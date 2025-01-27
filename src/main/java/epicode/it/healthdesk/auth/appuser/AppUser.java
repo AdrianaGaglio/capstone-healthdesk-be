@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.auth.appuser;
 
+import epicode.it.healthdesk.entities.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -24,5 +25,8 @@ public class AppUser {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

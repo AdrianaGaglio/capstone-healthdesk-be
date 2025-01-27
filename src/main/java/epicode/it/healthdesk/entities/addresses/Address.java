@@ -1,0 +1,26 @@
+package epicode.it.healthdesk.entities.addresses;
+
+import epicode.it.healthdesk.entities.addresses.city.City;
+import epicode.it.healthdesk.entities.addresses.province.Province;
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Data
+@Entity
+@Table(name="addresses")
+public class Address {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private  Long id;
+
+    private String street;
+    private String street_number;
+
+    @ManyToOne
+    @JoinColumn(name = "province_id")
+    private Province province;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private City city;
+}

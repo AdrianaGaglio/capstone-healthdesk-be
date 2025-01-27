@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.user;
 
+import epicode.it.healthdesk.auth.appuser.AppUser;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,4 +16,7 @@ public abstract class User {
     private String surname;
     private String avatar;
 
+    @OneToOne
+    @JoinColumn(name = "appuser_id")
+    private AppUser appUser;
 }
