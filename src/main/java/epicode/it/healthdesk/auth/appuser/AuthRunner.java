@@ -5,6 +5,7 @@ import epicode.it.healthdesk.auth.dto.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.swing.text.html.Option;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
+@Order(1)
 public class AuthRunner implements ApplicationRunner {
     private final AppUserSvc appUserSvc;
 
@@ -20,23 +22,24 @@ public class AuthRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        Optional<AppUser> admin = appUserSvc.findByEmail("admin");
+
+        Optional<AppUser> admin = appUserSvc.findByEmail("admin@mail.com");
         if (admin.isEmpty()) {
             RegisterRequest adminRequest = new RegisterRequest("admin@mail.com", "adminpwd");
             appUserSvc.registerAdmin(adminRequest);
         }
 
 
-        Optional<AppUser> doctor = appUserSvc.findByEmail("doctor");
+        Optional<AppUser> doctor = appUserSvc.findByEmail("doctor@mail.com");
         if (doctor.isEmpty()) {
             RegisterRequest doctorRequest = new RegisterRequest("doctor@mail.com", "doctorpwd");
             appUserSvc.registerDoctor(doctorRequest);
         }
 
-        Optional<AppUser> user = appUserSvc.findByEmail("user");
-        if (user.isEmpty()) {
-            RegisterRequest userRequest = new RegisterRequest("user@mail.com", "userpwd");
-            appUserSvc.registerDoctor(userRequest);
+        Optional<AppUser> patient = appUserSvc.findByEmail("patient@mail.com");
+        if (patient.isEmpty()) {
+            RegisterRequest patientRequest = new RegisterRequest("patient@mail.com", "patientpwd");
+            appUserSvc.registerPatient(patientRequest);
         }
 
     }

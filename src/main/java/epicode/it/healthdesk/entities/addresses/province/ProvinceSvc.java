@@ -25,6 +25,10 @@ public class ProvinceSvc {
         return (int) provinceRepo.count();
     }
 
+    public List<Province> findAll() {
+        return provinceRepo.findAll();
+    }
+
     public List<ProvinceDTO> getProvinces() {
         HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -58,7 +62,7 @@ public class ProvinceSvc {
         provinceRepo.saveAll(newProvinces);
     }
 
-    public Province findByAcronym(String acronym) {
+    public Province getByAcronym(String acronym) {
         return provinceRepo.findByAcronym(acronym);
     }
 }

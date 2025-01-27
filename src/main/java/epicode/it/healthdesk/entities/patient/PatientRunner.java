@@ -1,0 +1,64 @@
+package epicode.it.healthdesk.entities.patient;
+
+import com.github.javafaker.Faker;
+import epicode.it.healthdesk.auth.appuser.AppUserSvc;
+import epicode.it.healthdesk.auth.dto.RegisterRequest;
+import epicode.it.healthdesk.entities.addresses.city.City;
+import epicode.it.healthdesk.entities.addresses.city.CitySvc;
+import epicode.it.healthdesk.entities.addresses.dto.AddressRequest;
+import epicode.it.healthdesk.entities.addresses.province.ProvinceSvc;
+import epicode.it.healthdesk.entities.patient.dto.PatientRequest;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+@Order(5)
+@RequiredArgsConstructor
+public class PatientRunner implements ApplicationRunner {
+    private final AppUserSvc appUserSvc;
+    private final ProvinceSvc proviceSvc;
+    private final CitySvc citySvc;
+    private final Faker faker;
+
+    @Transactional
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+
+        RegisterRequest request = new RegisterRequest();
+
+        request.setEmail(faker.internet().emailAddress());
+        request.setPassword(faker.internet().password());
+
+        PatientRequest patientRequest = new PatientRequest();
+        patientRequest.setName(faker.name().firstName());
+        patientRequest.setSurname(faker.name().lastName());
+        patientRequest.setTaxId(faker.regexify("[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]"));
+        patientRequest.setPhoneNumber(faker.phoneNumber().phoneNumber());
+
+        AddressRequest addressRequest = new AddressRequest();
+        addressRequest.setStreet(faker.address().streetAddress());
+        addressRequest.setStreetNumber(faker.address().streetAddressNumber());
+        addressRequest.setProvinceAcronym(proviceSvc.findAll().get(faker.random().nextInt(proviceSvc.count())).getAcronym());
+        City city = citySvc.findByProvinceAcronym(addressRequest.getProvinceAcronym()).get(faker.random().nextInt(1, citySvc.findByProvinceAcronym(addressRequest.getProvinceAcronym()).size()));
+        addressRequest.setCityName(city.getName());
+        addressRequest.setPostalCode(city.getPostalCode());
+
+        patientRequest.setAddress(addressRequest);
+
+        request.setPatient(patientRequest);
+
+        try {
+            appUserSvc.registerPatient(request);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+            System.out.println(request);
+        }
+
+    }
+}

@@ -14,7 +14,9 @@ public class Address {
     private  Long id;
 
     private String street;
-    private String street_number;
+
+    @Column(name="street_number")
+    private String streetNumber;
 
     @ManyToOne
     @JoinColumn(name = "province_id")

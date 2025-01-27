@@ -5,10 +5,12 @@ import epicode.it.healthdesk.entities.addresses.province.ProvinceSvc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Order(2)
 public class AddressRunner implements ApplicationRunner {
     private final ProvinceSvc provinceSvc;
     private final CitySvc citySvc;

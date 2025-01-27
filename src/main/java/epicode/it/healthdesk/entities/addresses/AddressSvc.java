@@ -1,26 +1,38 @@
 package epicode.it.healthdesk.entities.addresses;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import epicode.it.healthdesk.entities.addresses.province.Province;
-import epicode.it.healthdesk.entities.addresses.province.ProvinceRepo;
-import epicode.it.healthdesk.entities.addresses.province.dto.ProvinceDTO;
-import epicode.it.healthdesk.entities.addresses.province.dto.ProvinceMapper;
-import epicode.it.healthdesk.entities.addresses.province.dto.ProvinceServerResponse;
+import epicode.it.healthdesk.entities.addresses.city.City;
+import epicode.it.healthdesk.entities.addresses.city.CitySvc;
+import epicode.it.healthdesk.entities.addresses.dto.AddressMapper;
+import epicode.it.healthdesk.entities.addresses.dto.AddressRequest;
+import epicode.it.healthdesk.exceptions.AddressMismatchingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 public class AddressSvc {
+    private final AddressRepo addressRepo;
+    private final CitySvc citySvc;
+    private final AddressMapper mapper;
 
+    public Address create(@Valid AddressRequest request) {
+        City city = citySvc.findByNameAndPostalCode(request.getCityName(), request.getPostalCode());
+        List<City> cities = citySvc.findByProvinceAcronym(request.getProvinceAcronym());
 
+        if (!cities.contains(city)) {
+            throw new AddressMismatchingException("La città e la provincia non corrispondono");
+        }
+
+        if (!city.getPostalCode().equals(request.getPostalCode())) {
+            throw new AddressMismatchingException("La città e il cap non corrispondono");
+        }
+
+        return addressRepo.save(mapper.toAddress(request));
+    }
 
 }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,7 +23,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequest registerRequest) {
         Map<String, String> response = new HashMap<>();
-        response.put("message",  appUserSvc.registerUser(registerRequest));
+        response.put("message",  appUserSvc.registerPatient(registerRequest));
         return ResponseEntity.ok(response);
     }
 

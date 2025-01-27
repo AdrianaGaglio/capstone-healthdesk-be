@@ -5,19 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import epicode.it.healthdesk.entities.addresses.city.dto.CityDTO;
 import epicode.it.healthdesk.entities.addresses.city.dto.CityMapper;
 import epicode.it.healthdesk.entities.addresses.city.dto.CityServerResponse;
+import epicode.it.healthdesk.entities.addresses.province.Province;
 import epicode.it.healthdesk.entities.addresses.province.ProvinceSvc;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
-
-import static com.fasterxml.jackson.databind.jsonFormatVisitors.JsonValueFormat.URI;
 
 @Service
 @RequiredArgsConstructor
@@ -63,9 +61,16 @@ public class CitySvc {
         List<CityDTO> newCities = getCities();
         for (int i = 0; i < newCities.size(); i++) {
             City newCity = mapper.toCity(newCities.get(i));
-            newCity.setProvince(provinceSvc.findByAcronym(newCities.get(i).getProvinceAcronym()));
+            newCity.setProvince(provinceSvc.getByAcronym(newCities.get(i).getProvinceAcronym()));
             cityRepo.save(newCity);
         }
+    }
 
+    public City findByNameAndPostalCode(String name, String postalCode) {
+        return cityRepo.findByNameAndPostalCode(name, postalCode);
+    }
+
+    public List<City> findByProvinceAcronym(String provinceAcronym) {
+        return cityRepo.findByProvinceAcronym(provinceAcronym);
     }
 }
