@@ -3,10 +3,10 @@ package epicode.it.healthdesk.entities.patient;
 import com.github.javafaker.Faker;
 import epicode.it.healthdesk.auth.appuser.AppUserSvc;
 import epicode.it.healthdesk.auth.dto.RegisterRequest;
-import epicode.it.healthdesk.entities.addresses.city.City;
-import epicode.it.healthdesk.entities.addresses.city.CitySvc;
-import epicode.it.healthdesk.entities.addresses.dto.AddressRequest;
-import epicode.it.healthdesk.entities.addresses.province.ProvinceSvc;
+import epicode.it.healthdesk.entities.address.city.City;
+import epicode.it.healthdesk.entities.address.city.CitySvc;
+import epicode.it.healthdesk.entities.address.dto.AddressRequest;
+import epicode.it.healthdesk.entities.address.province.ProvinceSvc;
 import epicode.it.healthdesk.entities.patient.dto.PatientRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +14,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @Order(5)

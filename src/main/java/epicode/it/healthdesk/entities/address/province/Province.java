@@ -1,4 +1,4 @@
-package epicode.it.healthdesk.entities.addresses.province;
+package epicode.it.healthdesk.entities.address.province;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -1,9 +1,9 @@
-package epicode.it.healthdesk.entities.addresses;
+package epicode.it.healthdesk.entities.address;
 
-import epicode.it.healthdesk.entities.addresses.city.City;
-import epicode.it.healthdesk.entities.addresses.city.CitySvc;
-import epicode.it.healthdesk.entities.addresses.dto.AddressMapper;
-import epicode.it.healthdesk.entities.addresses.dto.AddressRequest;
+import epicode.it.healthdesk.entities.address.city.City;
+import epicode.it.healthdesk.entities.address.city.CitySvc;
+import epicode.it.healthdesk.entities.address.dto.AddressMapper;
+import epicode.it.healthdesk.entities.address.dto.AddressRequest;
 import epicode.it.healthdesk.exceptions.AddressMismatchingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

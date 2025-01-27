@@ -1,4 +1,4 @@
-package epicode.it.healthdesk.entities.addresses;
+package epicode.it.healthdesk.entities.address;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

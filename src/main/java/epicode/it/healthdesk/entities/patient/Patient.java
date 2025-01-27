@@ -1,10 +1,9 @@
 package epicode.it.healthdesk.entities.patient;
 
-import epicode.it.healthdesk.entities.addresses.Address;
+import epicode.it.healthdesk.entities.address.Address;
 import epicode.it.healthdesk.entities.general_user.GeneralUser;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
 

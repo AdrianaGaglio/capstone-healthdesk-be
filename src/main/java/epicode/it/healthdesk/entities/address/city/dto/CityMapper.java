@@ -1,6 +1,6 @@
-package epicode.it.healthdesk.entities.addresses.city.dto;
+package epicode.it.healthdesk.entities.address.city.dto;
 
-import epicode.it.healthdesk.entities.addresses.city.City;
+import epicode.it.healthdesk.entities.address.city.City;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 

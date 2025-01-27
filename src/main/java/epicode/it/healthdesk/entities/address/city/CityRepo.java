@@ -1,6 +1,5 @@
-package epicode.it.healthdesk.entities.addresses.city;
+package epicode.it.healthdesk.entities.address.city;
 
-import epicode.it.healthdesk.entities.addresses.province.Province;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

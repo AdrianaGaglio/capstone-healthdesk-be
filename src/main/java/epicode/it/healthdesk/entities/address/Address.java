@@ -1,7 +1,7 @@
-package epicode.it.healthdesk.entities.addresses;
+package epicode.it.healthdesk.entities.address;
 
-import epicode.it.healthdesk.entities.addresses.city.City;
-import epicode.it.healthdesk.entities.addresses.province.Province;
+import epicode.it.healthdesk.entities.address.city.City;
+import epicode.it.healthdesk.entities.address.province.Province;
 import jakarta.persistence.*;
 import lombok.Data;
 

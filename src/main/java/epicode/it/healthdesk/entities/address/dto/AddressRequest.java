@@ -1,4 +1,4 @@
-package epicode.it.healthdesk.entities.addresses.dto;
+package epicode.it.healthdesk.entities.address.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

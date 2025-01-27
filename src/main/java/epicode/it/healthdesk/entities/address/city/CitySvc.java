@@ -1,12 +1,11 @@
-package epicode.it.healthdesk.entities.addresses.city;
+package epicode.it.healthdesk.entities.address.city;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import epicode.it.healthdesk.entities.addresses.city.dto.CityDTO;
-import epicode.it.healthdesk.entities.addresses.city.dto.CityMapper;
-import epicode.it.healthdesk.entities.addresses.city.dto.CityServerResponse;
-import epicode.it.healthdesk.entities.addresses.province.Province;
-import epicode.it.healthdesk.entities.addresses.province.ProvinceSvc;
+import epicode.it.healthdesk.entities.address.city.dto.CityDTO;
+import epicode.it.healthdesk.entities.address.city.dto.CityMapper;
+import epicode.it.healthdesk.entities.address.city.dto.CityServerResponse;
+import epicode.it.healthdesk.entities.address.province.ProvinceSvc;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

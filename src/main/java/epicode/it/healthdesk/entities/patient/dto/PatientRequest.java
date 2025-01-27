@@ -1,6 +1,6 @@
 package epicode.it.healthdesk.entities.patient.dto;
 
-import epicode.it.healthdesk.entities.addresses.dto.AddressRequest;
+import epicode.it.healthdesk.entities.address.dto.AddressRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;

@@ -1,7 +1,7 @@
-package epicode.it.healthdesk.entities.addresses.city.dto;
+package epicode.it.healthdesk.entities.address.city.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import epicode.it.healthdesk.entities.addresses.province.dto.ProvinceServerResponse;
+import epicode.it.healthdesk.entities.address.province.dto.ProvinceServerResponse;
 import lombok.Data;
 
 @Data

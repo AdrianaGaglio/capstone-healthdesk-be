@@ -1,4 +1,4 @@
-package epicode.it.healthdesk.entities.addresses.province.dto;
+package epicode.it.healthdesk.entities.address.province.dto;
 
 import lombok.Data;
 

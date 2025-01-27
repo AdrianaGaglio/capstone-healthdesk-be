@@ -1,10 +1,7 @@
 package epicode.it.healthdesk.entities.patient.dto;
 
-import epicode.it.healthdesk.entities.addresses.AddressSvc;
 import epicode.it.healthdesk.entities.patient.Patient;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;

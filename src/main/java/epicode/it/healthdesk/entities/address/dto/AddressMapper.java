@@ -1,8 +1,8 @@
-package epicode.it.healthdesk.entities.addresses.dto;
+package epicode.it.healthdesk.entities.address.dto;
 
-import epicode.it.healthdesk.entities.addresses.Address;
-import epicode.it.healthdesk.entities.addresses.city.CitySvc;
-import epicode.it.healthdesk.entities.addresses.province.ProvinceSvc;
+import epicode.it.healthdesk.entities.address.Address;
+import epicode.it.healthdesk.entities.address.city.CitySvc;
+import epicode.it.healthdesk.entities.address.province.ProvinceSvc;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
