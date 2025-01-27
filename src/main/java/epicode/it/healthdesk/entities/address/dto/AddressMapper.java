@@ -7,6 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class AddressMapper {
     private ModelMapper mapper = new ModelMapper();
@@ -22,5 +24,17 @@ public class AddressMapper {
         response.setCity(citySvc.findByNameAndPostalCode(request.getCityName(), request.getPostalCode()));
         response.setProvince(provinceSvc.getByAcronym(request.getProvinceAcronym()));
         return response;
+    }
+
+    public AddressResponse fromAddressToAddressResponse(Address address) {
+        AddressResponse response = mapper.map(address, AddressResponse.class);
+        response.setProvince(address.getProvince().getAcronym());
+        response.setCity(address.getCity().getName());
+        response.setPostalCode(address.getCity().getPostalCode());
+        return response;
+    }
+
+    public List<AddressResponse> fromAddressToAddressResponseList(List<Address> addresses) {
+        return addresses.stream().map(this::fromAddressToAddressResponse).toList();
     }
 }

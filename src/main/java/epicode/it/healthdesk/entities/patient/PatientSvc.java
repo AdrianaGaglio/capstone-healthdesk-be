@@ -1,6 +1,7 @@
 package epicode.it.healthdesk.entities.patient;
 
 import epicode.it.healthdesk.entities.address.AddressSvc;
+import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolderSvc;
 import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
 import epicode.it.healthdesk.entities.patient.dto.PatientRequest;
@@ -41,8 +42,11 @@ public class PatientSvc {
         return (int) patientRepo.count();
     }
 
+    @Transactional
     public String delete(Long id) {
         Patient e = getById(id);
+        MedicalFolder mf = medicalFolderSvc.getById(e.getId());
+        medicalFolderSvc.delete(mf);
         patientRepo.delete(e);
         return "Paziente cancellato correttamente";
     }

@@ -15,6 +15,11 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 @Component
 @Order(5)
 @RequiredArgsConstructor
@@ -37,13 +42,14 @@ public class PatientRunner implements ApplicationRunner {
         patientRequest.setName(faker.name().firstName());
         patientRequest.setSurname(faker.name().lastName());
         patientRequest.setTaxId(faker.regexify("[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]"));
+        patientRequest.setBirthDate(faker.date().past(18250, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         patientRequest.setPhoneNumber(faker.phoneNumber().phoneNumber());
 
         AddressRequest addressRequest = new AddressRequest();
         addressRequest.setStreet(faker.address().streetAddress());
         addressRequest.setStreetNumber(faker.address().streetAddressNumber());
         addressRequest.setProvinceAcronym(proviceSvc.findAll().get(faker.random().nextInt(proviceSvc.count())).getAcronym());
-        City city = citySvc.findByProvinceAcronym(addressRequest.getProvinceAcronym()).get(faker.random().nextInt(1, citySvc.findByProvinceAcronym(addressRequest.getProvinceAcronym()).size()));
+        City city = citySvc.findByProvinceAcronym(addressRequest.getProvinceAcronym()).get(faker.random().nextInt(citySvc.findByProvinceAcronym(addressRequest.getProvinceAcronym()).size() - 1));
         addressRequest.setCityName(city.getName());
         addressRequest.setPostalCode(city.getPostalCode());
 
