@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name="users")
+@Table(name="appusers")
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +20,7 @@ public class AppUser {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "appuser_roles", joinColumns = @JoinColumn(name = "appuser_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
