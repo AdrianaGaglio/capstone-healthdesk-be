@@ -4,6 +4,13 @@ package epicode.it.healthdesk.entities.doctor;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorRequest;
+import epicode.it.healthdesk.entities.doctor.dto.DoctorUpdateAddInfoRequest;
+import epicode.it.healthdesk.entities.experience.ExperienceSvc;
+import epicode.it.healthdesk.entities.payment_method.PaymentMethod;
+import epicode.it.healthdesk.entities.payment_method.PaymentMethodSvc;
+import epicode.it.healthdesk.entities.service.DoctorServiceSvc;
+import epicode.it.healthdesk.entities.specialization.SpecializationSvc;
+import epicode.it.healthdesk.entities.training.TrainingSvc;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -14,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +30,11 @@ import java.util.List;
 public class DoctorSvc {
     private final DoctorRepo doctorRepo;
     private final DoctorMapper mapper;
+    private final SpecializationSvc specializationSvc;
+    private final DoctorServiceSvc doctorServiceSvc;
+    private final ExperienceSvc experienceSvc;
+    private final TrainingSvc trainingSvc;
+    private final PaymentMethodSvc paymentMethodSvc;
 
     public List<Doctor> getAll() {
         return doctorRepo.findAll();
@@ -62,5 +75,30 @@ public class DoctorSvc {
         c.setDoctor(d);
         d.setCalendar(c);
         return d;
+    }
+
+    @Transactional
+    public Doctor updateAddInfo(Long id, @Valid DoctorUpdateAddInfoRequest request) {
+        Doctor d = getById(id);
+        if (request.getSpecializations() != null) {
+            d.getSpecializations().addAll(specializationSvc.saveAll(d, request.getSpecializations()));
+        }
+        if (request.getServices() != null) {
+            d.getServices().addAll(doctorServiceSvc.saveAll(d, request.getServices()));
+        }
+        if (request.getExperiences() != null) {
+            d.getExperiences().addAll(experienceSvc.saveAll(d, request.getExperiences()));
+        }
+        if (request.getTrainings() != null) {
+            d.getTrainings().addAll(trainingSvc.saveAll(d, request.getTrainings()));
+        }
+        if (request.getPayments() != null) {
+            List<PaymentMethod> paymentMethods = new ArrayList<>();
+            request.getPayments().forEach(p -> {
+                paymentMethods.add(paymentMethodSvc.getByName(p));
+            });
+            d.getPaymentMethods().addAll(paymentMethods);
+        }
+        return doctorRepo.save(d);
     }
 }

@@ -1,20 +1,18 @@
 package epicode.it.healthdesk.entities.service;
 
+import epicode.it.healthdesk.entities.doctor.Doctor;
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Entity
 @Table(name = "services")
-public class Service {
+public class DoctorService {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     private String description;
@@ -25,4 +23,6 @@ public class Service {
     @Column(nullable = false)
     private boolean online;
 
+    @ManyToOne
+    private Doctor doctor;
 }

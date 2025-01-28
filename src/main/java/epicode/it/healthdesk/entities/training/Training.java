@@ -25,5 +25,6 @@ public class Training {
 
     private String description;
 
-
+    @ManyToOne
+    private Doctor doctor;
 }

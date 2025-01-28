@@ -1,17 +1,19 @@
 package epicode.it.healthdesk.entities.doctor.dto;
 
-import epicode.it.healthdesk.entities.address.dto.AddressResponse;
 import epicode.it.healthdesk.entities.experience.Experience;
+import epicode.it.healthdesk.entities.experience.dto.ExperienceResponse;
 import epicode.it.healthdesk.entities.payment_method.PaymentMethod;
-import epicode.it.healthdesk.entities.service.Service;
+import epicode.it.healthdesk.entities.service.DoctorService;
+import epicode.it.healthdesk.entities.service.dto.DoctorServiceResponse;
 import epicode.it.healthdesk.entities.specialization.Specialization;
+import epicode.it.healthdesk.entities.specialization.dto.SpecializationResponse;
 import epicode.it.healthdesk.entities.training.Training;
+import epicode.it.healthdesk.entities.training.dto.TrainingResponse;
 import lombok.Data;
 
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Data
 public class DoctorResponse {
@@ -23,9 +25,9 @@ public class DoctorResponse {
     private String licenceNumber;
     private String phoneNumber;
     private List<AddressResponseForDoctor> addresses = new ArrayList<>();
-    private List<Specialization> specializations = new ArrayList<>();
-    private List<Service> services = new ArrayList<>();
-    private List<Experience> experiences = new ArrayList<>();
-    private List<Training> trainings = new ArrayList<>();
+    private List<SpecializationResponse> specializations = new ArrayList<>();
+    private List<DoctorServiceResponse> services = new ArrayList<>();
+    private List<ExperienceResponse> experiences = new ArrayList<>();
+    private List<TrainingResponse> trainings = new ArrayList<>();
     private List<PaymentMethod> paymentMethods = new ArrayList<>();
 }

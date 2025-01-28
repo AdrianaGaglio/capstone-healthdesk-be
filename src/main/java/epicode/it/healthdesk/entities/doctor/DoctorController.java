@@ -2,6 +2,7 @@ package epicode.it.healthdesk.entities.doctor;
 
 import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorResponse;
+import epicode.it.healthdesk.entities.doctor.dto.DoctorUpdateAddInfoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,5 +51,11 @@ public class DoctorController {
         Map<String, String> response = new HashMap<>();
         response.put("message", doctorSvc.delete(id));
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    public ResponseEntity<DoctorResponse> updateAddInfo(@PathVariable Long id, @RequestBody DoctorUpdateAddInfoRequest request) {
+        return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.updateAddInfo(id, request)));
     }
 }

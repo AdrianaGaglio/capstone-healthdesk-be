@@ -24,4 +24,7 @@ public class Experience {
     private String name;
 
     private String description;
+
+    @ManyToOne
+    private Doctor doctor;
 }

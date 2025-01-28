@@ -21,4 +21,7 @@ public class Specialization {
 
     private LocalDate date;
 
+    @ManyToOne
+    private Doctor doctor;
+
 }
