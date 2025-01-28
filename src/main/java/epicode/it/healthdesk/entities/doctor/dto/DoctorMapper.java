@@ -3,15 +3,17 @@ package epicode.it.healthdesk.entities.doctor.dto;
 import epicode.it.healthdesk.entities.address.AddressSvc;
 import epicode.it.healthdesk.entities.address.dto.AddressMapper;
 import epicode.it.healthdesk.entities.address.dto.AddressRequest;
+import epicode.it.healthdesk.entities.address.dto.AddressResponse;
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 
@@ -49,7 +51,12 @@ public class DoctorMapper {
         response.setExperiences(d.getExperiences());
         response.setTrainings(d.getTrainings());
         response.setPaymentMethods(d.getPaymentMethods());
-        d.getAddresses().forEach((k, v) -> response.getAddresses().put(k, (addressMapper.fromAddressToAddressResponse(v))));
+
+        d.getAddresses().forEach((name, address) -> {
+            AddressResponseForDoctor ar = new AddressResponseForDoctor(name, addressMapper.fromAddressToAddressResponse(address));
+            response.getAddresses().add(ar);
+        });
+
         return response;
     }
 

@@ -10,7 +10,6 @@ import lombok.Data;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ public class DoctorResponse {
     private String avatar;
     private String licenceNumber;
     private String phoneNumber;
-    private Map<String, AddressResponse> addresses = new HashMap<>();
+    private List<AddressResponseForDoctor> addresses = new ArrayList<>();
     private List<Specialization> specializations = new ArrayList<>();
     private List<Service> services = new ArrayList<>();
     private List<Experience> experiences = new ArrayList<>();
