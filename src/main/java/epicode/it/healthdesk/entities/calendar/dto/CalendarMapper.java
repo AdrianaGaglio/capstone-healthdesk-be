@@ -2,6 +2,7 @@ package epicode.it.healthdesk.entities.calendar.dto;
 
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.calendar.active_day.dto.ActiveDayMapper;
+import epicode.it.healthdesk.entities.calendar.time_slot.dto.TimeSlotMapper;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorResponse;
 import lombok.RequiredArgsConstructor;
