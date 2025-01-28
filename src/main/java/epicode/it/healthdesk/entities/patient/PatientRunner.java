@@ -35,8 +35,8 @@ public class PatientRunner implements ApplicationRunner {
 
         RegisterRequest request = new RegisterRequest();
 
-        request.setEmail(faker.internet().emailAddress());
-        request.setPassword(faker.internet().password());
+
+        request.setPassword("password");
 
         PatientRequest patientRequest = new PatientRequest();
         patientRequest.setName(faker.name().firstName());
@@ -44,6 +44,12 @@ public class PatientRunner implements ApplicationRunner {
         patientRequest.setTaxId(faker.regexify("[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]"));
         patientRequest.setBirthDate(faker.date().past(18250, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         patientRequest.setPhoneNumber(faker.phoneNumber().phoneNumber());
+
+        String surname = patientRequest.getSurname();
+        if (surname.contains("'")) surname.replace("'", "");
+        if (surname.contains(" ")) surname.replace(" ", "");
+
+        request.setEmail(patientRequest.getName().toLowerCase() + "." + surname.toLowerCase() + "@mail.com");
 
         AddressRequest addressRequest = new AddressRequest();
         addressRequest.setStreet(faker.address().streetAddress());

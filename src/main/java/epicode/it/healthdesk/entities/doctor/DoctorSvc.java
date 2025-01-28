@@ -65,7 +65,7 @@ public class DoctorSvc {
     }
 
     public Doctor getByEmail(String email) {
-        return doctorRepo.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Medico non trovato"));
+        return doctorRepo.findFirstByEmail(email).orElseThrow(() -> new EntityNotFoundException("Medico non trovato"));
     }
 
     @Transactional

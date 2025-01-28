@@ -28,6 +28,11 @@ public class PatientController {
     private final PatientMapper mapper;
 
     @GetMapping
+    public ResponseEntity<PatientResponse> getPatient(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(mapper.fromPatientToPatientResponse(patientSvc.getByEmail(userDetails.getUsername())));
+    }
+
+    @GetMapping("/all")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     public ResponseEntity<List<PatientResponse>> getAll(@AuthenticationPrincipal UserDetails userDetails) {
 

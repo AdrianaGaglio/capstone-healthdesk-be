@@ -42,6 +42,10 @@ public class PatientSvc {
         return (int) patientRepo.count();
     }
 
+    public Patient getByEmail(String email) {
+        return patientRepo.findFirstByEmail(email).orElseThrow(() -> new EntityNotFoundException("Paziente non trovato"));
+    }
+
     @Transactional
     public String delete(Long id) {
         Patient e = getById(id);

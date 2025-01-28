@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface DoctorRepo extends JpaRepository<Doctor, Long> {
 
     @Query("SELECT d FROM Doctor d WHERE LOWER(d.appUser.email) = LOWER(:email)")
-    public Optional<Doctor> findByEmail(@Param("email") String email);
+    public Optional<Doctor> findFirstByEmail(@Param("email") String email);
 }
