@@ -11,5 +11,14 @@ public class PaymentMethod {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentCategory category;
+
+    private int priority;
 
 }
