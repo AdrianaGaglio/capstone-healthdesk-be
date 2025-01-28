@@ -2,6 +2,7 @@ package epicode.it.healthdesk.entities.doctor;
 
 
 import epicode.it.healthdesk.entities.calendar.Calendar;
+import epicode.it.healthdesk.entities.calendar.CalendarSvc;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorRequest;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorUpdateAddInfoRequest;
@@ -21,8 +22,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +40,7 @@ public class DoctorSvc {
     private final ExperienceSvc experienceSvc;
     private final TrainingSvc trainingSvc;
     private final PaymentMethodSvc paymentMethodSvc;
+    private final CalendarSvc calendarSvc;
 
     public List<Doctor> getAll() {
         return doctorRepo.findAll();
@@ -71,9 +77,7 @@ public class DoctorSvc {
     @Transactional
     public Doctor create(@Valid DoctorRequest request) {
         Doctor d = doctorRepo.save(mapper.fromDoctorRequestToDoctor(request));
-        Calendar c = new Calendar();
-        c.setDoctor(d);
-        d.setCalendar(c);
+        d.setCalendar(calendarSvc.create(d));
         return d;
     }
 
