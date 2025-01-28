@@ -3,6 +3,7 @@ package epicode.it.healthdesk.entities.calendar;
 import epicode.it.healthdesk.entities.calendar.active_day.ActiveDaySvc;
 import epicode.it.healthdesk.entities.calendar.dto.CalendarMapper;
 import epicode.it.healthdesk.entities.calendar.dto.CalendarResponse;
+import epicode.it.healthdesk.entities.calendar.time_slot.dto.TimeSlotRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,15 @@ public class CalendarController {
         return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.getById(id)));
     }
 
-    @PostMapping("/{id}/new-day")
-    public ResponseEntity<CalendarResponse> addDay(@PathVariable Long id, @RequestParam String dayName) {
-        Calendar c = calendarSvc.getById(id);
+    @PostMapping("/{calendarId}/new-day")
+    public ResponseEntity<CalendarResponse> addDay(@PathVariable Long calendarId, @RequestParam String dayName) {
+        Calendar c = calendarSvc.getById(calendarId);
         return new ResponseEntity<>(mapper.toCalendarResponse(activeDaySvc.create(c, dayName)), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{dayId}/new-slot")
+    public ResponseEntity<CalendarResponse> addSlot(@PathVariable Long dayId, @RequestBody TimeSlotRequest request) {
+        return new ResponseEntity<>(mapper.toCalendarResponse(activeDaySvc.addSlot(dayId, request)), HttpStatus.CREATED);
     }
 
 }

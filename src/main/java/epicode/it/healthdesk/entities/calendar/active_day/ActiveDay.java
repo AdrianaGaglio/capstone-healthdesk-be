@@ -2,9 +2,12 @@ package epicode.it.healthdesk.entities.calendar.active_day;
 
 import epicode.it.healthdesk.entities.calendar.Calendar;
 
+import epicode.it.healthdesk.entities.calendar.time_slot.TimeSlot;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -22,7 +25,7 @@ public class ActiveDay {
     @Enumerated(EnumType.STRING)
     private DayName dayName;
 
-//    @OneToMany
-//    private List<Slot> slots = new ArrayList<>();
+    @OneToMany(mappedBy = "activeDay", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TimeSlot> slots = new ArrayList<>();
 
 }
