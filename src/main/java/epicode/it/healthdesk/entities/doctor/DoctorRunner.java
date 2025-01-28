@@ -41,6 +41,7 @@ public class DoctorRunner implements ApplicationRunner {
             doctorRequest.setName(faker.name().firstName());
             doctorRequest.setSurname(faker.name().lastName());
             doctorRequest.setLicenceNumber(faker.regexify("[A-Z0-9]{8}"));
+            doctorRequest.setPhoneNumber(faker.phoneNumber().phoneNumber());
 
             Province p = proviceSvc.findAll().get(faker.random().nextInt(proviceSvc.count()));
             List<City> cities = citySvc.findByProvinceAcronym(p.getAcronym());

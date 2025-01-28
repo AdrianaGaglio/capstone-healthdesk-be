@@ -17,6 +17,9 @@ public abstract class GeneralUser {
     private String surname;
     private String avatar;
 
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AppUser appUser;
 }

@@ -16,9 +16,6 @@ public class Patient extends GeneralUser {
     @Column(name = "tax_id", nullable = false, unique = true)
     private String taxId;
 
-    @Column(name = "phone_number", nullable = false)
-    private String phoneNumber;
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Address address;
 

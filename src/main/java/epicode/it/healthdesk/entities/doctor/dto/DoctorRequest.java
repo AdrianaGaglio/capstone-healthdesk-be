@@ -20,6 +20,9 @@ public class DoctorRequest {
 
     private String avatar;
 
+    @NotNull(message = "Numero di telefono richiesto")
+    private String phoneNumber;
+
     @NotNull(message = "Codice abilitazione richiesto")
     @Pattern(regexp = "^[A-Z0-9]{8}$", message = "Il codice di abilitazione deve essere alfanumerico di 8 caratteri.")
     private String licenceNumber;

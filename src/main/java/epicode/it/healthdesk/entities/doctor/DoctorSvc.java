@@ -51,6 +51,10 @@ public class DoctorSvc {
         return "Medico eliminato con successo";
     }
 
+    public Doctor getByEmail(String email) {
+        return doctorRepo.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Medico non trovato"));
+    }
+
     @Transactional
     public Doctor create(@Valid DoctorRequest request) {
         Doctor d = doctorRepo.save(mapper.fromDoctorRequestToDoctor(request));
