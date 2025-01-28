@@ -25,5 +25,6 @@ public class Patient extends GeneralUser {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
+    @Column(name="creation_date", nullable = false)
     private LocalDate creationDate;
 }

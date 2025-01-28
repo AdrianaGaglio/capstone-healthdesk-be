@@ -48,11 +48,11 @@ public class AppUserSvc {
 
         appUser = appUserRepo.save(appUser);
 
-        if (request.getPatient() != null) {
-            Patient p = patientSvc.create(request.getPatient());
-            p.setAppUser(appUser);
-            appUser.setGeneralUser(p);
-        }
+
+        Patient p = patientSvc.create(request.getPatient());
+        p.setAppUser(appUser);
+        appUser.setGeneralUser(p);
+
 
         return "Utente registrato con successo";
     }
