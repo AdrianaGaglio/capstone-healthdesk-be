@@ -1,6 +1,5 @@
-package epicode.it.healthdesk.entities.doctor.dto;
+package epicode.it.healthdesk.entities.address.dto;
 
-import epicode.it.healthdesk.entities.address.dto.AddressResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

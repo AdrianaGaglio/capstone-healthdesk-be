@@ -1,13 +1,10 @@
 package epicode.it.healthdesk.entities.doctor.dto;
 
-import epicode.it.healthdesk.entities.experience.Experience;
+import epicode.it.healthdesk.entities.address.dto.AddressResponseForDoctor;
 import epicode.it.healthdesk.entities.experience.dto.ExperienceResponse;
 import epicode.it.healthdesk.entities.payment_method.PaymentMethod;
-import epicode.it.healthdesk.entities.service.DoctorService;
 import epicode.it.healthdesk.entities.service.dto.DoctorServiceResponse;
-import epicode.it.healthdesk.entities.specialization.Specialization;
 import epicode.it.healthdesk.entities.specialization.dto.SpecializationResponse;
-import epicode.it.healthdesk.entities.training.Training;
 import epicode.it.healthdesk.entities.training.dto.TrainingResponse;
 import lombok.Data;
 

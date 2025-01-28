@@ -1,7 +1,9 @@
 package epicode.it.healthdesk.entities.experience;
 
 import epicode.it.healthdesk.entities.doctor.Doctor;
+import epicode.it.healthdesk.entities.experience.dto.ExperienceMapper;
 import epicode.it.healthdesk.entities.experience.dto.ExperienceRequest;
+import epicode.it.healthdesk.entities.experience.dto.ExperienceResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

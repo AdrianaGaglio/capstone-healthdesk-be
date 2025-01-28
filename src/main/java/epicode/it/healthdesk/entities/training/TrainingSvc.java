@@ -19,22 +19,22 @@ import java.util.List;
 @Validated
 public class TrainingSvc {
     private final TrainingRepo trainingRepo;
-    private final TrainingMapper mapper;
 
-    public TrainingResponse create(@Valid TrainingRequest request) {
+
+    public Training create(@Valid TrainingRequest request) {
         Training t = new Training();
         BeanUtils.copyProperties(request, t);
-        return mapper.toTrainingResponse(trainingRepo.save(t));
+        return trainingRepo.save(t);
     }
 
-    public List<TrainingResponse> saveAll(Doctor d, List<TrainingRequest> requests) {
+    public List<Training> saveAll(Doctor d, List<TrainingRequest> requests) {
         List<Training> trainings = new ArrayList<>();
         requests.forEach(request -> {
             Training t = new Training();
             BeanUtils.copyProperties(request, t);
             trainings.add(t);
         });
-        return mapper.toTrainingResponseList(trainingRepo.saveAll(trainings));
+        return trainingRepo.saveAll(trainings);
     }
 
     public String delete(Long id) {

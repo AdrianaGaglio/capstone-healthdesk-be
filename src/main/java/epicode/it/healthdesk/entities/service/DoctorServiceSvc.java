@@ -19,15 +19,14 @@ import java.util.List;
 @Validated
 public class DoctorServiceSvc {
     private final DoctorServiceRepo serviceRepo;
-    private final DoctorServiceMapper mapper;
 
-    public DoctorServiceResponse create(@Valid DoctorServiceRequest request) {
+    public DoctorService create(@Valid DoctorServiceRequest request) {
         DoctorService s = new DoctorService();
         BeanUtils.copyProperties(request, s);
-        return mapper.toDoctorServiceResponse(serviceRepo.save(s));
+        return serviceRepo.save(s);
     }
 
-    public List<DoctorServiceResponse> saveAll(Doctor d, List<DoctorServiceRequest> requests) {
+    public List<DoctorService> saveAll(Doctor d, List<DoctorServiceRequest> requests) {
         List<DoctorService> services = new ArrayList<>();
         requests.forEach(request -> {
             DoctorService s = new DoctorService();
@@ -35,7 +34,7 @@ public class DoctorServiceSvc {
             s.setDoctor(d);
             services.add(s);
         });
-        return mapper.toDoctorServiceResponseList(serviceRepo.saveAll(services));
+        return serviceRepo.saveAll(services);
     }
 
     public String delete(Long id) {

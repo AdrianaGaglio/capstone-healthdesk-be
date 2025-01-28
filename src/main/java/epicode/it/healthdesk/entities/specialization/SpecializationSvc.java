@@ -20,15 +20,14 @@ import java.util.List;
 @Validated
 public class SpecializationSvc {
     private final SpecializationRepo specializationRepo;
-    private final SpecializationMapper mapper;
 
-    public SpecializationResponse create(@Valid SpecializationRequest request) {
+    public Specialization create(@Valid SpecializationRequest request) {
         Specialization s = new Specialization();
         BeanUtils.copyProperties(request, s);
-        return mapper.toSpecializationResponse(specializationRepo.save(s));
+        return specializationRepo.save(s);
     }
 
-    public List<SpecializationResponse> saveAll(Doctor d, List<SpecializationRequest> requests) {
+    public List<Specialization> saveAll(Doctor d, List<SpecializationRequest> requests) {
         List<Specialization> specializations = new ArrayList<>();
         requests.forEach(request -> {
             Specialization s = new Specialization();
@@ -36,7 +35,7 @@ public class SpecializationSvc {
             s.setDoctor(d);
             specializations.add(s);
         });
-        return mapper.toSpecializationResponseList(specializationRepo.saveAll(specializations));
+        return specializationRepo.saveAll(specializations);
     }
 
     public String delete(Long id) {
