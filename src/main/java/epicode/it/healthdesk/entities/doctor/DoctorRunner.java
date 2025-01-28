@@ -1,6 +1,9 @@
 package epicode.it.healthdesk.entities.doctor;
 
 import com.github.javafaker.Faker;
+import epicode.it.healthdesk.auth.appuser.AppUser;
+import epicode.it.healthdesk.auth.appuser.AppUserSvc;
+import epicode.it.healthdesk.auth.dto.RegisterDoctorRequest;
 import epicode.it.healthdesk.entities.address.city.City;
 import epicode.it.healthdesk.entities.address.city.CitySvc;
 import epicode.it.healthdesk.entities.address.dto.AddressRequest;
@@ -18,6 +21,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class DoctorRunner implements ApplicationRunner {
+    private final AppUserSvc appUserSvc;
     private final DoctorSvc doctorSvc;
     private final CitySvc citySvc;
     private final ProvinceSvc proviceSvc;
@@ -26,11 +30,17 @@ public class DoctorRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        if(doctorSvc.count() == 0){
-            DoctorRequest request = new DoctorRequest();
-            request.setName(faker.name().firstName());
-            request.setSurname(faker.name().lastName());
-            request.setLicenceNumber(faker.regexify("[A-Z0-9]{8}"));
+        if (doctorSvc.count() == 0) {
+
+            RegisterDoctorRequest request = new RegisterDoctorRequest();
+
+            request.setEmail("doctor@mail.com");
+            request.setPassword("doctorpwd");
+
+            DoctorRequest doctorRequest = new DoctorRequest();
+            doctorRequest.setName(faker.name().firstName());
+            doctorRequest.setSurname(faker.name().lastName());
+            doctorRequest.setLicenceNumber(faker.regexify("[A-Z0-9]{8}"));
 
             Province p = proviceSvc.findAll().get(faker.random().nextInt(proviceSvc.count()));
             List<City> cities = citySvc.findByProvinceAcronym(p.getAcronym());
@@ -43,10 +53,17 @@ public class DoctorRunner implements ApplicationRunner {
                 addressRequest.setCityName(c.getName());
                 addressRequest.setPostalCode(c.getPostalCode());
                 addressRequest.setName("Studio " + i);
-                request.getAddresses().add(addressRequest);
+                doctorRequest.getAddresses().add(addressRequest);
             }
 
-            doctorSvc.create(request);
+            request.setDoctor(doctorRequest);
+
+            try {
+                appUserSvc.registerDoctor(request);
+            } catch (RuntimeException e) {
+                System.out.println(e.getMessage());
+                System.out.println(request);
+            }
         }
 
 

@@ -2,9 +2,12 @@ package epicode.it.healthdesk.auth.appuser;
 
 import epicode.it.healthdesk.auth.configurations.PwdEncoder;
 import epicode.it.healthdesk.auth.dto.LoginRequest;
+import epicode.it.healthdesk.auth.dto.RegisterDoctorRequest;
 import epicode.it.healthdesk.auth.dto.RegisterRequest;
 import epicode.it.healthdesk.auth.jwt.JwtTokenUtil;
 
+import epicode.it.healthdesk.entities.doctor.Doctor;
+import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
 import jakarta.persistence.EntityExistsException;
@@ -32,6 +35,7 @@ public class AppUserSvc {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final PatientSvc patientSvc;
+    private final DoctorSvc doctorSvc;
 
     @Transactional
     public String registerPatient(@Valid RegisterRequest request) {
@@ -42,12 +46,10 @@ public class AppUserSvc {
 
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
-
         appUser.setPassword(pwdEncoder.passwordEncoder().encode(request.getPassword()));
         appUser.setRoles(Set.of(Role.ROLE_PATIENT));
 
         appUser = appUserRepo.save(appUser);
-
 
         Patient p = patientSvc.create(request.getPatient());
         p.setAppUser(appUser);
@@ -65,14 +67,14 @@ public class AppUserSvc {
 
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
-
         appUser.setPassword(pwdEncoder.passwordEncoder().encode(request.getPassword()));
         appUser.setRoles(Set.of(Role.ROLE_ADMIN));
 
         return appUserRepo.save(appUser);
     }
 
-    public AppUser registerDoctor(@Valid RegisterRequest request) {
+    @Transactional
+    public String registerDoctor(@Valid RegisterDoctorRequest request) {
 
         if (appUserRepo.existsByEmail(request.getEmail())) {
             throw new EntityExistsException("Email già in uso");
@@ -84,7 +86,13 @@ public class AppUserSvc {
         appUser.setPassword(pwdEncoder.passwordEncoder().encode(request.getPassword()));
         appUser.setRoles(Set.of(Role.ROLE_DOCTOR));
 
-        return appUserRepo.save(appUser);
+        appUser = appUserRepo.save(appUser);
+
+        Doctor d = doctorSvc.create(request.getDoctor());
+        d.setAppUser(appUser);
+        appUser.setGeneralUser(d);
+
+        return "Medico registrato con successo";
     }
 
     public Optional<AppUser> findByEmail(String email) {
