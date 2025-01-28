@@ -13,7 +13,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Entity
@@ -22,8 +24,9 @@ public class Doctor extends GeneralUser {
     @Column(name = "licence_number", nullable = false, unique = true)
     public String licenceNumber;
 
+    @ElementCollection
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Address> addresses = new ArrayList<>();
+    private Map<String, Address> addresses = new HashMap<>();
 
     @OneToMany
     private List<Patient> patients = new ArrayList<>();

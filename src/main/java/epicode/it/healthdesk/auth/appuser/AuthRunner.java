@@ -30,17 +30,17 @@ public class AuthRunner implements ApplicationRunner {
         }
 
 
-        Optional<AppUser> doctor = appUserSvc.findByEmail("doctor@mail.com");
-        if (doctor.isEmpty()) {
-            RegisterRequest doctorRequest = new RegisterRequest("doctor@mail.com", "doctorpwd");
-            appUserSvc.registerDoctor(doctorRequest);
-        }
-
-        Optional<AppUser> patient = appUserSvc.findByEmail("patient@mail.com");
-        if (patient.isEmpty()) {
-            RegisterRequest patientRequest = new RegisterRequest("patient@mail.com", "patientpwd");
-            appUserSvc.registerPatient(patientRequest);
-        }
+//        Optional<AppUser> doctor = appUserSvc.findByEmail("doctor@mail.com");
+//        if (doctor.isEmpty()) {
+//            RegisterRequest doctorRequest = new RegisterRequest("doctor@mail.com", "doctorpwd");
+//            appUserSvc.registerDoctor(doctorRequest);
+//        }
+//
+//        Optional<AppUser> patient = appUserSvc.findByEmail("patient@mail.com");
+//        if (patient.isEmpty()) {
+//            RegisterRequest patientRequest = new RegisterRequest("patient@mail.com", "patientpwd");
+//            appUserSvc.registerPatient(patientRequest);
+//        }
 
     }
 }
