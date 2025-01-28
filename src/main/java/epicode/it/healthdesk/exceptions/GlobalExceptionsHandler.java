@@ -28,8 +28,8 @@ public class GlobalExceptionsHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(AddressMismatchingException.class)
-    protected ResponseEntity<ErrorMessage> handleCityAndProvinceMismatchingException(AddressMismatchingException ex) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<ErrorMessage> handleIllegalArgumentException(IllegalArgumentException ex) {
         ErrorMessage errorMessage = new ErrorMessage(ex.getMessage(), HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }

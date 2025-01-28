@@ -26,26 +26,28 @@ public class DoctorRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        DoctorRequest request = new DoctorRequest();
-        request.setName(faker.name().firstName());
-        request.setSurname(faker.name().lastName());
-        request.setLicenceNumber(faker.regexify("[A-Z0-9]{8}"));
+        if(doctorSvc.count() == 0){
+            DoctorRequest request = new DoctorRequest();
+            request.setName(faker.name().firstName());
+            request.setSurname(faker.name().lastName());
+            request.setLicenceNumber(faker.regexify("[A-Z0-9]{8}"));
 
-        Province p = proviceSvc.findAll().get(faker.random().nextInt(proviceSvc.count()));
-        List<City> cities = citySvc.findByProvinceAcronym(p.getAcronym());
-        for (int i = 1; i < 3; i++) {
-            AddressRequestForDoctor addressRequest = new AddressRequestForDoctor();
-            addressRequest.setStreet(faker.address().streetAddress());
-            addressRequest.setStreetNumber(faker.address().streetAddressNumber());
-            addressRequest.setProvinceAcronym(p.getAcronym());
-            City c = cities.get(faker.random().nextInt(cities.size()));
-            addressRequest.setCityName(c.getName());
-            addressRequest.setPostalCode(c.getPostalCode());
-            addressRequest.setName("Studio " + i);
-            request.getAddresses().add(addressRequest);
+            Province p = proviceSvc.findAll().get(faker.random().nextInt(proviceSvc.count()));
+            List<City> cities = citySvc.findByProvinceAcronym(p.getAcronym());
+            for (int i = 1; i < 3; i++) {
+                AddressRequestForDoctor addressRequest = new AddressRequestForDoctor();
+                addressRequest.setStreet(faker.address().streetAddress());
+                addressRequest.setStreetNumber(faker.address().streetAddressNumber());
+                addressRequest.setProvinceAcronym(p.getAcronym());
+                City c = cities.get(faker.random().nextInt(cities.size()));
+                addressRequest.setCityName(c.getName());
+                addressRequest.setPostalCode(c.getPostalCode());
+                addressRequest.setName("Studio " + i);
+                request.getAddresses().add(addressRequest);
+            }
+
+            doctorSvc.create(request);
         }
-
-        System.out.println(request);
 
 
     }

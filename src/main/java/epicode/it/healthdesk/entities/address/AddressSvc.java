@@ -4,7 +4,6 @@ import epicode.it.healthdesk.entities.address.city.City;
 import epicode.it.healthdesk.entities.address.city.CitySvc;
 import epicode.it.healthdesk.entities.address.dto.AddressMapper;
 import epicode.it.healthdesk.entities.address.dto.AddressRequest;
-import epicode.it.healthdesk.exceptions.AddressMismatchingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,11 +24,11 @@ public class AddressSvc {
         List<City> cities = citySvc.findByProvinceAcronym(request.getProvinceAcronym());
 
         if (!cities.contains(city)) {
-            throw new AddressMismatchingException("La città e la provincia non corrispondono");
+            throw new IllegalArgumentException("La città e la provincia non corrispondono");
         }
 
         if (!city.getPostalCode().equals(request.getPostalCode())) {
-            throw new AddressMismatchingException("La città e il cap non corrispondono");
+            throw new IllegalArgumentException("La città e il cap non corrispondono");
         }
 
         return addressRepo.save(mapper.toAddress(request));

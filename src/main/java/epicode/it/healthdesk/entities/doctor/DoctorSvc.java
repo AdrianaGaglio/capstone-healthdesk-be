@@ -1,7 +1,14 @@
 package epicode.it.healthdesk.entities.doctor;
 
+
+import epicode.it.healthdesk.entities.calendar.Calendar;
+import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
+import epicode.it.healthdesk.entities.doctor.dto.DoctorRequest;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,6 +21,7 @@ import java.util.List;
 @Validated
 public class DoctorSvc {
     private final DoctorRepo doctorRepo;
+    private final DoctorMapper mapper;
 
     public List<Doctor> getAll() {
         return doctorRepo.findAll();
@@ -41,5 +49,14 @@ public class DoctorSvc {
         Doctor foundDoctor = getById(e.getId());
         doctorRepo.delete(foundDoctor);
         return "Medico eliminato con successo";
+    }
+
+    @Transactional
+    public Doctor create(@Valid DoctorRequest request) {
+        Doctor d = doctorRepo.save(mapper.fromDoctorRequestToDoctor(request));
+        Calendar c = new Calendar();
+        c.setDoctor(d);
+        d.setCalendar(c);
+        return d;
     }
 }

@@ -24,5 +24,6 @@ public class DoctorRequest {
     @Pattern(regexp = "^[A-Z0-9]{8}$", message = "Il codice di abilitazione deve essere alfanumerico di 8 caratteri.")
     private String licenceNumber;
 
+    @NotNull(message = "E' obbligatorio specificare almeno un indirizzo")
     private List<AddressRequestForDoctor> addresses = new ArrayList<>();
 }
