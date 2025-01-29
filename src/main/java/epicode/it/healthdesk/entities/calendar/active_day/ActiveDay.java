@@ -2,6 +2,7 @@ package epicode.it.healthdesk.entities.calendar.active_day;
 
 import epicode.it.healthdesk.entities.calendar.Calendar;
 
+import epicode.it.healthdesk.entities.calendar.calendar_setting.CalendarSettings;
 import epicode.it.healthdesk.entities.calendar.time_slot.TimeSlot;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class ActiveDay {
     private Long id;
 
     @ManyToOne
-    private Calendar calendar;
+    private CalendarSettings settings;
 
     @Column(name = "day_name")
     @Enumerated(EnumType.STRING)

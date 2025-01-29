@@ -6,6 +6,7 @@ import java.time.LocalTime;
 
 @Data
 public class TimeSlotRequest {
+    private Long dayId;
     private LocalTime startTime;
     private LocalTime endTime;
 }

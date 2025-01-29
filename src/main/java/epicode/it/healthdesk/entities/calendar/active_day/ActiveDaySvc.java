@@ -15,27 +15,12 @@ import java.time.LocalTime;
 @RequiredArgsConstructor
 public class ActiveDaySvc {
     private final ActiveDayRepo activeDayRepo;
-    private final CalendarSvc calendarSvc;
-    private final TimeSlotSvc timeSlotSvc;
 
     public ActiveDay getById(Long id) {
         return activeDayRepo.findById(id).orElse(null);
     }
 
-    @Transactional
-    public Calendar create(Calendar c, String dayName) {
-        ActiveDay day = new ActiveDay();
-        day.setDayName(DayName.valueOf(dayName.toUpperCase()));
-        day.setCalendar(c);
-        activeDayRepo.save(day);
-        return c;
-    }
-
-    @Transactional
-    public Calendar addSlot(Long id, TimeSlotRequest request) {
-        ActiveDay day = getById(id);
-        Calendar c = calendarSvc.getById(day.getCalendar().getId());
-        day.getSlots().add(timeSlotSvc.create(day, request.getStartTime(), request.getEndTime()));
-        return c;
+    public ActiveDay save(ActiveDay day) {
+        return activeDayRepo.save(day);
     }
 }

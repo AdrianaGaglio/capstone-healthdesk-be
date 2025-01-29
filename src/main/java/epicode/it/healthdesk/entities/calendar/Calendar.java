@@ -2,6 +2,7 @@ package epicode.it.healthdesk.entities.calendar;
 
 
 import epicode.it.healthdesk.entities.calendar.active_day.ActiveDay;
+import epicode.it.healthdesk.entities.calendar.calendar_setting.CalendarSettings;
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class Calendar {
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
 
-    @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ActiveDay> activeDays = new ArrayList<>();
+    @OneToOne
+    private CalendarSettings settings;
 
 }
