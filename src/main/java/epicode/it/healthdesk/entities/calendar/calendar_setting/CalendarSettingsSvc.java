@@ -10,6 +10,7 @@ import epicode.it.healthdesk.entities.calendar.time_slot.TimeSlot;
 import epicode.it.healthdesk.entities.calendar.time_slot.TimeSlotRepo;
 import epicode.it.healthdesk.entities.calendar.time_slot.TimeSlotSvc;
 import epicode.it.healthdesk.entities.calendar.time_slot.dto.TimeSlotRequest;
+import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class CalendarSettingsSvc {
 
     @Transactional
     public ActiveDay addActiveDay(CalendarSettings settings, String dayName) {
+        if(settings.getActiveDays().stream().anyMatch(d -> d.getDayName().equals(DayName.valueOf(dayName.toUpperCase())))) {
+            throw new EntityExistsException("Giornata già inserita per questo calendario");
+        };
         ActiveDay day = new ActiveDay();
         day.setDayName(DayName.valueOf(dayName.toUpperCase()));
         day.setSettings(settings);

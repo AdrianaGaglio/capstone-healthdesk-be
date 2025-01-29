@@ -16,6 +16,8 @@ import java.time.LocalTime;
 public class ActiveDaySvc {
     private final ActiveDayRepo activeDayRepo;
 
+
+
     public ActiveDay getById(Long id) {
         return activeDayRepo.findById(id).orElse(null);
     }

@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.calendar.active_day;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 
 import epicode.it.healthdesk.entities.calendar.calendar_setting.CalendarSettings;
