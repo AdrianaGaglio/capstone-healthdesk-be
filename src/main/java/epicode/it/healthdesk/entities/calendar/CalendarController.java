@@ -4,7 +4,10 @@ import epicode.it.healthdesk.entities.calendar.active_day.ActiveDaySvc;
 import epicode.it.healthdesk.entities.calendar.dto.CalendarMapper;
 import epicode.it.healthdesk.entities.calendar.dto.CalendarResponse;
 import epicode.it.healthdesk.entities.calendar.time_slot.dto.TimeSlotRequest;
+import epicode.it.healthdesk.entities.doctor.Doctor;
+import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,7 +22,16 @@ import org.springframework.web.bind.annotation.*;
 public class CalendarController {
     private final CalendarMapper mapper;
     private final CalendarSvc calendarSvc;
-    private final ActiveDaySvc activeDaySvc;
+    private final DoctorSvc doctorSvc;
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    public ResponseEntity<CalendarResponse> getAll(@AuthenticationPrincipal UserDetails userDetails) {
+
+        Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+
+        return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.getByDoctor(d)), HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<CalendarResponse> getById(@PathVariable Long id) {

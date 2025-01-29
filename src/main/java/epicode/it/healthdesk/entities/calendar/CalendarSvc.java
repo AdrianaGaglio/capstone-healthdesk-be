@@ -44,4 +44,8 @@ public class CalendarSvc {
         day.getSlots().add(settingsSvc.addSlotToActiveDay(day, newSlot));
         return c;
     }
+
+    public Calendar getByDoctor(Doctor d) {
+        return calendarRepo.findByDoctor(d).orElseThrow(() -> new EntityNotFoundException("Calendario non trovato"));
+    }
 }
