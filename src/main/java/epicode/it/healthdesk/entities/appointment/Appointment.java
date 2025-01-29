@@ -1,7 +1,14 @@
 package epicode.it.healthdesk.entities.appointment;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import epicode.it.healthdesk.entities.calendar.Calendar;
+import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
+import epicode.it.healthdesk.entities.patient.Patient;
+import epicode.it.healthdesk.entities.service.DoctorService;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -11,5 +18,20 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    private LocalDateTime startDate;
 
+    private LocalDateTime endDate;
+
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    private DoctorService service;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name="medical_folder_id")
+    private MedicalFolder medicalFolder;
+
+    @ManyToOne
+    @JsonBackReference
+    private Calendar calendar;
 }

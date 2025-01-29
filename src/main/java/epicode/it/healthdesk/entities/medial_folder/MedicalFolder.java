@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.medial_folder;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import epicode.it.healthdesk.entities.appointment.Appointment;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.prescription.Prescription;
@@ -19,9 +20,12 @@ public class MedicalFolder {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "patient_id")
+    @JsonManagedReference
     private Patient patient;
 
-    @OneToMany
+    @OneToMany(mappedBy = "medicalFolder", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Appointment> appointments = new ArrayList<>();
 
     @OneToMany

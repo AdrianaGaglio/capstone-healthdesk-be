@@ -47,4 +47,8 @@ public class MedicalFolderSvc {
         mf.setPatient(p);
         return medicalFolderRepo.save(mf);
     }
+
+    public MedicalFolder getByPatient(Long patientId) {
+        return medicalFolderRepo.findFirstByPatientId(patientId);
+    }
 }

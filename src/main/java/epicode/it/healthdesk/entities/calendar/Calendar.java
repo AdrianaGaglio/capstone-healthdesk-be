@@ -1,6 +1,8 @@
 package epicode.it.healthdesk.entities.calendar;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import epicode.it.healthdesk.entities.appointment.Appointment;
 import epicode.it.healthdesk.entities.calendar.active_day.ActiveDay;
 import epicode.it.healthdesk.entities.calendar.calendar_setting.CalendarSettings;
 import epicode.it.healthdesk.entities.doctor.Doctor;
@@ -28,5 +30,9 @@ public class Calendar {
 
     @OneToOne
     private CalendarSettings settings;
+
+    @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Appointment> appointments = new ArrayList<>();
 
 }

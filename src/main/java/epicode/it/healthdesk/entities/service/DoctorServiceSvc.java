@@ -20,6 +20,10 @@ import java.util.List;
 public class DoctorServiceSvc {
     private final DoctorServiceRepo serviceRepo;
 
+    public DoctorService getById(Long id) {
+        return serviceRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Servizio non trovato"));
+    }
+
     public DoctorService create(@Valid DoctorServiceRequest request) {
         DoctorService s = new DoctorService();
         BeanUtils.copyProperties(request, s);

@@ -41,4 +41,11 @@ public class PatientMapper {
     public List<PatientResponse> fromPatientToPatientResponseList(List<Patient> patients) {
         return patients.stream().map(this::fromPatientToPatientResponse).toList();
     }
+
+    public PatientResponseForCalendar toPatientResponseForCalendar(Patient patient) {
+        PatientResponseForCalendar response = new PatientResponseForCalendar();
+        BeanUtils.copyProperties(patient, response);
+        response.setEmail(patient.getAppUser().getEmail());
+        return response;
+    }
 }

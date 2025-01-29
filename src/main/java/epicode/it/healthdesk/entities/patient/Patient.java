@@ -1,7 +1,9 @@
 package epicode.it.healthdesk.entities.patient;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import epicode.it.healthdesk.entities.address.Address;
 import epicode.it.healthdesk.entities.general_user.GeneralUser;
+import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.cglib.core.Local;
