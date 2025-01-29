@@ -1,7 +1,7 @@
 package epicode.it.healthdesk.entities.calendar.active_day;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import epicode.it.healthdesk.entities.calendar.Calendar;
+
+
 
 import epicode.it.healthdesk.entities.calendar.calendar_setting.CalendarSettings;
 import epicode.it.healthdesk.entities.calendar.time_slot.TimeSlot;
@@ -26,6 +26,9 @@ public class ActiveDay {
     @Column(name = "day_name")
     @Enumerated(EnumType.STRING)
     private DayName dayName;
+
+    @Column(name="is_active")
+    private Boolean isActive = false;
 
     @OneToMany(mappedBy = "activeDay", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TimeSlot> slots = new ArrayList<>();

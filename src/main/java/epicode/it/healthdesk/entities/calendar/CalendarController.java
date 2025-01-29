@@ -5,7 +5,6 @@ import epicode.it.healthdesk.entities.calendar.dto.CalendarMapper;
 import epicode.it.healthdesk.entities.calendar.dto.CalendarResponse;
 import epicode.it.healthdesk.entities.calendar.time_slot.dto.TimeSlotRequest;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,9 +27,9 @@ public class CalendarController {
         return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.getById(id)));
     }
 
-    @PostMapping("/{id}/new-day")
+    @PostMapping("/{id}/manage-day")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
-    public ResponseEntity<CalendarResponse> addActiveDay(@PathVariable Long id, @RequestBody String dayName, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<CalendarResponse> manageDay(@PathVariable Long id, @RequestBody String dayName, @AuthenticationPrincipal UserDetails userDetails) {
 
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("DOCTOR"))) {
             if (!calendarSvc.getById(id).getDoctor().getAppUser().getEmail().equals(userDetails.getUsername())) {
@@ -38,7 +37,7 @@ public class CalendarController {
             }
         }
 
-        return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.addActiveDay(id, dayName)), HttpStatus.CREATED);
+        return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.manageDay(id, dayName)), HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}/new-slot")

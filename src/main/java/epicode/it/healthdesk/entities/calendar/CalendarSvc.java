@@ -1,6 +1,7 @@
 package epicode.it.healthdesk.entities.calendar;
 
 import epicode.it.healthdesk.entities.calendar.active_day.ActiveDay;
+import epicode.it.healthdesk.entities.calendar.active_day.DayName;
 import epicode.it.healthdesk.entities.calendar.calendar_setting.CalendarSettings;
 import epicode.it.healthdesk.entities.calendar.calendar_setting.CalendarSettingsSvc;
 import epicode.it.healthdesk.entities.calendar.time_slot.dto.TimeSlotRequest;
@@ -9,11 +10,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.util.Set;
-import java.util.TreeSet;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +30,11 @@ public class CalendarSvc {
     }
 
     @Transactional
-    public Calendar addActiveDay(Long calendarId, String dayName) {
+    public Calendar manageDay(Long calendarId, String dayName) {
         Calendar c = getById(calendarId);
-        c.getSettings().getActiveDays().add(settingsSvc.addActiveDay(c.getSettings(), dayName));
-        return c;
+        ActiveDay day = c.getSettings().getActiveDays().stream().filter(d -> d.getDayName() == DayName.valueOf(dayName.toUpperCase())).findFirst().orElse(null);
+        settingsSvc.manageDay(day);
+        return getById(calendarId);
     }
 
     public Calendar addSlot(Long calendarId, TimeSlotRequest newSlot) {

@@ -10,5 +10,6 @@ import java.util.List;
 public class ActiveDayResponse {
     private Long id;
     private String dayName;
+    private Boolean isActive;
     private List<TimeSlotResponse> timeSlots = new ArrayList<>();
 }
