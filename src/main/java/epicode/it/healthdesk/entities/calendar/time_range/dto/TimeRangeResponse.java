@@ -1,12 +1,12 @@
-package epicode.it.healthdesk.entities.calendar.time_slot.dto;
+package epicode.it.healthdesk.entities.calendar.time_range.dto;
 
 import lombok.Data;
 
 import java.time.LocalTime;
 
 @Data
-public class TimeSlotRequest {
-    private Long dayId;
+public class TimeRangeResponse {
+    private Long id;
     private LocalTime startTime;
     private LocalTime endTime;
 }

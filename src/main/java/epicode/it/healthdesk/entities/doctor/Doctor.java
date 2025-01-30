@@ -1,5 +1,7 @@
 package epicode.it.healthdesk.entities.doctor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import epicode.it.healthdesk.entities.address.Address;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.experience.Experience;
@@ -11,6 +13,7 @@ import epicode.it.healthdesk.entities.specialization.Specialization;
 import epicode.it.healthdesk.entities.training.Training;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +30,7 @@ public class Doctor extends GeneralUser {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "address_name")
     @JoinColumn(name = "doctor_id")
+    @ToString.Exclude
     private Map<String, Address> addresses = new HashMap<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -36,6 +40,7 @@ public class Doctor extends GeneralUser {
     private List<Specialization> specializations = new ArrayList<>();
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<DoctorService> services = new ArrayList<>();
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -46,6 +51,7 @@ public class Doctor extends GeneralUser {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "calendar_id")
+    @JsonManagedReference
     private Calendar calendar;
 
     @OneToMany

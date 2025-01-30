@@ -21,11 +21,9 @@ public class MedicalFolder {
 
     @OneToOne
     @JoinColumn(name = "patient_id")
-    @JsonManagedReference
     private Patient patient;
 
     @OneToMany(mappedBy = "medicalFolder", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Appointment> appointments = new ArrayList<>();
 
     @OneToMany

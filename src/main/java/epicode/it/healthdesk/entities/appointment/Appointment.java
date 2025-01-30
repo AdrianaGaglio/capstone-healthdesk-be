@@ -27,11 +27,9 @@ public class Appointment {
     private DoctorService service;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name="medical_folder_id")
     private MedicalFolder medicalFolder;
 
     @ManyToOne
-    @JsonBackReference
     private Calendar calendar;
 }

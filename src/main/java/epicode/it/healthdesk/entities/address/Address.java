@@ -1,5 +1,7 @@
 package epicode.it.healthdesk.entities.address;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import epicode.it.healthdesk.entities.address.city.City;
 import epicode.it.healthdesk.entities.address.province.Province;
 import jakarta.persistence.*;
@@ -20,9 +22,11 @@ public class Address {
 
     @ManyToOne
     @JoinColumn(name = "province_id")
+    @JsonIgnore
     private Province province;
 
     @ManyToOne
     @JoinColumn(name = "city_id")
+    @JsonIgnore
     private City city;
 }

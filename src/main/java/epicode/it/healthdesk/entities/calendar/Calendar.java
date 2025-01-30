@@ -1,20 +1,16 @@
 package epicode.it.healthdesk.entities.calendar;
 
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import epicode.it.healthdesk.entities.appointment.Appointment;
-import epicode.it.healthdesk.entities.calendar.active_day.ActiveDay;
-import epicode.it.healthdesk.entities.calendar.calendar_setting.CalendarSettings;
+import epicode.it.healthdesk.entities.calendar.opening_day.OpeningDay;
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import jakarta.persistence.*;
 import lombok.Data;
 
 
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 @Data
 @Entity
@@ -26,13 +22,16 @@ public class Calendar {
 
     @OneToOne
     @JoinColumn(name = "doctor_id")
+    @JsonBackReference
     private Doctor doctor;
 
-    @OneToOne
-    private CalendarSettings settings;
+    @OneToMany(mappedBy = "calendar")
+    private List<OpeningDay> days = new ArrayList<>();
 
     @OneToMany(mappedBy = "calendar", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Appointment> appointments = new ArrayList<>();
+
+    @Column(name="is_active")
+    private boolean isActive;
 
 }
