@@ -14,4 +14,5 @@ public class OpeningDayResponse {
     private Long id;
     private String dayName;
     private List<TimeSlot> slots;
+    private Boolean isActive;
 }

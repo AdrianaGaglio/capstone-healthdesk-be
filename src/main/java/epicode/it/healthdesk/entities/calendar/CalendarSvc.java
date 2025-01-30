@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CalendarSvc {
@@ -31,7 +33,7 @@ public class CalendarSvc {
     }
 
     @Transactional
-    public Calendar updateDay(Long id, OpeningDayUpdateRequest request) {
+    public Calendar updateDay(Long id, List<OpeningDayUpdateRequest> request) {
         Calendar c = getById(id);
         daySvc.update(c.getId(), request);
         return c;
@@ -42,5 +44,11 @@ public class CalendarSvc {
         Calendar c = getById(id);
         daySvc.addRange(c.getId(), request);
         return c;
+    }
+
+    public Calendar changeStatus(Long id, boolean isActive) {
+        Calendar c = getById(id);
+        c.setActive(isActive);
+        return calendarRepo.save(c);
     }
 }

@@ -41,8 +41,8 @@ public class CalendarController {
         return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.getById(id)));
     }
 
-    @PostMapping("/{id}/manage-day")
-    public ResponseEntity<CalendarResponse> manageDaySettings(@PathVariable Long id, @RequestBody OpeningDayUpdateRequest request) {
+    @PostMapping("/{id}/manage-days")
+    public ResponseEntity<CalendarResponse> manageDaySettings(@PathVariable Long id, @RequestBody List<OpeningDayUpdateRequest> request) {
 
         return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.updateDay(id, request)), HttpStatus.CREATED);
     }
@@ -51,5 +51,10 @@ public class CalendarController {
     public ResponseEntity<CalendarResponse> addTimeRange(@PathVariable Long id, @RequestBody OpeningDayUpdateRequest request) {
 
         return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.addRange(id, request)), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}/change-status")
+    public ResponseEntity<CalendarResponse> changeStatus(@PathVariable Long id, @RequestParam boolean isActive) {
+        return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.changeStatus(id, isActive)));
     }
 }

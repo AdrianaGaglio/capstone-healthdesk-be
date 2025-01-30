@@ -52,10 +52,15 @@ public class OpeningDaySvc {
     }
 
 
-    public OpeningDay update(Long id, @Valid OpeningDayUpdateRequest request) {
-        OpeningDay day = getByNameAndCalendarId(id, DayOfWeek.valueOf(request.getDayName()));
-        BeanUtils.copyProperties(request, day);
-        return dayRepo.save(day);
+    public List<OpeningDay> update(Long id, @Valid List<OpeningDayUpdateRequest> request) {
+        List<OpeningDay> days = new ArrayList<>();
+        request.forEach(r -> {
+            OpeningDay day = getByNameAndCalendarId(id, DayOfWeek.valueOf(r.getDayName()));
+            BeanUtils.copyProperties(r, day);
+            day=dayRepo.save(day);
+            days.add(day);
+        });
+        return days;
     }
 
     @Transactional

@@ -20,6 +20,7 @@ public class OpeningDayMapper {
     private ModelMapper mapper = new ModelMapper();
 
     public OpeningDayResponse toOpeningDayResponse(OpeningDay day) {
+        OpeningDay dayDb = daySvc.getByNameAndCalendarId(day.getCalendar().getId(), day.getDayName());
         OpeningDayResponse response = mapper.map(day, OpeningDayResponse.class);
         response.setSlots(daySvc.getSlots(day));
         return response;
