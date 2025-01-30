@@ -13,5 +13,7 @@ public class DoctorServiceResponse {
 
     private double price;
 
-    private boolean online;
+    private Boolean online;
+
+    private Boolean isActive;
 }

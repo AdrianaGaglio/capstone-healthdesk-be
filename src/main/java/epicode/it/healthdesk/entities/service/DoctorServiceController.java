@@ -23,6 +23,11 @@ public class DoctorServiceController {
         return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.updateServiceAvailability(id, serviceId)));
     }
 
+    @PutMapping("/{id}/change-activation")
+    public ResponseEntity<DoctorResponse> changeActivation(@PathVariable Long id, @RequestParam Long serviceId) {
+        return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.updateServiceActivation(id, serviceId)));
+    }
+
     @DeleteMapping("/{id}/delete-service")
     public ResponseEntity<DoctorResponse> deleteService(@PathVariable Long id, @RequestParam Long serviceId) {
         return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.deleteService(id, serviceId)));

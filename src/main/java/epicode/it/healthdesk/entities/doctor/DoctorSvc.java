@@ -112,6 +112,11 @@ public class DoctorSvc {
         return getById(id);
     }
 
+    public Doctor updateServiceActivation(Long id, Long serviceId) {
+        doctorServiceSvc.updateActivation(serviceId);
+        return getById(id);
+    }
+
     public Doctor deleteService(Long id, Long serviceId) {
         doctorServiceSvc.delete(serviceId);
         return getById(id);

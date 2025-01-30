@@ -24,19 +24,18 @@ public class DoctorServiceSvc {
         return serviceRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Servizio non trovato"));
     }
 
-    public DoctorService create(@Valid DoctorServiceRequest request) {
+    public DoctorService create(Doctor d, @Valid DoctorServiceRequest request) {
         DoctorService s = new DoctorService();
         BeanUtils.copyProperties(request, s);
+        s.setDoctor(d);
+        s.setIsActive(false);
         return serviceRepo.save(s);
     }
 
     public List<DoctorService> saveAll(Doctor d, List<DoctorServiceRequest> requests) {
         List<DoctorService> services = new ArrayList<>();
         requests.forEach(request -> {
-            DoctorService s = new DoctorService();
-            BeanUtils.copyProperties(request, s);
-            s.setDoctor(d);
-            services.add(s);
+            services.add(create(d, request));
         });
         return serviceRepo.saveAll(services);
     }
@@ -55,6 +54,15 @@ public class DoctorServiceSvc {
         }
         DoctorService s = getById(id);
         s.setOnline(!s.getOnline());
+        return serviceRepo.save(s);
+    }
+
+    public DoctorService updateActivation(Long id) {
+        if (!serviceRepo.existsById(id)) {
+            throw new EntityNotFoundException("Servizio non trovato");
+        }
+        DoctorService s = getById(id);
+        s.setIsActive(!s.getIsActive());
         return serviceRepo.save(s);
     }
 }

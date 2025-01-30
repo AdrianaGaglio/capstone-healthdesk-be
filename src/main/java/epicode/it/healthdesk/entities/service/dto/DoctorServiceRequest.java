@@ -14,5 +14,5 @@ public class DoctorServiceRequest {
     private double price;
 
     @NotNull(message = "Specificare se il servizio è disponibile online")
-    private boolean online;
+    private Boolean online;
 }

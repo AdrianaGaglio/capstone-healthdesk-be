@@ -28,4 +28,6 @@ public class DoctorService {
     @ManyToOne
     @JsonBackReference
     private Doctor doctor;
+
+    private Boolean isActive;
 }
