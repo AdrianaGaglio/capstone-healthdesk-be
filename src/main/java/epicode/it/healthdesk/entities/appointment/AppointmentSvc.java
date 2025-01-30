@@ -69,7 +69,7 @@ public class AppointmentSvc {
             throw new EntityExistsException("Slot non disponibile");
         }
 
-        if (request.getStartDate().isBefore(request.getEndDate())) {
+        if (request.getEndDate().isBefore(request.getStartDate())) {
             throw new IllegalArgumentException("L'ora di fine precede quella di inizio");
         }
 
