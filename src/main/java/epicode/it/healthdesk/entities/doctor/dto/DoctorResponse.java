@@ -21,6 +21,7 @@ public class DoctorResponse {
     private String avatar;
     private String licenceNumber;
     private String phoneNumber;
+    private String title;
     private List<AddressResponseForDoctor> addresses = new ArrayList<>();
     private List<SpecializationResponse> specializations = new ArrayList<>();
     private List<DoctorServiceResponse> services = new ArrayList<>();

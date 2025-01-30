@@ -54,6 +54,8 @@ public class Doctor extends GeneralUser {
     @JsonManagedReference
     private Calendar calendar;
 
+    private String title;
+
     @OneToMany
     private List<PaymentMethod> paymentMethods = new ArrayList<>();
 

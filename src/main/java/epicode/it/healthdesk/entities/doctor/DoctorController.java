@@ -31,7 +31,6 @@ public class DoctorController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DoctorResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.getById(id)));
     }

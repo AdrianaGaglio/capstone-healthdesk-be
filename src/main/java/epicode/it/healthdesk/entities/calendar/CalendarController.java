@@ -3,6 +3,7 @@ package epicode.it.healthdesk.entities.calendar;
 
 import epicode.it.healthdesk.entities.calendar.dto.CalendarMapper;
 import epicode.it.healthdesk.entities.calendar.dto.CalendarResponse;
+import epicode.it.healthdesk.entities.calendar.dto.CalendarResponseForPatient;
 import epicode.it.healthdesk.entities.calendar.opening_day.OpeningDaySvc;
 import epicode.it.healthdesk.entities.calendar.opening_day.dto.OpeningDayUpdateRequest;
 import epicode.it.healthdesk.entities.doctor.Doctor;
@@ -37,8 +38,12 @@ public class CalendarController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CalendarResponse> getById(@PathVariable Long id) {
-
         return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.getById(id)));
+    }
+
+    @GetMapping("/for-patient")
+    public ResponseEntity<CalendarResponseForPatient> getForPatient() {
+        return ResponseEntity.ok(mapper.toCalendarResponseForPatient(calendarSvc.getForPatient()));
     }
 
     @PostMapping("/{id}/manage-days")

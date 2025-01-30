@@ -41,6 +41,17 @@ public class AppointmentMapper {
     public List<AppointmentResponseForCalendar> toAppointmentResponseForCalendarList(List<Appointment> appointments) {
         return appointments.stream().map(this::toAppointmentResponseForCalendar).toList();
     }
+
+    public AppointmentResponseForPatient toAppointmentResponseForPatient(Appointment a){
+        AppointmentResponseForPatient response = mapper.map(a, AppointmentResponseForPatient.class);
+        response.setPatient(null);
+        response.setService(null);
+        return response;
+    }
+
+    public List<AppointmentResponseForPatient> toAppointmentResponseForPatientList(List<Appointment> appointments) {
+        return appointments.stream().map(this::toAppointmentResponseForPatient).toList();
+    }
 }
 
 

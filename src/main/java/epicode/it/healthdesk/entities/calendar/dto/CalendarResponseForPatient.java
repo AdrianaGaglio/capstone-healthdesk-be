@@ -1,19 +1,18 @@
 package epicode.it.healthdesk.entities.calendar.dto;
 
-import epicode.it.healthdesk.entities.appointment.dto.AppointmentResponse;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentResponseForCalendar;
-import epicode.it.healthdesk.entities.calendar.opening_day.OpeningDay;
+import epicode.it.healthdesk.entities.appointment.dto.AppointmentResponseForPatient;
 import epicode.it.healthdesk.entities.calendar.opening_day.dto.OpeningDayResponse;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class CalendarResponse {
+public class CalendarResponseForPatient {
     private Long id;
     private Long doctorId;
     private String doctorName;
     private List<OpeningDayResponse> days;
-    private List<AppointmentResponseForCalendar> appointments;
+    private List<AppointmentResponseForPatient> appointments;
     private Boolean isActive;
 }

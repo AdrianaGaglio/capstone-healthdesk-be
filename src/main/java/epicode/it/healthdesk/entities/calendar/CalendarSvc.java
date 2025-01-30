@@ -16,6 +16,10 @@ public class CalendarSvc {
     private final CalendarRepo calendarRepo;
     private final OpeningDaySvc daySvc;
 
+    public Calendar getForPatient(){
+        return calendarRepo.findAll().stream().findFirst().orElse(null);
+    }
+
     public Calendar getById(Long id) {
         return calendarRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Calendario non trovato"));
     }

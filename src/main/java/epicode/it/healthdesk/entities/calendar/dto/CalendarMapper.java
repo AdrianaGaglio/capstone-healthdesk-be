@@ -19,7 +19,17 @@ public class CalendarMapper {
 
     public CalendarResponse toCalendarResponse(Calendar c) {
         CalendarResponse response = mapper.map(c, CalendarResponse.class);
+        response.setDoctorId(c.getDoctor().getId());
+        response.setDoctorName(c.getDoctor().getName() + " " + c.getDoctor().getSurname());
         response.setAppointments(appointmentMapper.toAppointmentResponseForCalendarList(c.getAppointments()));
+        response.setDays(dayMapper.toOpeningDayResponseList(c.getDays()));
+        return response;
+    }
+
+    public CalendarResponseForPatient toCalendarResponseForPatient(Calendar c) {
+        CalendarResponseForPatient response = mapper.map(c, CalendarResponseForPatient.class);
+        response.setDoctorId(c.getDoctor().getId());
+        response.setAppointments(appointmentMapper.toAppointmentResponseForPatientList(c.getAppointments()));
         response.setDays(dayMapper.toOpeningDayResponseList(c.getDays()));
         return response;
     }
