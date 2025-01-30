@@ -32,6 +32,6 @@ public class Calendar {
     private List<Appointment> appointments = new ArrayList<>();
 
     @Column(name="is_active")
-    private boolean isActive;
+    private Boolean isActive;
 
 }

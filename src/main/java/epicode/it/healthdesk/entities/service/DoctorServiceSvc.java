@@ -48,4 +48,13 @@ public class DoctorServiceSvc {
         serviceRepo.deleteById(id);
         return "Servizio eliminato con successo";
     }
+
+    public DoctorService updateAvailability(Long id) {
+        if (!serviceRepo.existsById(id)) {
+            throw new EntityNotFoundException("Servizio non trovato");
+        }
+        DoctorService s = getById(id);
+        s.setOnline(!s.getOnline());
+        return serviceRepo.save(s);
+    }
 }

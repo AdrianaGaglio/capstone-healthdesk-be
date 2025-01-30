@@ -1,6 +1,7 @@
 package epicode.it.healthdesk.entities.service;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.github.javafaker.Bool;
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class DoctorService {
     private double price;
 
     @Column(nullable = false)
-    private boolean online;
+    private Boolean online;
 
     @ManyToOne
     @JsonBackReference

@@ -48,7 +48,7 @@ public class CalendarSvc {
 
     public Calendar changeStatus(Long id, boolean isActive) {
         Calendar c = getById(id);
-        c.setActive(isActive);
+        c.setIsActive(isActive);
         return calendarRepo.save(c);
     }
 }

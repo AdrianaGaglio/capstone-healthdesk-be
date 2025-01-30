@@ -9,6 +9,7 @@ import epicode.it.healthdesk.entities.doctor.dto.DoctorUpdateAddInfoRequest;
 import epicode.it.healthdesk.entities.experience.ExperienceSvc;
 import epicode.it.healthdesk.entities.payment_method.PaymentMethod;
 import epicode.it.healthdesk.entities.payment_method.PaymentMethodSvc;
+import epicode.it.healthdesk.entities.service.DoctorService;
 import epicode.it.healthdesk.entities.service.DoctorServiceSvc;
 import epicode.it.healthdesk.entities.specialization.SpecializationSvc;
 import epicode.it.healthdesk.entities.training.TrainingSvc;
@@ -104,5 +105,15 @@ public class DoctorSvc {
             d.getPaymentMethods().addAll(paymentMethods);
         }
         return doctorRepo.save(d);
+    }
+
+    public Doctor updateServiceAvailability(Long id, Long serviceId) {
+        doctorServiceSvc.updateAvailability(serviceId);
+        return getById(id);
+    }
+
+    public Doctor deleteService(Long id, Long serviceId) {
+        doctorServiceSvc.delete(serviceId);
+        return getById(id);
     }
 }
