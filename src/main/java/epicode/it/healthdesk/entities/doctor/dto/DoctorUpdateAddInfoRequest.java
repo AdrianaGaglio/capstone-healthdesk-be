@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.doctor.dto;
 
+import epicode.it.healthdesk.entities.address.dto.AddressRequestForDoctor;
 import epicode.it.healthdesk.entities.experience.dto.ExperienceRequest;
 import epicode.it.healthdesk.entities.service.dto.DoctorServiceRequest;
 import epicode.it.healthdesk.entities.specialization.dto.SpecializationRequest;
@@ -19,4 +20,5 @@ public class DoctorUpdateAddInfoRequest {
     private List<ExperienceRequest> experiences = new ArrayList<>();
     private List<TrainingRequest> trainings = new ArrayList<>();
     private List<String> payments = new ArrayList<>();
+    private List<AddressRequestForDoctor> addresses = new ArrayList<>();
 }

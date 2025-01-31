@@ -25,8 +25,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class PatientRunner implements ApplicationRunner {
     private final AppUserSvc appUserSvc;
-    private final ProvinceSvc proviceSvc;
-    private final CitySvc citySvc;
     private final Faker faker;
 
     @Transactional
@@ -54,10 +52,9 @@ public class PatientRunner implements ApplicationRunner {
         AddressRequest addressRequest = new AddressRequest();
         addressRequest.setStreet(faker.address().streetAddress());
         addressRequest.setStreetNumber(faker.address().streetAddressNumber());
-        addressRequest.setProvinceAcronym(proviceSvc.findAll().get(faker.random().nextInt(proviceSvc.count())).getAcronym());
-        City city = citySvc.findByProvinceAcronym(addressRequest.getProvinceAcronym()).get(faker.random().nextInt(citySvc.findByProvinceAcronym(addressRequest.getProvinceAcronym()).size() - 1));
-        addressRequest.setCityName(city.getName());
-        addressRequest.setPostalCode(city.getPostalCode());
+        addressRequest.setProvinceAcronym(faker.address().cityPrefix());
+        addressRequest.setCityName(faker.address().cityName());
+        addressRequest.setPostalCode(faker.address().zipCode());
 
         patientRequest.setAddress(addressRequest);
 

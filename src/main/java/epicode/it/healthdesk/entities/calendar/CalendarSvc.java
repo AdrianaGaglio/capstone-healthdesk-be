@@ -33,6 +33,7 @@ public class CalendarSvc {
         Calendar c = new Calendar();
         c.setDoctor(d);
         c.getDays().addAll(daySvc.generateDays(c));
+        c.setIsActive(true);
         return calendarRepo.save(c);
     }
 

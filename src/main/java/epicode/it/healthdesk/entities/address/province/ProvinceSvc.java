@@ -18,16 +18,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProvinceSvc {
-    private final ProvinceRepo provinceRepo;
     private final ProvinceMapper mapper;
-
-    public int count() {
-        return (int) provinceRepo.count();
-    }
-
-    public List<Province> findAll() {
-        return provinceRepo.findAll();
-    }
 
     public List<ProvinceDTO> getProvinces() {
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -57,12 +48,7 @@ public class ProvinceSvc {
         }
     }
 
-    public void saveProvinces() {
-        List<Province> newProvinces = mapper.toProvinceList(getProvinces());
-        provinceRepo.saveAll(newProvinces);
-    }
-
-    public Province getByAcronym(String acronym) {
-        return provinceRepo.findByAcronym(acronym);
+    public ProvinceDTO getByProvinceAcronym(String acronym) {
+        return getProvinces().stream().filter(p -> p.getAcronym().equals(acronym)).findFirst().orElse(null);
     }
 }

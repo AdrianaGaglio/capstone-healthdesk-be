@@ -19,4 +19,6 @@ public class AddressRequest {
 
     @NotNull(message = "CAP obbligatorio")
     private String postalCode;
+
+    private String additional;
 }

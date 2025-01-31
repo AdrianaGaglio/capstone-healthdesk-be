@@ -6,6 +6,7 @@ import epicode.it.healthdesk.entities.address.dto.AddressMapper;
 import epicode.it.healthdesk.entities.address.dto.AddressRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -20,22 +21,18 @@ public class AddressSvc {
     private final AddressMapper mapper;
 
     public Address create(@Valid AddressRequest request) {
-        City city = citySvc.findByNameAndPostalCode(request.getCityName(), request.getPostalCode());
-        List<City> cities = citySvc.findByProvinceAcronym(request.getProvinceAcronym());
-
-        if (!cities.contains(city)) {
-            throw new IllegalArgumentException("La città e la provincia non corrispondono");
-        }
-
-        if (!city.getPostalCode().equals(request.getPostalCode())) {
-            throw new IllegalArgumentException("La città e il cap non corrispondono");
-        }
-
+        Address a = new Address();
+        BeanUtils.copyProperties(request, a);
         return addressRepo.save(mapper.toAddress(request));
     }
 
     public Address getById(Long id) {
         return addressRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Indirizzo non trovato"));
+    }
+
+    public void delete(Long id) {
+        Address a = getById(id);
+        addressRepo.delete(a);
     }
 
 }

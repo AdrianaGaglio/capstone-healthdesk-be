@@ -20,13 +20,11 @@ public class Address {
     @Column(name="street_number")
     private String streetNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "province_id")
-    @JsonIgnore
-    private Province province;
+    private String provinceAcronym;
 
-    @ManyToOne
-    @JoinColumn(name = "city_id")
-    @JsonIgnore
-    private City city;
+    private String city;
+
+    private String additional;
+
+    private String postalCode;
 }

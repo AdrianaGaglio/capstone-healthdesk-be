@@ -14,24 +14,13 @@ import java.util.Map;
 public class AddressMapper {
     private ModelMapper mapper = new ModelMapper();
 
-    @Autowired
-    private CitySvc citySvc;
-
-    @Autowired
-    private ProvinceSvc provinceSvc;
-
     public Address toAddress(AddressRequest request) {
         Address response = mapper.map(request, Address.class);
-        response.setCity(citySvc.findByNameAndPostalCode(request.getCityName(), request.getPostalCode()));
-        response.setProvince(provinceSvc.getByAcronym(request.getProvinceAcronym()));
         return response;
     }
 
     public AddressResponse fromAddressToAddressResponse(Address address) {
         AddressResponse response = mapper.map(address, AddressResponse.class);
-        response.setProvince(address.getProvince().getAcronym());
-        response.setCity(address.getCity().getName());
-        response.setPostalCode(address.getCity().getPostalCode());
         return response;
     }
 

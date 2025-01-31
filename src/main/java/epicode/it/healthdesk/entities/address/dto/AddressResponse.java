@@ -8,6 +8,8 @@ public class AddressResponse {
     private String street;
     private String streetNumber;
     private String province;
+    private String provinceAcronym;
     private String city;
     private String postalCode;
+    private String additional;
 }

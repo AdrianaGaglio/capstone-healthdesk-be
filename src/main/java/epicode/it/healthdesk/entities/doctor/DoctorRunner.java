@@ -23,8 +23,6 @@ import java.util.List;
 public class DoctorRunner implements ApplicationRunner {
     private final AppUserSvc appUserSvc;
     private final DoctorSvc doctorSvc;
-    private final CitySvc citySvc;
-    private final ProvinceSvc proviceSvc;
     private final Faker faker;
 
     @Override
@@ -43,16 +41,14 @@ public class DoctorRunner implements ApplicationRunner {
             doctorRequest.setLicenceNumber(faker.regexify("[A-Z0-9]{8}"));
             doctorRequest.setPhoneNumber(faker.phoneNumber().phoneNumber());
 
-            Province p = proviceSvc.findAll().get(faker.random().nextInt(proviceSvc.count()));
-            List<City> cities = citySvc.findByProvinceAcronym(p.getAcronym());
+
             for (int i = 1; i < 3; i++) {
                 AddressRequestForDoctor addressRequest = new AddressRequestForDoctor();
                 addressRequest.setStreet(faker.address().streetAddress());
                 addressRequest.setStreetNumber(faker.address().streetAddressNumber());
-                addressRequest.setProvinceAcronym(p.getAcronym());
-                City c = cities.get(faker.random().nextInt(cities.size()));
-                addressRequest.setCityName(c.getName());
-                addressRequest.setPostalCode(c.getPostalCode());
+                addressRequest.setProvinceAcronym(faker.address().cityPrefix());
+                addressRequest.setCityName(faker.address().cityName());
+                addressRequest.setPostalCode(faker.address().zipCode());
                 addressRequest.setName("Studio " + i);
                 doctorRequest.getAddresses().add(addressRequest);
             }

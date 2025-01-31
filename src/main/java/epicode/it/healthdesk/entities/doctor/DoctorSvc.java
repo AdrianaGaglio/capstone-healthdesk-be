@@ -1,6 +1,9 @@
 package epicode.it.healthdesk.entities.doctor;
 
 
+import epicode.it.healthdesk.entities.address.Address;
+import epicode.it.healthdesk.entities.address.AddressSvc;
+import epicode.it.healthdesk.entities.address.dto.AddressRequest;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.calendar.CalendarSvc;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
@@ -18,6 +21,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,6 +46,7 @@ public class DoctorSvc {
     private final TrainingSvc trainingSvc;
     private final PaymentMethodSvc paymentMethodSvc;
     private final CalendarSvc calendarSvc;
+    private final AddressSvc addressSvc;
 
     public List<Doctor> getAll() {
         return doctorRepo.findAll();
@@ -103,6 +108,13 @@ public class DoctorSvc {
                 paymentMethods.add(paymentMethodSvc.getByName(p));
             });
             d.getPaymentMethods().addAll(paymentMethods);
+        }
+        if (request.getAddresses() != null) {
+            request.getAddresses().forEach(a -> {
+                AddressRequest ar = new AddressRequest();
+                BeanUtils.copyProperties(a, ar);
+                d.getAddresses().put(a.getName(), addressSvc.create(ar));
+            });
         }
         return doctorRepo.save(d);
     }
