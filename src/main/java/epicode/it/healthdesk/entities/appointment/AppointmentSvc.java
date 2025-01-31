@@ -6,6 +6,7 @@ import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolderSvc;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
+import epicode.it.healthdesk.entities.service.DoctorService;
 import epicode.it.healthdesk.entities.service.DoctorServiceSvc;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -98,6 +99,10 @@ public class AppointmentSvc {
 
         a.setStatus(AppointmentStatus.PENDING);
         return appointmentRepo.save(a);
+    }
+
+    public List<Appointment> findByService(DoctorService service) {
+        return appointmentRepo.findByService(service);
     }
 
 }

@@ -34,11 +34,7 @@ public class PatientController {
 
     @GetMapping("/all")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
-    public ResponseEntity<List<PatientResponse>> getAll(@AuthenticationPrincipal UserDetails userDetails) {
-
-        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
-            System.out.println("dottore");
-        }
+    public ResponseEntity<List<PatientResponse>> getAll() {
 
         return ResponseEntity.ok(mapper.fromPatientToPatientResponseList(patientSvc.getAll()));
     }
