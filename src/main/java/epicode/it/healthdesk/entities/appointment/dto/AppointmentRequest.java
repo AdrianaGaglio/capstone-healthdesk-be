@@ -21,4 +21,7 @@ public class AppointmentRequest {
 
     @NotNull(message = "Medico richiesto")
     private Long doctorId;
+
+    @NotNull(message = "Indirizzo richiesto")
+    private Long doctorAddressId;
 }

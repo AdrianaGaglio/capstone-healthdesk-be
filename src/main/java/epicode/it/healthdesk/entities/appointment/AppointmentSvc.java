@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.appointment;
 
+import epicode.it.healthdesk.entities.address.AddressSvc;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentRequest;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
@@ -28,6 +29,7 @@ public class AppointmentSvc {
     private final DoctorServiceSvc serviceSvc;
     private final DoctorSvc doctorSvc;
     private final MedicalFolderSvc medicalFolderSvc;
+    private final AddressSvc addressSvc;
 
     public List<Appointment> getAll() {
         return appointmentRepo.findAll();
@@ -78,6 +80,8 @@ public class AppointmentSvc {
         a.setService(serviceSvc.getById(request.getServiceId()));
         a.setCalendar(c);
         a.setMedicalFolder(medicalFolderSvc.getByPatient(request.getPatientId()));
+        a.setDoctorAddress(addressSvc.getById(request.getDoctorAddressId()));
+        a.setStatus(AppointmentStatus.PENDING);
         return appointmentRepo.save(a);
     }
 

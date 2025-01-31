@@ -34,4 +34,8 @@ public class AddressSvc {
         return addressRepo.save(mapper.toAddress(request));
     }
 
+    public Address getById(Long id) {
+        return addressRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Indirizzo non trovato"));
+    }
+
 }

@@ -1,6 +1,8 @@
 package epicode.it.healthdesk.entities.appointment;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import epicode.it.healthdesk.entities.address.Address;
+import epicode.it.healthdesk.entities.address.dto.AddressResponse;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import epicode.it.healthdesk.entities.patient.Patient;
@@ -32,4 +34,11 @@ public class Appointment {
 
     @ManyToOne
     private Calendar calendar;
+
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address doctorAddress;
+
+    @Enumerated(EnumType.STRING)
+    private AppointmentStatus status;
 }

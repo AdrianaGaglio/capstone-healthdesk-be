@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.appointment.dto;
 
+import epicode.it.healthdesk.entities.address.dto.AddressResponse;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorResponse;
 import epicode.it.healthdesk.entities.patient.dto.PatientResponse;
 import epicode.it.healthdesk.entities.service.dto.DoctorServiceResponse;
@@ -15,4 +16,6 @@ public class AppointmentResponse {
     private DoctorResponse doctor;
     private PatientResponse patient;
     private DoctorServiceResponse service;
+    private String status;
+    private AddressResponse address;
 }

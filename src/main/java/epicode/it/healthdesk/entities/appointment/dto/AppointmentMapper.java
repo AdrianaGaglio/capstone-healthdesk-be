@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.appointment.dto;
 
+import epicode.it.healthdesk.entities.address.dto.AddressMapper;
 import epicode.it.healthdesk.entities.appointment.Appointment;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
 import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
@@ -16,6 +17,7 @@ public class AppointmentMapper {
     private final DoctorMapper doctorMapper;
     private final PatientMapper patientMapper;
     private final DoctorServiceMapper serviceMapper;
+    private final AddressMapper addressMapper;
 
     private ModelMapper mapper = new ModelMapper();
 
@@ -24,6 +26,8 @@ public class AppointmentMapper {
         response.setDoctor(doctorMapper.fromDoctorToDoctorResponse(a.getCalendar().getDoctor()));
         response.setPatient(patientMapper.fromPatientToPatientResponse(a.getMedicalFolder().getPatient()));
         response.setService(serviceMapper.toDoctorServiceResponse(a.getService()));
+        response.setStatus(a.getStatus().toString());
+        response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
         return response;
     }
 
@@ -35,6 +39,8 @@ public class AppointmentMapper {
         AppointmentResponseForCalendar response = mapper.map(a, AppointmentResponseForCalendar.class);
         response.setService(serviceMapper.toDoctorServiceResponse(a.getService()));
         response.setPatient(patientMapper.toPatientResponseForCalendar(a.getMedicalFolder().getPatient()));
+        response.setStatus(a.getStatus().toString());
+        response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
         return response;
     }
 
@@ -46,6 +52,8 @@ public class AppointmentMapper {
         AppointmentResponseForPatient response = mapper.map(a, AppointmentResponseForPatient.class);
         response.setPatient(null);
         response.setService(null);
+        response.setStatus(a.getStatus().toString());
+        response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
         return response;
     }
 
