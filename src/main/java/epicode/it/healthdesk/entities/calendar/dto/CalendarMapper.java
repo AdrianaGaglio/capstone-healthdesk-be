@@ -23,6 +23,7 @@ public class CalendarMapper {
         response.setDoctorName(c.getDoctor().getName() + " " + c.getDoctor().getSurname());
         response.setAppointments(appointmentMapper.toAppointmentResponseForCalendarList(c.getAppointments()));
         response.setDays(dayMapper.toOpeningDayResponseList(c.getDays()));
+        response.setIsActive(c.getIsActive());
         return response;
     }
 
@@ -31,6 +32,7 @@ public class CalendarMapper {
         response.setDoctorId(c.getDoctor().getId());
         response.setAppointments(appointmentMapper.toAppointmentResponseForPatientList(c.getAppointments()));
         response.setDays(dayMapper.toOpeningDayResponseList(c.getDays()));
+        response.setIsActive(c.getIsActive());
         return response;
     }
 }

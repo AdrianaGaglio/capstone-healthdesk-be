@@ -40,7 +40,9 @@ public class AppointmentMapper {
         response.setService(serviceMapper.toDoctorServiceResponse(a.getService()));
         response.setPatient(patientMapper.toPatientResponseForCalendar(a.getMedicalFolder().getPatient()));
         response.setStatus(a.getStatus().toString());
-        response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
+        if (a.getDoctorAddress() != null) {
+            response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
+        }
         return response;
     }
 
@@ -48,12 +50,14 @@ public class AppointmentMapper {
         return appointments.stream().map(this::toAppointmentResponseForCalendar).toList();
     }
 
-    public AppointmentResponseForPatient toAppointmentResponseForPatient(Appointment a){
+    public AppointmentResponseForPatient toAppointmentResponseForPatient(Appointment a) {
         AppointmentResponseForPatient response = mapper.map(a, AppointmentResponseForPatient.class);
         response.setPatient(null);
         response.setService(null);
         response.setStatus(a.getStatus().toString());
-        response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
+        if (a.getDoctorAddress() != null) {
+            response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
+        }
         return response;
     }
 
