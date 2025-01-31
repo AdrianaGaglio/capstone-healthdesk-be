@@ -83,16 +83,18 @@ public class AppointmentSvc {
         if (request.getOnline() == false && request.getDoctorAddressId() == null) {
             throw new IllegalArgumentException("Indirizzo del medico richiesto per visita in presenza");
         }
+
+        if (request.getOnline() == true) {
+            a.setOnline(true);
+        } else {
+            a.setOnline(false);
+        }
+
         if (request.getDoctorAddressId() != null) {
             a.setDoctorAddress(addressSvc.getById(request.getDoctorAddressId()));
         }
 
-        if (request.getOnline() == true) {
-            a.setOnline(true);
-            a.setDoctorAddress(null);
-        } else {
-            a.setOnline(false);
-        }
+
 
         a.setStatus(AppointmentStatus.PENDING);
         return appointmentRepo.save(a);

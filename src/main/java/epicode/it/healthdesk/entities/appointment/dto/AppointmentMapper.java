@@ -27,7 +27,9 @@ public class AppointmentMapper {
         response.setPatient(patientMapper.fromPatientToPatientResponse(a.getMedicalFolder().getPatient()));
         response.setService(serviceMapper.toDoctorServiceResponse(a.getService()));
         response.setStatus(a.getStatus().toString());
-        response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
+        if (a.getDoctorAddress() != null) {
+            response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
+        }
         return response;
     }
 

@@ -43,7 +43,6 @@ public class CalendarController {
 
     @GetMapping("/for-patient")
     public ResponseEntity<CalendarResponseForPatient> getForPatient() {
-        System.out.println("chiamata");
         return ResponseEntity.ok(mapper.toCalendarResponseForPatient(calendarSvc.getForPatient()));
     }
 
