@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.appointment.dto;
 
+import com.github.javafaker.Bool;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ public class AppointmentRequest {
     @NotNull(message = "Medico richiesto")
     private Long doctorId;
 
-    @NotNull(message = "Indirizzo richiesto")
     private Long doctorAddressId;
+
+    private Boolean online;
 }

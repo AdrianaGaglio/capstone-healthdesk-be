@@ -80,7 +80,20 @@ public class AppointmentSvc {
         a.setService(serviceSvc.getById(request.getServiceId()));
         a.setCalendar(c);
         a.setMedicalFolder(medicalFolderSvc.getByPatient(request.getPatientId()));
-        a.setDoctorAddress(addressSvc.getById(request.getDoctorAddressId()));
+        if (request.getOnline() == false && request.getDoctorAddressId() == null) {
+            throw new IllegalArgumentException("Indirizzo del medico richiesto per visita in presenza");
+        }
+        if (request.getDoctorAddressId() != null) {
+            a.setDoctorAddress(addressSvc.getById(request.getDoctorAddressId()));
+        }
+
+        if (request.getOnline() == true) {
+            a.setOnline(true);
+            a.setDoctorAddress(null);
+        } else {
+            a.setOnline(false);
+        }
+
         a.setStatus(AppointmentStatus.PENDING);
         return appointmentRepo.save(a);
     }
