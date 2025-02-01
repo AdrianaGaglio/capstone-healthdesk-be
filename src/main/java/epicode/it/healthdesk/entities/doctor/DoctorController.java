@@ -19,7 +19,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/doctors")
 @RequiredArgsConstructor
-@PreAuthorize("isAuthenticated()")
 public class DoctorController {
     private final DoctorSvc doctorSvc;
     private final DoctorMapper mapper;
@@ -37,11 +36,9 @@ public class DoctorController {
 
     @GetMapping
     @PreAuthorize("hasRole('DOCTOR')")
-    public ResponseEntity<DoctorResponse> getAll(@AuthenticationPrincipal UserDetails userDetails) {
-
+    public ResponseEntity<DoctorResponse> getDoctor(@AuthenticationPrincipal UserDetails userDetails) {
         Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
         return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.getById(d.getId())));
-
     }
 
     @DeleteMapping("/{id}")

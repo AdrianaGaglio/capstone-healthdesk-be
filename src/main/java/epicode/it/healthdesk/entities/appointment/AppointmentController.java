@@ -35,7 +35,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/next/{calendarId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR')")
     public ResponseEntity<?> findNextByCalendar(@PathVariable Long calendarId, @ParameterObject Pageable pageable, @AuthenticationPrincipal UserDetails userDetails) {
 
         Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
@@ -48,7 +48,7 @@ public class AppointmentController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR')")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Appointment request, @AuthenticationPrincipal UserDetails userDetails) {
 
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("DOCTOR"))) {
@@ -58,7 +58,6 @@ public class AppointmentController {
                 return new ResponseEntity<>(err, HttpStatus.FORBIDDEN);
             }
         }
-
         return new ResponseEntity<>(calendarMapper.toCalendarResponse((appointmentSvc.update(id, request))), HttpStatus.OK);
     }
 }

@@ -28,7 +28,7 @@ public class CalendarController {
     private final DoctorSvc doctorSvc;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<CalendarResponse> getAll(@AuthenticationPrincipal UserDetails userDetails) {
 
         Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
@@ -36,10 +36,10 @@ public class CalendarController {
         return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.getByDoctor(d)), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CalendarResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.getById(id)));
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<CalendarResponse> getById(@PathVariable Long id) {
+//        return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.getById(id)));
+//    }
 
     @GetMapping("/for-patient")
     public ResponseEntity<CalendarResponseForPatient> getForPatient() {
@@ -47,18 +47,20 @@ public class CalendarController {
     }
 
     @PostMapping("/{id}/manage-days")
+    @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<CalendarResponse> manageDaySettings(@PathVariable Long id, @RequestBody List<OpeningDayUpdateRequest> request) {
 
         return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.updateDay(id, request)), HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}/add-time-range")
+    @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<CalendarResponse> addTimeRange(@PathVariable Long id, @RequestBody OpeningDayUpdateRequest request) {
-
         return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.addRange(id, request)), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/change-status")
+    @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<CalendarResponse> changeStatus(@PathVariable Long id, @RequestParam boolean isActive) {
         return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.changeStatus(id, isActive)));
     }
