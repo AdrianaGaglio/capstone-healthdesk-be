@@ -3,6 +3,7 @@ package epicode.it.healthdesk.entities.appointment;
 import epicode.it.healthdesk.entities.address.AddressSvc;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentRequest;
 import epicode.it.healthdesk.entities.calendar.Calendar;
+import epicode.it.healthdesk.entities.calendar.CalendarRepo;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolderSvc;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
@@ -15,12 +16,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class AppointmentSvc {
     private final DoctorServiceSvc serviceSvc;
     private final DoctorSvc doctorSvc;
     private final MedicalFolderSvc medicalFolderSvc;
+    private final CalendarRepo calendarRepo;
     private final AddressSvc addressSvc;
 
     public List<Appointment> getAll() {
@@ -95,14 +99,24 @@ public class AppointmentSvc {
             a.setDoctorAddress(addressSvc.getById(request.getDoctorAddressId()));
         }
 
-
-
         a.setStatus(AppointmentStatus.PENDING);
         return appointmentRepo.save(a);
     }
 
     public List<Appointment> findByService(DoctorService service) {
         return appointmentRepo.findByService(service);
+    }
+
+    public Page<Appointment> findByCalendarNext(Long calendarId, Pageable pageable) {
+        Calendar c = calendarRepo.findById(calendarId)
+                .orElseThrow(() -> new EntityNotFoundException("Agenda non trovata"));
+
+        // Il metodo di repository filtra già gli appuntamenti futuri
+        return appointmentRepo.findByCalendarAndStartDateAfter(
+                c,
+                LocalDateTime.now(),
+                pageable
+        );
     }
 
 }

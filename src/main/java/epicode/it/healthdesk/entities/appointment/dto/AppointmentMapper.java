@@ -3,10 +3,13 @@ package epicode.it.healthdesk.entities.appointment.dto;
 import epicode.it.healthdesk.entities.address.dto.AddressMapper;
 import epicode.it.healthdesk.entities.appointment.Appointment;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
+import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
+import epicode.it.healthdesk.entities.patient.dto.PatientResponse;
 import epicode.it.healthdesk.entities.service.dto.DoctorServiceMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -35,6 +38,10 @@ public class AppointmentMapper {
 
     public List<AppointmentResponse> toAppointmentResponseList(List<Appointment> appointments) {
         return appointments.stream().map(this::toAppointmentResponse).toList();
+    }
+
+    public Page<AppointmentResponse> toAppointmentsPaged(Page<Appointment> pagedAppointments) {
+        return pagedAppointments.map(this::toAppointmentResponse);
     }
 
     public AppointmentResponseForCalendar toAppointmentResponseForCalendar(Appointment a) {
