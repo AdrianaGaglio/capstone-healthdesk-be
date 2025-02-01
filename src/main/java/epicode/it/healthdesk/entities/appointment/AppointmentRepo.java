@@ -20,4 +20,7 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
     public List<Appointment> findByService(DoctorService service);
 
     Page<Appointment> findByCalendarAndStartDateAfter(Calendar calendar, LocalDateTime date, Pageable pageable);
+
+    public Appointment findFirstByStartDateAndEndDate(LocalDateTime startDate, LocalDateTime endDate);
+    public boolean existsByStartDateAndEndDate(LocalDateTime startDate, LocalDateTime endDate);
 }

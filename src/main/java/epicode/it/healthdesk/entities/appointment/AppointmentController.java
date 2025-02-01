@@ -44,4 +44,19 @@ public class AppointmentController {
         return new ResponseEntity<>(mapper.toAppointmentsPaged(appointmentSvc.findByCalendarNext(calendarId, pageable)), HttpStatus.OK);
 
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Appointment request, @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            if (!d.getCalendar().getId().equals(request.getCalendar().getId())) {
+                ErrorMessage err = new ErrorMessage("Accesso negato", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(err, HttpStatus.FORBIDDEN);
+            }
+        }
+
+        return new ResponseEntity<>(mapper.toAppointmentResponseForCalendar((appointmentSvc.update(id, request))), HttpStatus.OK);
+    }
 }

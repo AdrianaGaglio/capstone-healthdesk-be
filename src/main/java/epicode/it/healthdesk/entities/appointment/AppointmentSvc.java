@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.appointment;
 
+import com.github.javafaker.App;
 import epicode.it.healthdesk.entities.address.AddressSvc;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentRequest;
 import epicode.it.healthdesk.entities.calendar.Calendar;
@@ -117,6 +118,32 @@ public class AppointmentSvc {
                 LocalDateTime.now(),
                 pageable
         );
+    }
+
+    public boolean existByStartDateAndEndDate(LocalDateTime startDate, LocalDateTime endDate) {
+        return appointmentRepo.existsByStartDateAndEndDate(startDate, endDate);
+    }
+
+    public Appointment findFirstByStartDateAndEndDate(LocalDateTime startDate, LocalDateTime endDate) {
+        return appointmentRepo.findFirstByStartDateAndEndDate(startDate, endDate);
+    }
+
+    public Appointment update(Long id, Appointment request) {
+        Appointment a = getById(id);
+        a.setStatus(request.getStatus());
+
+        if (existByStartDateAndEndDate(request.getStartDate(), request.getEndDate())) {
+            Appointment found = findFirstByStartDateAndEndDate(request.getStartDate(), request.getEndDate());
+            System.out.println(found.getId());
+            System.out.println(request.getId());
+            if (!found.getId().equals(request.getId()))
+                throw new EntityExistsException("Slot non disponibile");
+        }
+
+        a.setStartDate(request.getStartDate());
+        a.setEndDate(request.getEndDate());
+
+        return appointmentRepo.save(a);
     }
 
 }
