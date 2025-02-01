@@ -3,6 +3,7 @@ package epicode.it.healthdesk.entities.appointment;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentMapper;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentRequest;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentResponse;
+import epicode.it.healthdesk.entities.calendar.dto.CalendarMapper;
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import epicode.it.healthdesk.exceptions.ErrorMessage;
@@ -26,6 +27,7 @@ public class AppointmentController {
     private final AppointmentSvc appointmentSvc;
     private final DoctorSvc doctorSvc;
     private final AppointmentMapper mapper;
+    private final CalendarMapper calendarMapper;
 
     @PostMapping
     public ResponseEntity<AppointmentResponse> create(@RequestBody AppointmentRequest request) {
@@ -57,6 +59,6 @@ public class AppointmentController {
             }
         }
 
-        return new ResponseEntity<>(mapper.toAppointmentResponseForCalendar((appointmentSvc.update(id, request))), HttpStatus.OK);
+        return new ResponseEntity<>(calendarMapper.toCalendarResponse((appointmentSvc.update(id, request))), HttpStatus.OK);
     }
 }

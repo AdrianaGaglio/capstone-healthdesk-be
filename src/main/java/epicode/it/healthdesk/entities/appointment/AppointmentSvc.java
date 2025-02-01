@@ -128,7 +128,7 @@ public class AppointmentSvc {
         return appointmentRepo.findFirstByStartDateAndEndDate(startDate, endDate);
     }
 
-    public Appointment update(Long id, Appointment request) {
+    public Calendar update(Long id, Appointment request) {
         Appointment a = getById(id);
         a.setStatus(request.getStatus());
 
@@ -143,7 +143,9 @@ public class AppointmentSvc {
         a.setStartDate(request.getStartDate());
         a.setEndDate(request.getEndDate());
 
-        return appointmentRepo.save(a);
+        appointmentRepo.save(a);
+        return calendarRepo.findById(a.getCalendar().getId()).orElse(null);
+
     }
 
 }
