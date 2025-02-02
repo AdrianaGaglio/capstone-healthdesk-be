@@ -18,4 +18,5 @@ public class PatientResponse {
     private LocalDate birthDate;
     private LocalDate creationDate;
     private AddressResponse address;
+    private LocalDate lastVisit;
 }

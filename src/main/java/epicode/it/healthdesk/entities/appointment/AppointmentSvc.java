@@ -6,6 +6,7 @@ import epicode.it.healthdesk.entities.appointment.dto.AppointmentRequest;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.calendar.CalendarRepo;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
+import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolderSvc;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
 import epicode.it.healthdesk.entities.service.DoctorService;
@@ -146,6 +147,11 @@ public class AppointmentSvc {
         appointmentRepo.save(a);
         return calendarRepo.findById(a.getCalendar().getId()).orElse(null);
 
+    }
+
+    public Appointment findLastByMedicalFolder(Long patientId) {
+        MedicalFolder mf = medicalFolderSvc.getByPatient(patientId);
+        return appointmentRepo.findLastByMedicalFolder(mf.getId()).stream().findFirst().orElse(null);
     }
 
 }

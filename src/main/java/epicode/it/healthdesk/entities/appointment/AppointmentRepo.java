@@ -22,5 +22,10 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
     Page<Appointment> findByCalendarAndStartDateAfter(Calendar calendar, LocalDateTime date, Pageable pageable);
 
     public Appointment findFirstByStartDateAndEndDate(LocalDateTime startDate, LocalDateTime endDate);
+
     public boolean existsByStartDateAndEndDate(LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT a From Appointment a WHERE a.medicalFolder.id = :id AND a.status = 'CONFIRMED' AND  a.endDate < CURRENT_TIMESTAMP ORDER BY a.startDate DESC")
+    public List<Appointment> findLastByMedicalFolder(@Param("id") Long id);
 }
+

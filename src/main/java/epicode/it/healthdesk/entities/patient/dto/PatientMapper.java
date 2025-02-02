@@ -2,6 +2,8 @@ package epicode.it.healthdesk.entities.patient.dto;
 
 import epicode.it.healthdesk.entities.address.dto.AddressMapper;
 import epicode.it.healthdesk.entities.address.dto.AddressResponse;
+import epicode.it.healthdesk.entities.appointment.Appointment;
+import epicode.it.healthdesk.entities.appointment.AppointmentSvc;
 import epicode.it.healthdesk.entities.patient.Patient;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -17,6 +19,9 @@ public class PatientMapper {
 
     @Autowired
     private AddressMapper addressMapper;
+
+    @Autowired
+    private AppointmentSvc appointmentSvc;
 
     private ModelMapper mapper = new ModelMapper();
 
@@ -35,6 +40,12 @@ public class PatientMapper {
         PatientResponse response = mapper.map(p, PatientResponse.class);
         response.setEmail(p.getAppUser().getEmail());
         response.setAddress(addressMapper.fromAddressToAddressResponse(p.getAddress()));
+        Appointment lastAppointment = appointmentSvc.findLastByMedicalFolder(p.getId());
+        if (lastAppointment != null) {
+            response.setLastVisit(appointmentSvc.findLastByMedicalFolder(p.getId()).getStartDate().toLocalDate());
+        } else {
+            response.setLastVisit(null);
+        }
         return response;
     }
 

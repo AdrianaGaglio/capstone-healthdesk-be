@@ -14,4 +14,6 @@ public interface PatientRepo extends JpaRepository<Patient, Long> {
 
     @Query("SELECT p FROM Patient p WHERE LOWER(p.appUser.email) = LOWER(:email)")
     public Optional<Patient> findFirstByEmail(@Param("email") String email);
+
+    
 }
