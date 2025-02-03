@@ -146,7 +146,6 @@ public class AppointmentSvc {
 
         appointmentRepo.save(a);
         return calendarRepo.findById(a.getCalendar().getId()).orElse(null);
-
     }
 
     public Appointment findLastByMedicalFolder(Long patientId) {
