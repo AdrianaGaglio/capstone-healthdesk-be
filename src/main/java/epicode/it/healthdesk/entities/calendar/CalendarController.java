@@ -29,7 +29,7 @@ public class CalendarController {
 
     @GetMapping
     @PreAuthorize("hasRole('DOCTOR')")
-    public ResponseEntity<CalendarResponse> getAll(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<CalendarResponse> get(@AuthenticationPrincipal UserDetails userDetails) {
 
         Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
 
