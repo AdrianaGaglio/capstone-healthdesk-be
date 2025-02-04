@@ -32,6 +32,7 @@ public class TrainingSvc {
         requests.forEach(request -> {
             Training t = new Training();
             BeanUtils.copyProperties(request, t);
+            t.setDoctor(d);
             trainings.add(t);
         });
         return trainingRepo.saveAll(trainings);
