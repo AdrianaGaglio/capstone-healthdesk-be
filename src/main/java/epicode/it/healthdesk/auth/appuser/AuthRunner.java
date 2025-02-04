@@ -1,16 +1,14 @@
 package epicode.it.healthdesk.auth.appuser;
 
-import epicode.it.healthdesk.auth.configurations.PwdEncoder;
 import epicode.it.healthdesk.auth.dto.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +16,7 @@ import java.util.Set;
 public class AuthRunner implements ApplicationRunner {
     private final AppUserSvc appUserSvc;
 
-    private final PwdEncoder pwdEncoder;
+    private final PasswordEncoder pwdEncoder;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {

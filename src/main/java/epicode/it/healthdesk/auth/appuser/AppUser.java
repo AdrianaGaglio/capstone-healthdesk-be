@@ -4,6 +4,7 @@ package epicode.it.healthdesk.auth.appuser;
 import epicode.it.healthdesk.entities.general_user.GeneralUser;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Set;
 
@@ -27,6 +28,7 @@ public class AppUser {
     private Set<Role> roles;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private GeneralUser generalUser;
 
 }

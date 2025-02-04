@@ -1,13 +1,12 @@
 package epicode.it.healthdesk.auth.appuser;
 
-import epicode.it.healthdesk.auth.configurations.PwdEncoder;
-import epicode.it.healthdesk.auth.dto.LoginRequest;
-import epicode.it.healthdesk.auth.dto.RegisterDoctorRequest;
-import epicode.it.healthdesk.auth.dto.RegisterRequest;
+import epicode.it.healthdesk.auth.dto.*;
 import epicode.it.healthdesk.auth.jwt.JwtTokenUtil;
 
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
+import epicode.it.healthdesk.entities.general_user.GeneralUser;
+import epicode.it.healthdesk.entities.general_user.GeneralUserRepo;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
 import jakarta.persistence.EntityExistsException;
@@ -20,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -31,11 +31,12 @@ import java.util.Set;
 @Validated
 public class AppUserSvc {
     private final AppUserRepo appUserRepo;
-    private final PwdEncoder pwdEncoder;
+    private final PasswordEncoder pwdEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final PatientSvc patientSvc;
     private final DoctorSvc doctorSvc;
+    private final GeneralUserRepo generalUserRepo;
 
     @Transactional
     public Patient registerPatient(@Valid RegisterRequest request) {
@@ -44,11 +45,11 @@ public class AppUserSvc {
             throw new EntityExistsException("Email già in uso");
         }
 
-        if(request.getPassword() == null) request.setPassword("temp_password");
+        if (request.getPassword() == null) request.setPassword("temp_password");
 
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
-        appUser.setPassword(pwdEncoder.passwordEncoder().encode(request.getPassword()));
+        appUser.setPassword(pwdEncoder.encode(request.getPassword()));
 
         appUser.setRoles(Set.of(Role.ROLE_PATIENT));
         appUser = appUserRepo.save(appUser);
@@ -67,11 +68,12 @@ public class AppUserSvc {
 
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
-        appUser.setPassword(pwdEncoder.passwordEncoder().encode(request.getPassword()));
+        appUser.setPassword(pwdEncoder.encode(request.getPassword()));
         appUser.setRoles(Set.of(Role.ROLE_ADMIN));
 
         return appUserRepo.save(appUser);
     }
+
 
     @Transactional
     public String registerDoctor(@Valid RegisterDoctorRequest request) {
@@ -82,7 +84,7 @@ public class AppUserSvc {
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
 
-        appUser.setPassword(pwdEncoder.passwordEncoder().encode(request.getPassword()));
+        appUser.setPassword(pwdEncoder.encode(request.getPassword()));
 
         appUser.setRoles(Set.of(Role.ROLE_DOCTOR));
 
@@ -107,11 +109,11 @@ public class AppUserSvc {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
-
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
             return jwtTokenUtil.generateToken(userDetails);
         } catch (AuthenticationException e) {
+            System.out.println("dentro metodo di autenticazione");
             throw new SecurityException("Credenziali non valide", e);
         }
     }
@@ -120,4 +122,21 @@ public class AppUserSvc {
     public AppUser loadUserByEmail(String identifier) {
         return findByEmail(identifier).orElseThrow(() -> new EntityNotFoundException("Utente non trovato"));
     }
+
+    @Transactional
+    public AppUser updateLoginInfo(AppUser appUser, @Valid AuthUpdateRequest request) {
+
+        if (request.getEmail() != null) {
+            appUser.setEmail(request.getEmail());
+        }
+        if (request.getNewPassword() != null && !request.getNewPassword().isEmpty() && request.getOldPassword() != null && !request.getOldPassword().isEmpty()) {
+            if (pwdEncoder.matches(request.getOldPassword(), appUser.getPassword())) {
+                appUser.setPassword(pwdEncoder.encode(request.getNewPassword()));
+            } else {
+                throw new SecurityException("Credenziali non valide");
+            }
+        }
+        return appUserRepo.save(appUser);
+    }
+
 }

@@ -1,17 +1,22 @@
 package epicode.it.healthdesk.auth.appuser;
 
 
+import com.github.javafaker.App;
 import epicode.it.healthdesk.auth.dto.AuthResponse;
+import epicode.it.healthdesk.auth.dto.AuthUpdateRequest;
 import epicode.it.healthdesk.auth.dto.LoginRequest;
 import epicode.it.healthdesk.auth.dto.RegisterRequest;
+import epicode.it.healthdesk.auth.jwt.JwtTokenUtil;
+import epicode.it.healthdesk.entities.general_user.GeneralUser;
+import epicode.it.healthdesk.entities.general_user.GeneralUserRepo;
 import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
 import epicode.it.healthdesk.entities.patient.dto.PatientResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +27,8 @@ import java.util.Map;
 public class AuthController {
     private final AppUserSvc appUserSvc;
     private final PatientMapper patientMapper;
+    private final GeneralUserRepo generalUserRepo;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/register")
     public ResponseEntity<PatientResponse> register(@RequestBody RegisterRequest registerRequest) {
@@ -31,6 +38,14 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
         String token = appUserSvc.authenticateUser(loginRequest);
+        return ResponseEntity.ok(new AuthResponse(token));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateLoginInfo(@RequestBody AuthUpdateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        AppUser appUser = appUserSvc.loadUserByEmail(userDetails.getUsername());
+        appUser = appUserSvc.updateLoginInfo(appUser, request);
+        String token = jwtTokenUtil.generateAccessToken(appUser);
         return ResponseEntity.ok(new AuthResponse(token));
     }
 }

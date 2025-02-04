@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.auth.jwt;
 
+import epicode.it.healthdesk.auth.appuser.AppUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -93,6 +94,18 @@ public class JwtTokenUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs)) // Imposta la data di scadenza.
                 .signWith(SignatureAlgorithm.HS256, secret) // Firma il token utilizzando HS256 e la chiave segreta.
                 .compact(); // Compatta il token in una stringa.
+    }
+
+    public String generateAccessToken(AppUser user) {
+        // Costruiamo il token includendo l'email come soggetto e altri claim utili
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim("id", user.getId())
+                .claim("roles", user.getRoles()) // se AppUser ha un campo 'roles'
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
+                .signWith(SignatureAlgorithm.HS256, secret)
+                .compact();
     }
 
     /**

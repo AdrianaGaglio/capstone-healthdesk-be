@@ -1,6 +1,8 @@
 package epicode.it.healthdesk.entities.doctor;
 
 
+import epicode.it.healthdesk.auth.appuser.AppUser;
+import epicode.it.healthdesk.auth.jwt.JwtTokenUtil;
 import epicode.it.healthdesk.entities.address.Address;
 import epicode.it.healthdesk.entities.address.AddressSvc;
 import epicode.it.healthdesk.entities.address.dto.AddressRequest;
@@ -9,6 +11,7 @@ import epicode.it.healthdesk.entities.calendar.CalendarSvc;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorRequest;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorUpdateAddInfoRequest;
+import epicode.it.healthdesk.entities.doctor.dto.DoctorUpdateRequest;
 import epicode.it.healthdesk.entities.experience.ExperienceSvc;
 import epicode.it.healthdesk.entities.payment_method.PaymentMethod;
 import epicode.it.healthdesk.entities.payment_method.PaymentMethodSvc;
@@ -77,7 +80,7 @@ public class DoctorSvc {
     }
 
     public Doctor getByEmail(String email) {
-        return doctorRepo.findFirstByEmail(email).orElseThrow(() -> new EntityNotFoundException("Medico non trovato"));
+        return doctorRepo.findFirstByEmail(email).orElse(null);
     }
 
     @Transactional
@@ -90,6 +93,7 @@ public class DoctorSvc {
     @Transactional
     public Doctor updateAddInfo(Long id, @Valid DoctorUpdateAddInfoRequest request) {
         Doctor d = getById(id);
+        if (d == null) throw new EntityNotFoundException("Medico non trovato");
         if (request.getSpecializations() != null) {
             d.getSpecializations().addAll(specializationSvc.saveAll(d, request.getSpecializations()));
         }
@@ -132,5 +136,24 @@ public class DoctorSvc {
     public Doctor deleteService(Long id, Long serviceId) {
         doctorServiceSvc.delete(serviceId);
         return getById(id);
+    }
+
+    public boolean existsByLicenceNumber(String licenceNumber) {
+        return doctorRepo.existsByLicenceNumber(licenceNumber);
+    }
+
+    public Doctor findFirstByLicenceNumber(String licenceNumber) {
+        return doctorRepo.findFirstByLicenceNumber(licenceNumber).orElse(null);
+    }
+
+    @Transactional
+    public Doctor updatePersonalInfo(Long id, @Valid DoctorUpdateRequest request) {
+        Doctor d = getById(id);
+        BeanUtils.copyProperties(request, d);
+
+        if (existsByLicenceNumber(request.getLicenceNumber()) && findFirstByLicenceNumber(request.getLicenceNumber()).getId() != id) {
+            throw new IllegalArgumentException("Codice licenza già utilizzato");
+        }
+        return doctorRepo.save(d);
     }
 }
