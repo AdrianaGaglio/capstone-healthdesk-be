@@ -71,15 +71,13 @@ public class PatientSvc {
 
     @Transactional
     public Patient create(@Valid PatientRequest request) {
-        if (existsByTaxId(request.getTaxId())) {
+        if (request.getTaxId() != null && existsByTaxId(request.getTaxId())) {
             throw new EntityExistsException("Codice fiscale già registrato");
         }
 
         Patient p = mapper.fromPatientRequestToPatient(request);
-        p.setAddress(addressSvc.create(request.getAddress()));
-
+        p=patientRepo.save(p);
         medicalFolderSvc.create(p);
-
-        return patientRepo.save(p);
+        return p;
     }
 }

@@ -10,7 +10,6 @@ public class RegisterRequest {
     @NotNull(message = "Email richiesta")
     private String email;
 
-    @NotNull(message = "Password richiesta")
     private String password;
 
     private PatientRequest patient;

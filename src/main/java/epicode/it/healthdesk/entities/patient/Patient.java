@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Table(name = "patients")
 public class Patient extends GeneralUser {
 
-    @Column(name = "tax_id", nullable = false, unique = true)
+    @Column(name = "tax_id")
     private String taxId;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

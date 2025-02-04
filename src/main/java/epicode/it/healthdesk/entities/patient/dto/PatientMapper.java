@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.patient.dto;
 
+import epicode.it.healthdesk.entities.address.AddressSvc;
 import epicode.it.healthdesk.entities.address.dto.AddressMapper;
 import epicode.it.healthdesk.entities.address.dto.AddressResponse;
 import epicode.it.healthdesk.entities.appointment.Appointment;
@@ -23,12 +24,24 @@ public class PatientMapper {
     @Autowired
     private AppointmentSvc appointmentSvc;
 
+    @Autowired
+    private AddressSvc addressSvc;
+
     private ModelMapper mapper = new ModelMapper();
 
     public Patient fromPatientRequestToPatient(PatientRequest request) {
         Patient p = new Patient();
         BeanUtils.copyProperties(request, p);
         p.setCreationDate(LocalDate.now());
+
+        if (request.getTaxId() == null) p.setTaxId(null);
+
+        if (request.getAddress() != null) {
+            p.setAddress(addressSvc.create(request.getAddress()));
+        } else {
+            p.setAddress(null);
+        }
+
         return p;
     }
 
@@ -39,7 +52,11 @@ public class PatientMapper {
     public PatientResponse fromPatientToPatientResponse(Patient p) {
         PatientResponse response = mapper.map(p, PatientResponse.class);
         response.setEmail(p.getAppUser().getEmail());
-        response.setAddress(addressMapper.fromAddressToAddressResponse(p.getAddress()));
+        if (p.getAddress() != null) {
+            response.setAddress(addressMapper.fromAddressToAddressResponse(p.getAddress()));
+        } else {
+            response.setAddress(null);
+        }
         Appointment lastAppointment = appointmentSvc.findLastByMedicalFolder(p.getId());
         if (lastAppointment != null) {
             response.setLastVisit(appointmentSvc.findLastByMedicalFolder(p.getId()).getStartDate().toLocalDate());

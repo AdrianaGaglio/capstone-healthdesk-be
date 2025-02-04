@@ -19,7 +19,6 @@ public class PatientRequest {
 
     private String avatar;
 
-    @NotNull(message = "Codice fiscale richiesto")
     @Pattern(regexp = "^[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]$", message = "Codice fiscale non valido")
     private String taxId;
 
@@ -30,6 +29,5 @@ public class PatientRequest {
     @NotNull(message = "Numero di telefono richiesto")
     private String phoneNumber;
 
-    @NotNull(message = "Indirizzo richiesto")
     private AddressRequest address;
 }

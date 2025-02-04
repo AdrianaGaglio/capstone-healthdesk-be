@@ -38,25 +38,25 @@ public class AppUserSvc {
     private final DoctorSvc doctorSvc;
 
     @Transactional
-    public String registerPatient(@Valid RegisterRequest request) {
+    public Patient registerPatient(@Valid RegisterRequest request) {
 
         if (appUserRepo.existsByEmail(request.getEmail())) {
             throw new EntityExistsException("Email già in uso");
         }
 
+        if(request.getPassword() == null) request.setPassword("temp_password");
+
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
         appUser.setPassword(pwdEncoder.passwordEncoder().encode(request.getPassword()));
-        appUser.setRoles(Set.of(Role.ROLE_PATIENT));
 
+        appUser.setRoles(Set.of(Role.ROLE_PATIENT));
         appUser = appUserRepo.save(appUser);
 
         Patient p = patientSvc.create(request.getPatient());
         p.setAppUser(appUser);
         appUser.setGeneralUser(p);
-
-
-        return "Utente registrato con successo";
+        return p;
     }
 
     public AppUser registerAdmin(@Valid RegisterRequest request) {
@@ -75,7 +75,6 @@ public class AppUserSvc {
 
     @Transactional
     public String registerDoctor(@Valid RegisterDoctorRequest request) {
-
         if (appUserRepo.existsByEmail(request.getEmail())) {
             throw new EntityExistsException("Email già in uso");
         }
@@ -84,6 +83,7 @@ public class AppUserSvc {
         appUser.setEmail(request.getEmail());
 
         appUser.setPassword(pwdEncoder.passwordEncoder().encode(request.getPassword()));
+
         appUser.setRoles(Set.of(Role.ROLE_DOCTOR));
 
         appUser = appUserRepo.save(appUser);

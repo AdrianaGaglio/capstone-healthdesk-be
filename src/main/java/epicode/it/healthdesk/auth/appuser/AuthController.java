@@ -4,6 +4,8 @@ package epicode.it.healthdesk.auth.appuser;
 import epicode.it.healthdesk.auth.dto.AuthResponse;
 import epicode.it.healthdesk.auth.dto.LoginRequest;
 import epicode.it.healthdesk.auth.dto.RegisterRequest;
+import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
+import epicode.it.healthdesk.entities.patient.dto.PatientResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +21,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
     private final AppUserSvc appUserSvc;
+    private final PatientMapper patientMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequest registerRequest) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message",  appUserSvc.registerPatient(registerRequest));
-        return ResponseEntity.ok(response);
+    public ResponseEntity<PatientResponse> register(@RequestBody RegisterRequest registerRequest) {
+        return ResponseEntity.ok(patientMapper.fromPatientToPatientResponse(appUserSvc.registerPatient(registerRequest)));
     }
 
     @PostMapping("/login")
