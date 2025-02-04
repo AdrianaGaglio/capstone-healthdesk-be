@@ -101,6 +101,13 @@
 			<artifactId>modelmapper</artifactId>
 			<version>3.2.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.1.1</version> <!-- controlla l'ultima versione disponibile -->
+		</dependency>
+
 		<dependency>
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
