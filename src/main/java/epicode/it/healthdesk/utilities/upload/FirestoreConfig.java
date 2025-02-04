@@ -4,6 +4,8 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.StorageClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,6 +15,10 @@ import java.io.IOException;
 
 @Configuration
 public class FirestoreConfig {
+
+    @Autowired
+    @Value("${spring.firestore.bucketName}")
+    private String bucketName;
 
     @Bean
     public FirebaseApp firebaseApp() {
@@ -29,7 +35,7 @@ public class FirestoreConfig {
         try {
             options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setStorageBucket("healt-desk-7d46c.firebasestorage.app")
+                    .setStorageBucket(bucketName)
                     .build();
         } catch (IOException e) {
             throw new RuntimeException(e);
