@@ -7,6 +7,7 @@ public class DoctorUpdateRequest {
     private Long id;
     private String name;
     private String title;
+    private String avatar;
     private String licenceNumber;
     private String phoneNumber;
 }

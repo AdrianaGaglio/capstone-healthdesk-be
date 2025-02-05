@@ -3,6 +3,7 @@ package epicode.it.healthdesk.entities.patient;
 import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
 import epicode.it.healthdesk.entities.patient.dto.PatientRequest;
 import epicode.it.healthdesk.entities.patient.dto.PatientResponse;
+import epicode.it.healthdesk.entities.patient.dto.PatientUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Response;
 import org.springdoc.core.annotations.ParameterObject;
@@ -67,5 +68,13 @@ public class PatientController {
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<PatientResponse> update(@PathVariable Long id, @RequestBody PatientUpdateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
 
+        Patient p = patientSvc.getByEmail(userDetails.getUsername());
+        if (p.getId() != id) throw new IllegalArgumentException("Accesso negato");
+
+        return ResponseEntity.ok(mapper.fromPatientToPatientResponse(patientSvc.update(id, request)));
+    }
 }

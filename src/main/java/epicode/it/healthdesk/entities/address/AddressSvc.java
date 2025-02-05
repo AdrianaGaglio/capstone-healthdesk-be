@@ -35,4 +35,10 @@ public class AddressSvc {
         addressRepo.delete(a);
     }
 
+    public Address update(Long id, Address request) {
+        Address a = getById(id);
+        BeanUtils.copyProperties(request, a);
+        return addressRepo.save(a);
+    }
+
 }
