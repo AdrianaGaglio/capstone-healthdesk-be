@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -35,19 +36,20 @@ public class PrescriptionSvc {
     public String delete(Long id) {
         Prescription e = getById(id);
         prescriptionRepo.delete(e);
-        return "Prescription deleted successfully";
+        return "Prescrizione eliminata con successo";
     }
 
     public String delete(Prescription e) {
         Prescription foundPrescription = getById(e.getId());
         prescriptionRepo.delete(foundPrescription);
-        return "Prescription deleted successfully";
+        return "Prescrizione eliminata con successo";
     }
 
     @Transactional
     public Prescription create(MedicalFolder mf, String file) {
         Prescription p = new Prescription();
         p.setFile(file);
+        p.setDate(LocalDate.now());
         p.setMedicalFolder(mf);
         return prescriptionRepo.save(p);
     }

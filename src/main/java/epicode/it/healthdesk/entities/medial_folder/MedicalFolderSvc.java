@@ -1,8 +1,10 @@
 package epicode.it.healthdesk.entities.medial_folder;
 
 import epicode.it.healthdesk.entities.patient.Patient;
+import epicode.it.healthdesk.entities.prescription.Prescription;
 import epicode.it.healthdesk.entities.prescription.PrescriptionSvc;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,6 +59,15 @@ public class MedicalFolderSvc {
     public MedicalFolder addPrescription(Long id, String file) {
         MedicalFolder mf = getById(id);
         mf.getPrescriptions().add(prescriptionSvc.create(mf, file));
+        return medicalFolderRepo.save(mf);
+    }
+
+    @Transactional
+    public MedicalFolder deletePrescription(Long id, Long prescriptionId) {
+        MedicalFolder mf = getById(id);
+        Prescription p = prescriptionSvc.getById(prescriptionId);
+        mf.getPrescriptions().remove(p);
+        prescriptionSvc.delete(prescriptionId);
         return medicalFolderRepo.save(mf);
     }
 }

@@ -18,6 +18,8 @@ public class Prescription {
 
     private LocalDate date;
 
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "medical_folder_id")
     private MedicalFolder medicalFolder;
