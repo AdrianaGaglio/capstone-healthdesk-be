@@ -113,9 +113,9 @@ public class JwtTokenUtil {
      * @param token Il token JWT.
      * @return Una lista di ruoli estratti dal token.
      */
-    public List<String> getRolesFromToken(String token) {
+    public String getRolesFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
-        return claims.get("roles", List.class);
+        return claims.get("roles", List.class).getFirst().toString().substring(5);
     }
 
     /**
@@ -128,4 +128,7 @@ public class JwtTokenUtil {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
+
+
 }

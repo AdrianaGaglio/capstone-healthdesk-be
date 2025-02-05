@@ -34,45 +34,45 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-        final String requestTokenHeader = request.getHeader("Authorization"); // Recupera l'header "Authorization" dalla richiesta.
+        final String requestTokenHeader = request.getHeader("Authorization");
 
         String username = null;
         String jwtToken = null;
+        boolean tokenExpired = false;
 
-        // Controlla se l'header contiene un token JWT valido.
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7); // Rimuove il prefisso "Bearer " per ottenere il token puro.
+            jwtToken = requestTokenHeader.substring(7);
             try {
-                // Estrae l'username dal token JWT.
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
                 System.out.println("Impossibile ottenere il token JWT");
             } catch (ExpiredJwtException e) {
-                System.out.println("Il token JWT è scaduto");
+                System.out.println("Il token JWT è scaduto, generando un nuovo token...");
+                username = e.getClaims().getSubject(); // Recupera lo username dal token scaduto
+                tokenExpired = true;
             }
         } else {
-            // Se il token non è presente o non è nel formato corretto, continua la catena di filtri.
             chain.doFilter(request, response);
             return;
         }
 
-        // Se l'username è stato estratto e l'utente non è ancora autenticato nel SecurityContext.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Carica i dettagli dell'utente dal servizio CustomUserDetailsService.
             UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(username);
 
-            // Valida il token JWT con i dettagli dell'utente.
+            if (tokenExpired) {
+                // 🔹 Genera un nuovo token JWT
+                String newToken = jwtTokenUtil.generateToken(userDetails);
+                response.setHeader("Authorization", "Bearer " + newToken);
+            }
+
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-                // Crea un oggetto di autenticazione per l'utente.
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
-                // Imposta i dettagli di autenticazione sulla richiesta corrente.
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // Aggiorna il SecurityContext con l'autenticazione dell'utente.
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
-        // Continua la catena di filtri.
+
         chain.doFilter(request, response);
     }
 }

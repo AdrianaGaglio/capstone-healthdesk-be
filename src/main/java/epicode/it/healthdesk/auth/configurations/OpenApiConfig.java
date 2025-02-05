@@ -1,4 +1,4 @@
-package epicode.it.healthdesk.auth.appuser;
+package epicode.it.healthdesk.auth.configurations;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -8,7 +8,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration // Indica che questa classe è una configurazione Spring.
+@Configuration
 public class OpenApiConfig {
 
     /**
@@ -17,7 +17,7 @@ public class OpenApiConfig {
      */
     @Bean
     public OpenAPI customOpenAPI() {
-        final String securitySchemeName = "bearerAuth"; // Nome dello schema di sicurezza.
+        final String securitySchemeName = "bearerAuth";
 
         // Crea e restituisce una configurazione OpenAPI personalizzata.
         return new OpenAPI()

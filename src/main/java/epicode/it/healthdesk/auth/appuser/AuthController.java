@@ -38,14 +38,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
         String token = appUserSvc.authenticateUser(loginRequest);
-        return ResponseEntity.ok(new AuthResponse(token));
+
+        return ResponseEntity.ok(new AuthResponse(token, jwtTokenUtil.getRolesFromToken(token)));
     }
 
     @PutMapping("/update")
     public ResponseEntity<?> updateLoginInfo(@RequestBody AuthUpdateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
         AppUser appUser = appUserSvc.loadUserByEmail(userDetails.getUsername());
         appUser = appUserSvc.updateLoginInfo(appUser, request);
-        String token = jwtTokenUtil.generateAccessToken(appUser);
-        return ResponseEntity.ok(new AuthResponse(token));
+        String token = jwtTokenUtil.generateAccessToken(appUser); // genero un nuovo token dopo la modifica dei dati di accesso
+        return ResponseEntity.ok(new AuthResponse(token, jwtTokenUtil.getRolesFromToken(token)));
     }
 }

@@ -22,13 +22,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint; // Gestisce errori di autenticazione JWT.
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService; // Gestisce il caricamento degli utenti.
+    private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter; // Filtro per convalidare i token JWT nelle richieste.
+    private JwtRequestFilter jwtRequestFilter;
 
     /**
      * Configura la catena di filtri di sicurezza.
@@ -40,7 +40,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // Disabilita la protezione CSRF poiché stiamo utilizzando JWT, che è immune agli attacchi CSRF.
+                // Disabilita la protezione CSRF
                 .csrf(csrf -> csrf.disable())
                 // Configura le regole di autorizzazione per le richieste.
                 .authorizeHttpRequests(authorize -> authorize

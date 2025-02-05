@@ -5,7 +5,6 @@ import epicode.it.healthdesk.auth.jwt.JwtTokenUtil;
 
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
-import epicode.it.healthdesk.entities.general_user.GeneralUser;
 import epicode.it.healthdesk.entities.general_user.GeneralUserRepo;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
@@ -40,11 +39,13 @@ public class AppUserSvc {
 
     @Transactional
     public Patient registerPatient(@Valid RegisterRequest request) {
-
+        // controllo se l'email esiste
         if (appUserRepo.existsByEmail(request.getEmail())) {
             throw new EntityExistsException("Email già in uso");
         }
 
+        // se non esiste, ne viene generata una temporanea
+        // (per l'inserimento dei dati del paziente in fase di prenotazione)
         if (request.getPassword() == null) request.setPassword("temp_password");
 
         AppUser appUser = new AppUser();
@@ -60,8 +61,8 @@ public class AppUserSvc {
         return p;
     }
 
+    // metodo per la registrazione di un nuovo amministratore
     public AppUser registerAdmin(@Valid RegisterRequest request) {
-
         if (appUserRepo.existsByEmail(request.getEmail())) {
             throw new EntityExistsException("Email già in uso");
         }
@@ -75,17 +76,18 @@ public class AppUserSvc {
     }
 
 
+    // metodo per la registrazione di un nuovo medico
     @Transactional
     public String registerDoctor(@Valid RegisterDoctorRequest request) {
+
+        // controllo se l'email è già registrata
         if (appUserRepo.existsByEmail(request.getEmail())) {
             throw new EntityExistsException("Email già in uso");
         }
 
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
-
         appUser.setPassword(pwdEncoder.encode(request.getPassword()));
-
         appUser.setRoles(Set.of(Role.ROLE_DOCTOR));
 
         appUser = appUserRepo.save(appUser);
@@ -97,12 +99,12 @@ public class AppUserSvc {
         return "Medico registrato con successo";
     }
 
+    // cerca utente per email
     public Optional<AppUser> findByEmail(String email) {
-
         return appUserRepo.findByEmail(email);
     }
 
-
+    // metodo per il login
     public String authenticateUser(@Valid LoginRequest request) {
         try {
 
@@ -113,22 +115,23 @@ public class AppUserSvc {
 
             return jwtTokenUtil.generateToken(userDetails);
         } catch (AuthenticationException e) {
-            System.out.println("dentro metodo di autenticazione");
             throw new SecurityException("Credenziali non valide", e);
         }
     }
 
-
+    // carica utente per email
     public AppUser loadUserByEmail(String identifier) {
         return findByEmail(identifier).orElseThrow(() -> new EntityNotFoundException("Utente non trovato"));
     }
 
+    // metodo per modificare dati di accesso utente
     @Transactional
     public AppUser updateLoginInfo(AppUser appUser, @Valid AuthUpdateRequest request) {
 
         if (request.getEmail() != null) {
             appUser.setEmail(request.getEmail());
         }
+
         if (request.getNewPassword() != null && !request.getNewPassword().isEmpty() && request.getOldPassword() != null && !request.getOldPassword().isEmpty()) {
             if (pwdEncoder.matches(request.getOldPassword(), appUser.getPassword())) {
                 appUser.setPassword(pwdEncoder.encode(request.getNewPassword()));

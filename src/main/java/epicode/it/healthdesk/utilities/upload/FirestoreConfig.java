@@ -25,7 +25,7 @@ public class FirestoreConfig {
         FileInputStream serviceAccount =
                 null;
         try {
-            serviceAccount = new FileInputStream("src/main/resources/healt-desk-7d46c-firebase-adminsdk-fbsvc-bb6f01e266.json");
+            serviceAccount = new FileInputStream("src/main/resources/healt-desk-7d46c-firebase-adminsdk-fbsvc-3d15d25b7b.json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
