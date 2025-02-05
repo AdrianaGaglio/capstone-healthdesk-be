@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +31,12 @@ public class GlobalExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(SecurityException.class)
     protected ResponseEntity<ErrorMessage> handleSecurityException(SecurityException ex) {
+        ErrorMessage errorMessage = new ErrorMessage(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    protected ResponseEntity<ErrorMessage> handleAccessDeniedException(AccessDeniedException ex) {
         ErrorMessage errorMessage = new ErrorMessage(ex.getMessage(), HttpStatus.UNAUTHORIZED);
         return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
     }

@@ -1,7 +1,10 @@
 package epicode.it.healthdesk.entities.prescription;
 
+import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -11,5 +14,12 @@ public class Prescription {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    private String file;
+
+    private LocalDate date;
+
+    @ManyToOne
+    @JoinColumn(name = "medical_folder_id")
+    private MedicalFolder medicalFolder;
 
 }

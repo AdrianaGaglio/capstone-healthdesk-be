@@ -5,9 +5,11 @@ import epicode.it.healthdesk.entities.address.AddressSvc;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentRequest;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.calendar.CalendarRepo;
+import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolderSvc;
+import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
 import epicode.it.healthdesk.entities.service.DoctorService;
 import epicode.it.healthdesk.entities.service.DoctorServiceSvc;
@@ -73,6 +75,7 @@ public class AppointmentSvc {
     @Transactional
     public Appointment create(@Valid AppointmentRequest request) {
         Calendar c = doctorSvc.getById(request.getDoctorId()).getCalendar();
+        Doctor d = doctorSvc.getById(request.getDoctorId());
 
         if (findFirstByCalendarIdAndStartDate(c.getId(), request.getStartDate()) != null) {
             throw new EntityExistsException("Slot non disponibile");
@@ -102,6 +105,12 @@ public class AppointmentSvc {
         }
 
         a.setStatus(AppointmentStatus.PENDING);
+
+        Patient p = medicalFolderSvc.getByPatient(request.getPatientId()).getPatient();
+        if (!d.getPatients().contains(p)) {
+            d.getPatients().add(p);
+        }
+
         return appointmentRepo.save(a);
     }
 

@@ -1,6 +1,7 @@
 package epicode.it.healthdesk.entities.medial_folder;
 
 import epicode.it.healthdesk.entities.patient.Patient;
+import epicode.it.healthdesk.entities.prescription.PrescriptionSvc;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MedicalFolderSvc {
     private final MedicalFolderRepo medicalFolderRepo;
+    private final PrescriptionSvc prescriptionSvc;
 
     public List<MedicalFolder> getAll() {
         return medicalFolderRepo.findAll();
@@ -50,5 +52,11 @@ public class MedicalFolderSvc {
 
     public MedicalFolder getByPatient(Long patientId) {
         return medicalFolderRepo.findFirstByPatientId(patientId);
+    }
+
+    public MedicalFolder addPrescription(Long id, String file) {
+        MedicalFolder mf = getById(id);
+        mf.getPrescriptions().add(prescriptionSvc.create(mf, file));
+        return medicalFolderRepo.save(mf);
     }
 }
