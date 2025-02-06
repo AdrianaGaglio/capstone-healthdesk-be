@@ -59,12 +59,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(username);
 
+            // Se il token è scaduto, genero uno nuovo e lo uso per la validazione
             if (tokenExpired) {
-                // 🔹 Genera un nuovo token JWT
-                String newToken = jwtTokenUtil.generateToken(userDetails);
-                response.setHeader("Authorization", "Bearer " + newToken);
+                jwtToken = jwtTokenUtil.generateToken(userDetails); // Sostituiamo il vecchio token con quello nuovo
+                response.setHeader("Authorization", "Bearer " + jwtToken);
             }
 
+            // Ora validiamo il token CORRETTO (nuovo se rigenerato, vecchio se ancora valido)
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
@@ -75,4 +76,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         chain.doFilter(request, response);
     }
+
 }
