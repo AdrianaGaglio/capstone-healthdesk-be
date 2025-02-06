@@ -1,6 +1,7 @@
 package epicode.it.healthdesk.entities.patient;
 
 import epicode.it.healthdesk.entities.address.AddressSvc;
+import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolderSvc;
 import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
@@ -91,5 +92,9 @@ public class PatientSvc {
             p.setAddress(addressSvc.update(p.getAddress().getId(), request.getAddress()));
         }
         return patientRepo.save(p);
+    }
+
+    public List<Patient> findByNameOrSurname(String identifier) {
+        return patientRepo.findByNameOrSurname(identifier);
     }
 }

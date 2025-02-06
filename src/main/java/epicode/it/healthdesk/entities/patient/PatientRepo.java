@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PatientRepo extends JpaRepository<Patient, Long> {
@@ -15,5 +16,7 @@ public interface PatientRepo extends JpaRepository<Patient, Long> {
     @Query("SELECT p FROM Patient p WHERE LOWER(p.appUser.email) = LOWER(:email)")
     public Optional<Patient> findFirstByEmail(@Param("email") String email);
 
+    @Query("SELECT p FROM Patient p WHERE LOWER(p.name) LIKE(LOWER(CONCAT(:identifier, '%'))) OR LOWER(p.surname) LIKE(LOWER(CONCAT(:identifier, '%')))")
+    public List<Patient> findByNameOrSurname(@Param("identifier") String identifier);
     
 }

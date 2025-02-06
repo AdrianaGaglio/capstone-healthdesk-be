@@ -1,5 +1,7 @@
 package epicode.it.healthdesk.entities.patient;
 
+import epicode.it.healthdesk.entities.doctor.Doctor;
+import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
 import epicode.it.healthdesk.entities.patient.dto.PatientRequest;
 import epicode.it.healthdesk.entities.patient.dto.PatientResponse;
@@ -26,6 +28,7 @@ import java.util.Map;
 @PreAuthorize("isAuthenticated()")
 public class PatientController {
     private final PatientSvc patientSvc;
+    private final DoctorSvc doctorSvc;
     private final PatientMapper mapper;
 
     @GetMapping
@@ -77,4 +80,20 @@ public class PatientController {
 
         return ResponseEntity.ok(mapper.fromPatientToPatientResponse(patientSvc.update(id, request)));
     }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    public ResponseEntity<List<PatientResponse>> findByNameOrSurname(@RequestParam String identifier, @AuthenticationPrincipal UserDetails userDetails) {
+
+        List<Patient> patients = patientSvc.findByNameOrSurname(identifier);
+
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            patients = patients.stream().filter(p -> d.getPatients().contains(p)).toList();
+
+        }
+
+        return ResponseEntity.ok(mapper.fromPatientToPatientResponseList(patients));
+    }
+
 }
