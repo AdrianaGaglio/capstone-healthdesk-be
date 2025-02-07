@@ -37,6 +37,11 @@ public class PatientSvc {
         return patientRepo.findAll(pageable);
     }
 
+    public Page<Patient> getAllPageableByDoctor(Long doctorId, Pageable pageable) {
+        return patientRepo.findAllByDoctor(doctorId, pageable);
+    }
+
+
     public Patient getById(Long id) {
         return patientRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Paziente non trovato"));
     }
@@ -94,7 +99,7 @@ public class PatientSvc {
         return patientRepo.save(p);
     }
 
-    public List<Patient> findByNameOrSurname(String identifier) {
-        return patientRepo.findByNameOrSurname(identifier);
+    public Page<Patient> findByNameOrSurname(String identifier, Pageable pageable) {
+        return patientRepo.findByNameOrSurname(identifier, pageable);
     }
 }

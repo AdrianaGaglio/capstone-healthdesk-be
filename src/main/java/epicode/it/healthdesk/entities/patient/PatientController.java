@@ -3,16 +3,15 @@ package epicode.it.healthdesk.entities.patient;
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
-import epicode.it.healthdesk.entities.patient.dto.PatientRequest;
 import epicode.it.healthdesk.entities.patient.dto.PatientResponse;
 import epicode.it.healthdesk.entities.patient.dto.PatientUpdateRequest;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.connector.Response;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,14 +37,26 @@ public class PatientController {
 
     @GetMapping("/all")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
-    public ResponseEntity<List<PatientResponse>> getAll() {
+    public ResponseEntity<List<PatientResponse>> getAll(@AuthenticationPrincipal UserDetails userDetails) {
+        List<Patient> patients = patientSvc.getAll();
 
-        return ResponseEntity.ok(mapper.fromPatientToPatientResponseList(patientSvc.getAll()));
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            patients = patients.stream().filter(p -> d.getPatients().contains(p)).toList();
+        }
+
+        return ResponseEntity.ok(mapper.fromPatientToPatientResponseList(patients));
     }
 
     @GetMapping("/paged")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
-    public ResponseEntity<Page<PatientResponse>> getAllPaged(@ParameterObject Pageable pageable) {
+    public ResponseEntity<Page<PatientResponse>> getAllPaged(@ParameterObject Pageable pageable, @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patientSvc.getAllPageableByDoctor(d.getId(), pageable)));
+        }
+
         return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patientSvc.getAllPageable(pageable)));
     }
 
@@ -53,7 +64,11 @@ public class PatientController {
     public ResponseEntity<PatientResponse> getById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
-            System.out.println("paziente");
+            Patient p = patientSvc.getByEmail(userDetails.getUsername());
+
+            if (!p.getId().equals(id)) {
+                throw new AccessDeniedException("Accesso negato");
+            }
         }
 
         return ResponseEntity.ok(mapper.fromPatientToPatientResponse(patientSvc.getById(id)));
@@ -63,7 +78,11 @@ public class PatientController {
     public ResponseEntity<Map<String, String>> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
-            System.out.println("paziente");
+            Patient p = patientSvc.getByEmail(userDetails.getUsername());
+
+            if (!p.getId().equals(id)) {
+                throw new AccessDeniedException("Accesso negato");
+            }
         }
 
         Map<String, String> response = new HashMap<>();
@@ -76,24 +95,23 @@ public class PatientController {
     public ResponseEntity<PatientResponse> update(@PathVariable Long id, @RequestBody PatientUpdateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
 
         Patient p = patientSvc.getByEmail(userDetails.getUsername());
-        if (p.getId() != id) throw new IllegalArgumentException("Accesso negato");
+        if (p.getId() != id) throw new AccessDeniedException("Accesso negato");
 
         return ResponseEntity.ok(mapper.fromPatientToPatientResponse(patientSvc.update(id, request)));
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
-    public ResponseEntity<List<PatientResponse>> findByNameOrSurname(@RequestParam String identifier, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Page<PatientResponse>> findByNameOrSurname(@RequestParam String identifier, @ParameterObject Pageable pageable, @AuthenticationPrincipal UserDetails userDetails) {
 
-        List<Patient> patients = patientSvc.findByNameOrSurname(identifier);
+        Page<Patient> patients = patientSvc.findByNameOrSurname(identifier, pageable);
 
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
             Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
-            patients = patients.stream().filter(p -> d.getPatients().contains(p)).toList();
-
+            return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patientSvc.getAllPageableByDoctor(d.getId(), pageable)));
         }
 
-        return ResponseEntity.ok(mapper.fromPatientToPatientResponseList(patients));
+        return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patients));
     }
 
 }

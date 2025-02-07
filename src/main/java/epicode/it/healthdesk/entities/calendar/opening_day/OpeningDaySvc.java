@@ -84,6 +84,15 @@ public class OpeningDaySvc {
                 slots.add(new TimeSlot(current, current.plusHours(1)));
                 current = current.plusHours(1);
             }
+        }
+
+        return slots;
+
+    }
+
+    public List<TimeSlot> getExtraRange(OpeningDay day) {
+        List<TimeSlot> slots = new ArrayList<>();
+        if(day.getRanges().size()>0){
             day.getRanges().forEach(r -> {
                 LocalTime startTime = r.getStartTime();
                 LocalTime endTime = r.getEndTime();
@@ -93,8 +102,6 @@ public class OpeningDaySvc {
                 }
             });
         }
-
         return slots;
-
     }
 }

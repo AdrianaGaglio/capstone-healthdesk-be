@@ -23,6 +23,7 @@ public class OpeningDayMapper {
         OpeningDay dayDb = daySvc.getByNameAndCalendarId(day.getCalendar().getId(), day.getDayName());
         OpeningDayResponse response = mapper.map(day, OpeningDayResponse.class);
         response.setSlots(daySvc.getSlots(day));
+        response.setExtraRange(daySvc.getExtraRange(day));
         return response;
     }
 
