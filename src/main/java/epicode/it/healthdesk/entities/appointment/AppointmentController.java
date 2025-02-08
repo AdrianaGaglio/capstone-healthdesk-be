@@ -57,7 +57,8 @@ public class AppointmentController {
 
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
             Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
-            if (!d.getCalendar().getId().equals(request.getCalendar().getId())) {
+            Appointment a = appointmentSvc.getById(id);
+            if (!d.getCalendar().getId().equals(a.getCalendar().getId())) {
                 throw new AccessDeniedException("Accesso negato");
             }
         }

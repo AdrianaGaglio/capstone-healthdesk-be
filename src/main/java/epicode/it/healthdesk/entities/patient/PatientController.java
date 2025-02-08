@@ -108,7 +108,7 @@ public class PatientController {
 
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
             Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
-            return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patientSvc.getAllPageableByDoctor(d.getId(), pageable)));
+            return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patientSvc.findByDoctorAndNameOrSurname(d.getId(), identifier, pageable)));
         }
 
         return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patients));

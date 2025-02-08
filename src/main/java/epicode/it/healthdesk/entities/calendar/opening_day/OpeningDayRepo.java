@@ -10,4 +10,6 @@ public interface OpeningDayRepo extends JpaRepository<OpeningDay, Long> {
 
     @Query("SELECT d From OpeningDay d WHERE d.dayName = :dayName AND d.calendar.id = :calendarId")
     public OpeningDay findFirstByNameAndCalendarId(@Param("calendarId") Long calendarId, @Param("dayName") DayOfWeek dayName);
+
+
 }

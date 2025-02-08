@@ -102,4 +102,8 @@ public class PatientSvc {
     public Page<Patient> findByNameOrSurname(String identifier, Pageable pageable) {
         return patientRepo.findByNameOrSurname(identifier, pageable);
     }
+
+    public Page<Patient> findByDoctorAndNameOrSurname(Long doctorId, String identifier, Pageable pageable) {
+        return patientRepo.findAllByDoctorAndNameOrSurname(doctorId, identifier, pageable);
+    }
 }

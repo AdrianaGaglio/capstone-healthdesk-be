@@ -24,6 +24,11 @@ public class OpeningDayMapper {
         OpeningDayResponse response = mapper.map(day, OpeningDayResponse.class);
         response.setSlots(daySvc.getSlots(day));
         response.setExtraRange(daySvc.getExtraRange(day));
+        if (response.getExtraRange().size() > 0) {
+            response.setHasExtraRange(true);
+        } else {
+            response.setHasExtraRange(false);
+        }
         return response;
     }
 

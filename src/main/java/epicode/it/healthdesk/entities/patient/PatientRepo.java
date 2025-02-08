@@ -24,4 +24,13 @@ public interface PatientRepo extends JpaRepository<Patient, Long> {
     @Query("SELECT d.patients FROM Doctor d WHERE d.id = :doctorId")
     Page<Patient> findAllByDoctor(@Param("doctorId") Long doctorId, Pageable pageable);
 
+    @Query("SELECT p FROM Doctor d JOIN d.patients p " +
+           "WHERE d.id = :doctorId AND " +
+           "(LOWER(p.name) LIKE LOWER(CONCAT(:identifier, '%')) " +
+           "OR LOWER(p.surname) LIKE LOWER(CONCAT(:identifier, '%')))")
+    Page<Patient> findAllByDoctorAndNameOrSurname(@Param("doctorId") Long doctorId,
+                                                  @Param("identifier") String identifier,
+                                                  Pageable pageable);
+
+
 }

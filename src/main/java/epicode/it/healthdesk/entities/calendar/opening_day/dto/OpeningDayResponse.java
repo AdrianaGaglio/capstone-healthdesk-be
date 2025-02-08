@@ -16,4 +16,5 @@ public class OpeningDayResponse {
     private List<TimeSlot> slots;
     private List<TimeSlot> extraRange;
     private Boolean isActive;
+    private Boolean hasExtraRange;
 }
