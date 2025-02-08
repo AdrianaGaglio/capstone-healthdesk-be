@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,5 +34,11 @@ public class Calendar {
 
     @Column(name="is_active")
     private Boolean isActive;
+
+    private Boolean onHoliday;
+
+    private LocalDate holidayDateStart;
+
+    private LocalDate holidayDateEnd;
 
 }

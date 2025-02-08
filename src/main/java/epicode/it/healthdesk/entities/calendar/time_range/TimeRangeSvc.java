@@ -1,8 +1,6 @@
-package epicode.it.healthdesk.entities.calendar.time_range.dto;
+package epicode.it.healthdesk.entities.calendar.time_range;
 
 import epicode.it.healthdesk.entities.calendar.opening_day.OpeningDay;
-import epicode.it.healthdesk.entities.calendar.time_range.TimeRange;
-import epicode.it.healthdesk.entities.calendar.time_range.TimeRangeRepo;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +26,13 @@ public class TimeRangeSvc {
 
     public TimeRange getById(Long id) {
         return timeRangeRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Range orario non trovato"));
+    }
+
+    public boolean existsByOpeningDay(OpeningDay day) {
+        return timeRangeRepo.existsByOpeningDay(day);
+    }
+    public TimeRange findByOpeningDay(OpeningDay day) {
+        return timeRangeRepo.findByOpeningDay(day);
     }
 
     public int count() {

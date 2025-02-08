@@ -6,6 +6,7 @@ import epicode.it.healthdesk.entities.calendar.opening_day.OpeningDay;
 import epicode.it.healthdesk.entities.calendar.opening_day.dto.OpeningDayResponse;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -16,4 +17,7 @@ public class CalendarResponse {
     private List<OpeningDayResponse> days;
     private List<AppointmentResponseForCalendar> appointments;
     private Boolean isActive;
+    private Boolean onHoliday;
+    private LocalDate holidayDateStart;
+    private LocalDate holidayDateEnd;
 }

@@ -33,7 +33,6 @@ public class PatientRunner implements ApplicationRunner {
 
         RegisterRequest request = new RegisterRequest();
 
-
         request.setPassword("password");
 
         PatientRequest patientRequest = new PatientRequest();

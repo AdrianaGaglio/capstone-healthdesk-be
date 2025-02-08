@@ -51,13 +51,30 @@ public class OpeningDaySvc {
         return dayRepo.findFirstByNameAndCalendarId(calendarId, dayName);
     }
 
-
+    @Transactional
     public List<OpeningDay> update(Long id, @Valid List<OpeningDayUpdateRequest> request) {
         List<OpeningDay> days = new ArrayList<>();
         request.forEach(r -> {
+            System.out.println("===>" + r);
             OpeningDay day = getByNameAndCalendarId(id, DayOfWeek.valueOf(r.getDayName()));
             BeanUtils.copyProperties(r, day);
-            day=dayRepo.save(day);
+            if (r.getExtraRange() != null) {
+                if (!timeRangeRepo.existsByOpeningDay(day)) {
+                    TimeRange range = new TimeRange();
+                    BeanUtils.copyProperties(r.getExtraRange(), range);
+                    range.setOpeningDay(day);
+                    timeRangeRepo.save(range);
+                } else {
+                    TimeRange range = timeRangeRepo.findByOpeningDay(day);
+                    BeanUtils.copyProperties(r.getExtraRange(), range);
+                    timeRangeRepo.save(range);
+                }
+            } else {
+                if (timeRangeRepo.existsByOpeningDay(day)) {
+                    timeRangeRepo.delete(timeRangeRepo.findByOpeningDay(day));
+                }
+            }
+            day = dayRepo.save(day);
             days.add(day);
         });
         return days;
@@ -92,7 +109,7 @@ public class OpeningDaySvc {
 
     public List<TimeSlot> getExtraRange(OpeningDay day) {
         List<TimeSlot> slots = new ArrayList<>();
-        if(day.getRanges().size()>0){
+        if (day.getRanges().size() > 0) {
             day.getRanges().forEach(r -> {
                 LocalTime startTime = r.getStartTime();
                 LocalTime endTime = r.getEndTime();

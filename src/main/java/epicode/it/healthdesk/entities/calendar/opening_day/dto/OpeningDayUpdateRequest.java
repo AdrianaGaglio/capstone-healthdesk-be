@@ -11,6 +11,10 @@ public class OpeningDayUpdateRequest {
     @NotNull(message="Giorno richiesto")
     private String dayName;
     private Boolean isActive;
+
     private LocalTime startTime;
+
     private LocalTime endTime;
+
+    private OpeningDayNewRange extraRange;
 }

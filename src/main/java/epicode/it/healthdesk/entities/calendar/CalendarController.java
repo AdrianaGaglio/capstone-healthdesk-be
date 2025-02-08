@@ -4,6 +4,7 @@ package epicode.it.healthdesk.entities.calendar;
 import epicode.it.healthdesk.entities.calendar.dto.CalendarMapper;
 import epicode.it.healthdesk.entities.calendar.dto.CalendarResponse;
 import epicode.it.healthdesk.entities.calendar.dto.CalendarResponseForPatient;
+import epicode.it.healthdesk.entities.calendar.dto.HolidayRequest;
 import epicode.it.healthdesk.entities.calendar.opening_day.OpeningDaySvc;
 import epicode.it.healthdesk.entities.calendar.opening_day.dto.OpeningDayUpdateRequest;
 import epicode.it.healthdesk.entities.doctor.Doctor;
@@ -54,7 +55,6 @@ public class CalendarController {
     @PostMapping("/{id}/manage-days")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<CalendarResponse> manageDaySettings(@PathVariable Long id, @RequestBody List<OpeningDayUpdateRequest> request, @AuthenticationPrincipal UserDetails userDetails) {
-
         Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
         if (!d.getCalendar().getId().equals(id)) {
             throw new AccessDeniedException("Accesso negato");
@@ -89,5 +89,19 @@ public class CalendarController {
             }
         }
         return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.changeStatus(id, isActive)));
+    }
+
+    @PutMapping("{id}/holiday")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+    public ResponseEntity<CalendarResponse> handleOnHoliday(@PathVariable Long id, @RequestBody HolidayRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            if (!d.getCalendar().getId().equals(id)) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+
+        return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.handleOnHoliday(id, request)));
     }
 }

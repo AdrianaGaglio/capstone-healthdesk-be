@@ -138,6 +138,21 @@ public class DoctorSvc {
         return getById(id);
     }
 
+    public Doctor deleteTraining(Long id, Long trainingId) {
+        trainingSvc.delete(trainingId);
+        return getById(id);
+    }
+
+    public Doctor deleteExperience(Long id, Long experienceId) {
+        experienceSvc.delete(experienceId);
+        return getById(id);
+    }
+
+    public Doctor deleteSpecialization(Long id, Long specializationId) {
+        specializationSvc.delete(specializationId);
+        return getById(id);
+    }
+
     public boolean existsByLicenceNumber(String licenceNumber) {
         return doctorRepo.existsByLicenceNumber(licenceNumber);
     }

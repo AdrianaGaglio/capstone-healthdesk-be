@@ -7,6 +7,7 @@ import epicode.it.healthdesk.entities.doctor.dto.DoctorResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/services")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
 public class DoctorServiceController {
     private final DoctorSvc doctorSvc;
     private final DoctorMapper mapper;

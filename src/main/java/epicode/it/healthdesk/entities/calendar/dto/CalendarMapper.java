@@ -24,6 +24,7 @@ public class CalendarMapper {
         response.setAppointments(appointmentMapper.toAppointmentResponseForCalendarList(c.getAppointments()));
         response.setDays(dayMapper.toOpeningDayResponseList(c.getDays()));
         response.setIsActive(c.getIsActive());
+        if(c.getOnHoliday() == null) response.setOnHoliday(false);
         return response;
     }
 

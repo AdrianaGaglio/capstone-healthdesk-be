@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.calendar;
 
+import epicode.it.healthdesk.entities.calendar.dto.HolidayRequest;
 import epicode.it.healthdesk.entities.calendar.opening_day.OpeningDaySvc;
 import epicode.it.healthdesk.entities.calendar.opening_day.dto.OpeningDayUpdateRequest;
 import epicode.it.healthdesk.entities.doctor.Doctor;
@@ -8,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -54,6 +56,19 @@ public class CalendarSvc {
     public Calendar changeStatus(Long id, boolean isActive) {
         Calendar c = getById(id);
         c.setIsActive(isActive);
+        return calendarRepo.save(c);
+    }
+
+    public Calendar handleOnHoliday(Long id, HolidayRequest request) {
+        Calendar c = getById(id);
+        c.setOnHoliday(request.getOnHoliday());
+        if(!request.getOnHoliday()) {
+            c.setHolidayDateStart(null);
+            c.setHolidayDateEnd(null);
+        } else {
+            c.setHolidayDateStart(request.getHolidayDateStart());
+            c.setHolidayDateEnd(request.getHolidayDateEnd());
+        }
         return calendarRepo.save(c);
     }
 }
