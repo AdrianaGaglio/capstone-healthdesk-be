@@ -1,8 +1,7 @@
-package epicode.it.healthdesk.entities.prescription.dto;
+package epicode.it.healthdesk.entities.document.prescription.dto;
 
-import epicode.it.healthdesk.entities.prescription.Prescription;
+import epicode.it.healthdesk.entities.document.prescription.Prescription;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

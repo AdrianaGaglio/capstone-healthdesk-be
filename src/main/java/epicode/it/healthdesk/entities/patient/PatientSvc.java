@@ -1,6 +1,8 @@
 package epicode.it.healthdesk.entities.patient;
 
+import epicode.it.healthdesk.entities.address.Address;
 import epicode.it.healthdesk.entities.address.AddressSvc;
+import epicode.it.healthdesk.entities.address.dto.AddressRequest;
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolderSvc;
@@ -94,7 +96,15 @@ public class PatientSvc {
         Patient p = getById(id);
         BeanUtils.copyProperties(request, p);
         if (request.getAddress() != null) {
+            Address a = addressSvc.findById(request.getAddress().getId());
+            if(a!=null) {
+
             p.setAddress(addressSvc.update(p.getAddress().getId(), request.getAddress()));
+            } else {
+                AddressRequest newAddress = new AddressRequest();
+                BeanUtils.copyProperties(request.getAddress(), newAddress);
+                p.setAddress(addressSvc.create(newAddress));
+            }
         }
         return patientRepo.save(p);
     }

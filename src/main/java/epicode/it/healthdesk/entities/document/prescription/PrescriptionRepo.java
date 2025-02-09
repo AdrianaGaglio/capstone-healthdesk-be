@@ -1,4 +1,4 @@
-package epicode.it.healthdesk.entities.prescription;
+package epicode.it.healthdesk.entities.document.prescription;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

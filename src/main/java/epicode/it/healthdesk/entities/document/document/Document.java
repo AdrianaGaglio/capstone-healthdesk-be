@@ -1,4 +1,4 @@
-package epicode.it.healthdesk.entities.prescription;
+package epicode.it.healthdesk.entities.document.document;
 
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import jakarta.persistence.*;
@@ -8,8 +8,9 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name = "prescriptions")
-public class Prescription {
+@Table(name ="documents")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public abstract class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;

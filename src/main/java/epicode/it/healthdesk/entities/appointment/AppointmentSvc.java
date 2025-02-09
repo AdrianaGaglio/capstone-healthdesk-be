@@ -2,6 +2,7 @@ package epicode.it.healthdesk.entities.appointment;
 
 import com.github.javafaker.App;
 import epicode.it.healthdesk.entities.address.AddressSvc;
+import epicode.it.healthdesk.entities.appointment.dto.AppointmentDateUpdate;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentRequest;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.calendar.CalendarRepo;
@@ -160,6 +161,19 @@ public class AppointmentSvc {
     public Appointment findLastByMedicalFolder(Long patientId) {
         MedicalFolder mf = medicalFolderSvc.getByPatient(patientId);
         return appointmentRepo.findLastByMedicalFolder(mf.getId()).stream().findFirst().orElse(null);
+    }
+
+    public Appointment cancelApp(Long id) {
+        Appointment a = getById(id);
+        a.setStatus(AppointmentStatus.CANCELLED);
+        return appointmentRepo.save(a);
+    }
+
+    public Appointment updateDate(Long id, @Valid AppointmentDateUpdate request) {
+        Appointment a = getById(id);
+        a.setStartDate(request.getStartDate());
+        a.setEndDate(request.getEndDate());
+        return appointmentRepo.save(a);
     }
 
 }

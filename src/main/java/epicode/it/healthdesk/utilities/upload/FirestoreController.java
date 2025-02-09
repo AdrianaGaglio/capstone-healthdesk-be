@@ -18,7 +18,6 @@ public class FirestoreController {
     private final FirestoreSvc firestoreSvc;
 
     @PostMapping(path = "/upload-prescription", consumes = "multipart/form-data")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     public ResponseEntity<String> uploadPrescription(@RequestParam("file") MultipartFile file) {
         try {
             String fileUrl = firestoreSvc.uploadPrescription(file);
@@ -37,4 +36,6 @@ public class FirestoreController {
             return ResponseEntity.status(500).body("Errore durante l'upload del file: " + e.getMessage());
         }
     }
+
+
 }

@@ -30,6 +30,10 @@ public class AddressSvc {
         return addressRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Indirizzo non trovato"));
     }
 
+    public Address findById(Long id) {
+        return addressRepo.findById(id).orElse(null);
+    }
+
     public void delete(Long id) {
         Address a = getById(id);
         addressRepo.delete(a);

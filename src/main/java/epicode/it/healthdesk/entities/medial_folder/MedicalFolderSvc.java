@@ -1,8 +1,9 @@
 package epicode.it.healthdesk.entities.medial_folder;
 
+import epicode.it.healthdesk.entities.document.certificate.CertificateSvc;
 import epicode.it.healthdesk.entities.patient.Patient;
-import epicode.it.healthdesk.entities.prescription.Prescription;
-import epicode.it.healthdesk.entities.prescription.PrescriptionSvc;
+import epicode.it.healthdesk.entities.document.prescription.Prescription;
+import epicode.it.healthdesk.entities.document.prescription.PrescriptionSvc;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.List;
 public class MedicalFolderSvc {
     private final MedicalFolderRepo medicalFolderRepo;
     private final PrescriptionSvc prescriptionSvc;
+    private final CertificateSvc certificateSvc;
 
     public List<MedicalFolder> getAll() {
         return medicalFolderRepo.findAll();
@@ -62,6 +64,12 @@ public class MedicalFolderSvc {
         return medicalFolderRepo.save(mf);
     }
 
+    public MedicalFolder addCertificate(Long id, String file) {
+        MedicalFolder mf = getById(id);
+        mf.getDocumentation().add(certificateSvc.create(mf, file));
+        return medicalFolderRepo.save(mf);
+    }
+
     @Transactional
     public MedicalFolder deletePrescription(Long id, Long prescriptionId) {
         MedicalFolder mf = getById(id);
@@ -70,4 +78,6 @@ public class MedicalFolderSvc {
         prescriptionSvc.delete(prescriptionId);
         return medicalFolderRepo.save(mf);
     }
+
+
 }

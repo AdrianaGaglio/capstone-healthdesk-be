@@ -1,4 +1,4 @@
-package epicode.it.healthdesk.entities.prescription.dto;
+package epicode.it.healthdesk.entities.document.prescription.dto;
 
 import lombok.Data;
 

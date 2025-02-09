@@ -52,6 +52,21 @@ public class MedicalFolderController {
         return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.addPrescription(id, file)));
     }
 
+    @PutMapping("/{id}/add-certificate")
+    @PreAuthorize("hasAnyRole('PATIENT')")
+    public ResponseEntity<MedicalFolderResponse> addCertificate(@PathVariable Long id, @RequestParam String file, @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
+            MedicalFolder mf = medicalFolderSvc.getById(id);
+            Patient p = patientSvc.getByEmail(userDetails.getUsername());
+            if (mf.getPatient().getId() != p.getId()) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+
+        return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.addCertificate(id, file)));
+    }
+
     @DeleteMapping("/{id}/delete-prescription")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<MedicalFolderResponse> deletePrescription(@PathVariable Long id, @RequestParam Long prescriptionId, @AuthenticationPrincipal UserDetails userDetails) {

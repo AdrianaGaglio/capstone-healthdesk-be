@@ -1,7 +1,6 @@
-package epicode.it.healthdesk.entities.prescription;
+package epicode.it.healthdesk.entities.document.prescription;
 
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
