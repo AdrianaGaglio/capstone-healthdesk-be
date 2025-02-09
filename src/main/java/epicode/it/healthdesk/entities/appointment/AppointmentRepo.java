@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.appointment;
 
+import epicode.it.healthdesk.entities.address.Address;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.service.DoctorService;
 import org.springframework.data.domain.Page;
@@ -27,5 +28,7 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
 
     @Query("SELECT a From Appointment a WHERE a.medicalFolder.id = :id AND a.status = 'CONFIRMED' AND  a.endDate < CURRENT_TIMESTAMP ORDER BY a.startDate DESC")
     public List<Appointment> findLastByMedicalFolder(@Param("id") Long id);
+
+    public List<Appointment> findByDoctorAddress(Address address);
 }
 

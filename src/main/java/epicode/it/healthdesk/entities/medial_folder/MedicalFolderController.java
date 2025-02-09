@@ -2,6 +2,8 @@ package epicode.it.healthdesk.entities.medial_folder;
 
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
+import epicode.it.healthdesk.entities.document.document.Document;
+import epicode.it.healthdesk.entities.document.document.DocumentCreateRequest;
 import epicode.it.healthdesk.entities.medial_folder.dto.MedicalFolderMapper;
 import epicode.it.healthdesk.entities.medial_folder.dto.MedicalFolderResponse;
 import epicode.it.healthdesk.entities.patient.Patient;
@@ -39,7 +41,7 @@ public class MedicalFolderController {
 
     @PutMapping("/{id}/add-prescription")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
-    public ResponseEntity<MedicalFolderResponse> addPrescription(@PathVariable Long id, @RequestParam String file, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<MedicalFolderResponse> addPrescription(@PathVariable Long id, @RequestBody DocumentCreateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
 
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
             Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
@@ -49,12 +51,12 @@ public class MedicalFolderController {
             }
         }
 
-        return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.addPrescription(id, file)));
+        return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.addPrescription(id, request)));
     }
 
     @PutMapping("/{id}/add-certificate")
     @PreAuthorize("hasAnyRole('PATIENT')")
-    public ResponseEntity<MedicalFolderResponse> addCertificate(@PathVariable Long id, @RequestParam String file, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<MedicalFolderResponse> addCertificate(@PathVariable Long id, @RequestBody DocumentCreateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
 
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
             MedicalFolder mf = medicalFolderSvc.getById(id);
@@ -64,7 +66,7 @@ public class MedicalFolderController {
             }
         }
 
-        return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.addCertificate(id, file)));
+        return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.addCertificate(id, request)));
     }
 
     @DeleteMapping("/{id}/delete-prescription")
@@ -80,5 +82,20 @@ public class MedicalFolderController {
         }
 
         return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.deletePrescription(id, prescriptionId)));
+    }
+
+    @DeleteMapping("/{id}/delete-certificate")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<MedicalFolderResponse> deleteCertificate(@PathVariable Long id, @RequestParam Long certificateId, @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
+            Patient p = patientSvc.getByEmail(userDetails.getUsername());
+            MedicalFolder mf = medicalFolderSvc.getById(id);
+            if (!p.getId().equals(mf.getPatient().getId())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+
+        return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.deleteCertificate(id, certificateId)));
     }
 }

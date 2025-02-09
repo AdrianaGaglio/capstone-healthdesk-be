@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -39,10 +40,10 @@ public class FirestoreSvc {
         try {
             Blob blob = storage.create(blobInfo, file.getInputStream());
 
-            // 🔹 Imposta il file come pubblico
+            // Imposta il file come pubblico
             blob.createAcl(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 
-            // 🔹 Restituisci il link pubblico (senza token)
+            // Restituisce il link pubblico (senza token)
             return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
 
         } catch (IOException e) {
@@ -60,39 +61,23 @@ public class FirestoreSvc {
         // Genera un nome univoco per il file
         String fileName = "profile/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
-        // Genera un token univoco per l'accesso al file
-        String token = UUID.randomUUID().toString();
-
-        // Definisce i metadati con il token
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("firebaseStorageDownloadTokens", token);
-
-        // Crea il BlobInfo con content type e metadati
+        // Crea il BlobInfo con content type
         BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, fileName)
                 .setContentType(file.getContentType())
-                .setMetadata(metadata)
+                .setAcl(Collections.singletonList(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER))) // Rende il file pubblico
                 .build();
 
         // Carica il file su Firebase Storage
         try {
-            Blob blob = storage.create(blobInfo, file.getInputStream());
+            storage.create(blobInfo, file.getInputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        // Codifica il nome del file per l'URL
-        String encodedFileName = null;
-        try {
-            encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Costruisce e restituisce l'URL del file caricato
-        return String.format(
-                "https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media&token=%s",
-                bucketName, encodedFileName, token
-        );
+        // Costruisce e restituisce l'URL pubblico del file caricato
+        return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
     }
+
+
 
 }

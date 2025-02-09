@@ -1,7 +1,10 @@
 package epicode.it.healthdesk.entities.document.certificate;
 
+import epicode.it.healthdesk.entities.document.document.DocumentCreateRequest;
 import epicode.it.healthdesk.entities.document.prescription.Prescription;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -9,14 +12,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
-
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import jakarta.transaction.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 public class CertificateSvc {
     private final CertificateRepo certificateRepo;
 
@@ -50,9 +54,9 @@ public class CertificateSvc {
     }
 
     @Transactional
-    public Certificate create(MedicalFolder mf, String file) {
+    public Certificate create(MedicalFolder mf, @Valid DocumentCreateRequest request) {
         Certificate p = new Certificate();
-        p.setFile(file);
+        BeanUtils.copyProperties(request, p);
         p.setDate(LocalDate.now());
         p.setMedicalFolder(mf);
         return certificateRepo.save(p);

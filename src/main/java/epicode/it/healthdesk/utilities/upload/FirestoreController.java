@@ -30,7 +30,7 @@ public class FirestoreController {
     @PostMapping(path = "/upload-image", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
-            String fileUrl = firestoreSvc.uploadPrescription(file);
+            String fileUrl = firestoreSvc.uploadImages(file);
             return ResponseEntity.ok(fileUrl);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Errore durante l'upload del file: " + e.getMessage());

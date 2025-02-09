@@ -19,7 +19,7 @@ public class AddressRequestForDoctor {
     private String provinceAcronym;
 
     @NotNull(message = "Città obbligatoria")
-    private String cityName;
+    private String city;
 
     @NotNull(message = "CAP obbligatorio")
     private String postalCode;

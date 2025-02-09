@@ -78,7 +78,9 @@ public class AppointmentSvc {
         Calendar c = doctorSvc.getById(request.getDoctorId()).getCalendar();
         Doctor d = doctorSvc.getById(request.getDoctorId());
 
-        if (findFirstByCalendarIdAndStartDate(c.getId(), request.getStartDate()) != null) {
+        Appointment app = findFirstByCalendarIdAndStartDate(c.getId(), request.getStartDate());
+
+        if (app != null && app.getStatus() != AppointmentStatus.CANCELLED) {
             throw new EntityExistsException("Slot non disponibile");
         }
 

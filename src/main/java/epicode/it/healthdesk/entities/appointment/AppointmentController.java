@@ -92,4 +92,27 @@ public class AppointmentController {
         return ResponseEntity.ok(mapper.toAppResponseForMF(appointmentSvc.updateDate(id, request)));
 
     }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<AppointmentResponse> getById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            Appointment a = appointmentSvc.getById(id);
+            if (!d.getCalendar().getId().equals(a.getCalendar().getId())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
+            Patient p = patientSvc.getByEmail(userDetails.getUsername());
+            Appointment a = appointmentSvc.getById(id);
+            if (!p.getId().equals(a.getMedicalFolder().getPatient().getId())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+
+        return ResponseEntity.ok(mapper.toAppointmentResponse(appointmentSvc.getById(id)));
+    }
 }

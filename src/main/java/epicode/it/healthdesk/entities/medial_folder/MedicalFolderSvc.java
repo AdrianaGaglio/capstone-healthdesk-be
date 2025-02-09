@@ -1,6 +1,8 @@
 package epicode.it.healthdesk.entities.medial_folder;
 
+import epicode.it.healthdesk.entities.document.certificate.Certificate;
 import epicode.it.healthdesk.entities.document.certificate.CertificateSvc;
+import epicode.it.healthdesk.entities.document.document.DocumentCreateRequest;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.document.prescription.Prescription;
 import epicode.it.healthdesk.entities.document.prescription.PrescriptionSvc;
@@ -58,15 +60,15 @@ public class MedicalFolderSvc {
         return medicalFolderRepo.findFirstByPatientId(patientId);
     }
 
-    public MedicalFolder addPrescription(Long id, String file) {
+    public MedicalFolder addPrescription(Long id, DocumentCreateRequest request) {
         MedicalFolder mf = getById(id);
-        mf.getPrescriptions().add(prescriptionSvc.create(mf, file));
+        mf.getPrescriptions().add(prescriptionSvc.create(mf, request));
         return medicalFolderRepo.save(mf);
     }
 
-    public MedicalFolder addCertificate(Long id, String file) {
+    public MedicalFolder addCertificate(Long id, DocumentCreateRequest request) {
         MedicalFolder mf = getById(id);
-        mf.getDocumentation().add(certificateSvc.create(mf, file));
+        mf.getDocumentation().add(certificateSvc.create(mf, request));
         return medicalFolderRepo.save(mf);
     }
 
@@ -76,6 +78,15 @@ public class MedicalFolderSvc {
         Prescription p = prescriptionSvc.getById(prescriptionId);
         mf.getPrescriptions().remove(p);
         prescriptionSvc.delete(prescriptionId);
+        return medicalFolderRepo.save(mf);
+    }
+
+    @Transactional
+    public MedicalFolder deleteCertificate(Long id, Long certificateId) {
+        MedicalFolder mf = getById(id);
+        Certificate c = certificateSvc.getById(certificateId);
+        mf.getDocumentation().remove(c);
+        certificateSvc.delete(certificateId);
         return medicalFolderRepo.save(mf);
     }
 

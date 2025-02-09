@@ -1,17 +1,22 @@
 package epicode.it.healthdesk.entities.document.prescription;
 
+import epicode.it.healthdesk.entities.document.document.DocumentCreateRequest;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 public class PrescriptionSvc {
     private final PrescriptionRepo prescriptionRepo;
 
@@ -45,9 +50,9 @@ public class PrescriptionSvc {
     }
 
     @Transactional
-    public Prescription create(MedicalFolder mf, String file) {
+    public Prescription create(MedicalFolder mf, @Valid DocumentCreateRequest request) {
         Prescription p = new Prescription();
-        p.setFile(file);
+        BeanUtils.copyProperties(request, p);
         p.setDate(LocalDate.now());
         p.setMedicalFolder(mf);
         return prescriptionRepo.save(p);

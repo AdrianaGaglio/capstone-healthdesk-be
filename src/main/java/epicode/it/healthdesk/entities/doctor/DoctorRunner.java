@@ -47,7 +47,7 @@ public class DoctorRunner implements ApplicationRunner {
                 addressRequest.setStreet(faker.address().streetAddress());
                 addressRequest.setStreetNumber(faker.address().streetAddressNumber());
                 addressRequest.setProvinceAcronym(faker.address().cityPrefix());
-                addressRequest.setCityName(faker.address().cityName());
+                addressRequest.setCity(faker.address().cityName());
                 addressRequest.setPostalCode(faker.address().zipCode());
                 addressRequest.setName("Studio " + i);
                 doctorRequest.getAddresses().add(addressRequest);
