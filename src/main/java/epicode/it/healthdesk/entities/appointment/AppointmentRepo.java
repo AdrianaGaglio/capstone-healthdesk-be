@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,5 +31,8 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
     public List<Appointment> findLastByMedicalFolder(@Param("id") Long id);
 
     public List<Appointment> findByDoctorAddress(Address address);
+
+    @Query("SELECT a FROM Appointment a WHERE a.status = 'PENDING' AND a.startDate > :date")
+    public List<Appointment> findAllAfter(@Param("date") LocalDateTime date);
 }
 

@@ -15,7 +15,7 @@ import java.util.List;
 public class CalendarMonitor {
     private final CalendarRepo repo;
 
-    @Scheduled(cron = "0 53 15 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void checkAndReactive() {
         LocalDate today = LocalDate.now();

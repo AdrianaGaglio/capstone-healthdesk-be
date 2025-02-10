@@ -27,6 +27,5 @@ public class Patient extends GeneralUser {
     @Column(name="creation_date", nullable = false)
     private LocalDate creationDate;
 
-    @Column(name="last_seen_online")
-    private LocalDate lastSeenOnline;
+
 }

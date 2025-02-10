@@ -5,6 +5,7 @@ import epicode.it.healthdesk.auth.jwt.JwtTokenUtil;
 
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
+import epicode.it.healthdesk.entities.general_user.GeneralUser;
 import epicode.it.healthdesk.entities.general_user.GeneralUserRepo;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
@@ -16,6 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
@@ -120,14 +123,17 @@ public class AppUserSvc {
     }
 
     // metodo per il login
+    @Transactional
     public String authenticateUser(@Valid LoginRequest request) {
         try {
+            AppUser u = loadUserByEmail(request.getEmail());
 
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
+            u.getGeneralUser().setLastSeenOnline(LocalDate.now());
+            appUserRepo.save(u);
             return jwtTokenUtil.generateToken(userDetails);
         } catch (AuthenticationException e) {
             throw new SecurityException("Credenziali non valide", e);
@@ -157,16 +163,21 @@ public class AppUserSvc {
         return appUserRepo.save(appUser);
     }
 
-
+    @Transactional
     public AuthResponse resetPassword(@Valid ResetPassword request) {
         String email = jwtTokenUtil.getUsernameFromToken(request.getToken());
         AppUser u = findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utente non trovato"));
 
-        if(request.getOldPassword()== null) request.setOldPassword("temp_password");
+        if(request.getOldPassword()== null) {
+            request.setOldPassword("temp_password");
+        }
 
         if(pwdEncoder.matches(request.getOldPassword(), u.getPassword())) {
             u.setPassword(pwdEncoder.encode(request.getPassword()));
         }
+
+        u.getGeneralUser().setLastSeenOnline(LocalDate.now());
+        appUserRepo.save(u);
 
         String token = jwtTokenUtil.generateAccessToken(u);
         String role = jwtTokenUtil.getRolesFromToken(token);

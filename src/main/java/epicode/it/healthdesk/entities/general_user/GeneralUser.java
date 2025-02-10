@@ -4,6 +4,8 @@ import epicode.it.healthdesk.auth.appuser.AppUser;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 @Entity
 @Table(name = "general_users")
@@ -22,4 +24,7 @@ public abstract class GeneralUser {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AppUser appUser;
+
+    @Column(name="last_seen_online")
+    private LocalDate lastSeenOnline;
 }
