@@ -32,7 +32,7 @@ public class DoctorRunner implements ApplicationRunner {
 
             RegisterDoctorRequest request = new RegisterDoctorRequest();
 
-            request.setEmail("doctor@mail.com");
+            request.setEmail("infohealthdesk@gmail.com");
             request.setPassword("doctorpwd");
 
             DoctorRequest doctorRequest = new DoctorRequest();
@@ -42,16 +42,15 @@ public class DoctorRunner implements ApplicationRunner {
             doctorRequest.setPhoneNumber(faker.phoneNumber().phoneNumber());
 
 
-            for (int i = 1; i < 3; i++) {
-                AddressRequestForDoctor addressRequest = new AddressRequestForDoctor();
-                addressRequest.setStreet(faker.address().streetAddress());
-                addressRequest.setStreetNumber(faker.address().streetAddressNumber());
-                addressRequest.setProvinceAcronym(faker.address().cityPrefix());
-                addressRequest.setCity(faker.address().cityName());
-                addressRequest.setPostalCode(faker.address().zipCode());
-                addressRequest.setName("Studio " + i);
-                doctorRequest.getAddresses().add(addressRequest);
-            }
+            AddressRequestForDoctor addressRequest = new AddressRequestForDoctor();
+            addressRequest.setStreet("Via Giusti");
+            addressRequest.setStreetNumber("5");
+            addressRequest.setProvinceAcronym("PA");
+            addressRequest.setCity("Palermo");
+            addressRequest.setPostalCode("90144");
+            addressRequest.setName("Studio Via Giusti");
+            doctorRequest.getAddresses().add(addressRequest);
+
 
             request.setDoctor(doctorRequest);
 

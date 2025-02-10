@@ -8,6 +8,9 @@ import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import epicode.it.healthdesk.entities.general_user.GeneralUserRepo;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
+import epicode.it.healthdesk.utilities.email.EmailMapper;
+import epicode.it.healthdesk.utilities.email.EmailRequest;
+import epicode.it.healthdesk.utilities.email.EmailSvc;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -36,6 +39,8 @@ public class AppUserSvc {
     private final PatientSvc patientSvc;
     private final DoctorSvc doctorSvc;
     private final GeneralUserRepo generalUserRepo;
+    private final EmailSvc emailSvc;
+    private final EmailMapper emailMapper;
 
     @Transactional
     public Patient registerPatient(@Valid RegisterRequest request) {
@@ -58,6 +63,16 @@ public class AppUserSvc {
         Patient p = patientSvc.create(request.getPatient());
         p.setAppUser(appUser);
         appUser.setGeneralUser(p);
+
+        EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setTo("infohealthdesk@gmail.com"); // da modificare con email utente
+        emailRequest.setName(p.getName());
+        emailRequest.setSurname(p.getSurname());
+        emailRequest.setSubject("HealthDesk - " + p.getName() + " " + p.getSurname() + " - Nuovo account creato");
+
+        String token = jwtTokenUtil.generateAccessToken(appUser);
+        emailRequest.setBody(emailMapper.toNewUserBody(emailRequest, token));
+        emailSvc.sendEmail(emailRequest);
         return p;
     }
 
@@ -142,4 +157,21 @@ public class AppUserSvc {
         return appUserRepo.save(appUser);
     }
 
+
+    public AuthResponse resetPassword(@Valid ResetPassword request) {
+        String email = jwtTokenUtil.getUsernameFromToken(request.getToken());
+        AppUser u = findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utente non trovato"));
+
+        if(request.getOldPassword()== null) request.setOldPassword("temp_password");
+
+        if(pwdEncoder.matches(request.getOldPassword(), u.getPassword())) {
+            u.setPassword(pwdEncoder.encode(request.getPassword()));
+        }
+
+        String token = jwtTokenUtil.generateAccessToken(u);
+        String role = jwtTokenUtil.getRolesFromToken(token);
+
+        return new AuthResponse(token, role);
+
+    }
 }

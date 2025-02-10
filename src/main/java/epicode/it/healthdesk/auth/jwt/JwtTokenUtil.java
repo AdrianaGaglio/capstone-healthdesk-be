@@ -26,6 +26,7 @@ public class JwtTokenUtil {
 
     /**
      * Estrae il nome utente (subject) dal token JWT.
+     *
      * @param token Il token JWT.
      * @return Il nome utente contenuto nel token.
      */
@@ -35,6 +36,7 @@ public class JwtTokenUtil {
 
     /**
      * Estrae la data di scadenza dal token JWT.
+     *
      * @param token Il token JWT.
      * @return La data di scadenza del token.
      */
@@ -44,9 +46,10 @@ public class JwtTokenUtil {
 
     /**
      * Estrae un claim specifico dal token JWT utilizzando una funzione resolver.
-     * @param token Il token JWT.
+     *
+     * @param token          Il token JWT.
      * @param claimsResolver Funzione per estrarre un claim specifico.
-     * @param <T> Tipo del claim restituito.
+     * @param <T>            Tipo del claim restituito.
      * @return Il valore del claim estratto.
      */
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -56,6 +59,7 @@ public class JwtTokenUtil {
 
     /**
      * Estrae tutti i claims dal token JWT.
+     *
      * @param token Il token JWT.
      * @return I claims contenuti nel token.
      */
@@ -68,6 +72,7 @@ public class JwtTokenUtil {
 
     /**
      * Verifica se il token JWT è scaduto.
+     *
      * @param token Il token JWT.
      * @return True se il token è scaduto, altrimenti False.
      */
@@ -78,6 +83,7 @@ public class JwtTokenUtil {
 
     /**
      * Genera un token JWT per un utente, includendo i ruoli come claim.
+     *
      * @param userDetails I dettagli dell'utente per cui generare il token.
      * @return Una stringa rappresentante il token JWT generato.
      */
@@ -108,8 +114,21 @@ public class JwtTokenUtil {
                 .compact();
     }
 
+    public String generateTokenForReset(AppUser user) {
+        // Costruiamo il token includendo l'email come soggetto e altri claim utili
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim("id", user.getId())
+                .claim("roles", user.getRoles()) // se AppUser ha un campo 'roles'
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
+                .signWith(SignatureAlgorithm.HS256, secret)
+                .compact();
+    }
+
     /**
      * Estrae i ruoli dal token JWT.
+     *
      * @param token Il token JWT.
      * @return Una lista di ruoli estratti dal token.
      */
@@ -120,7 +139,8 @@ public class JwtTokenUtil {
 
     /**
      * Valida un token JWT confrontando il nome utente e verificando che non sia scaduto.
-     * @param token Il token JWT.
+     *
+     * @param token       Il token JWT.
      * @param userDetails I dettagli dell'utente.
      * @return True se il token è valido, altrimenti False.
      */
@@ -128,7 +148,6 @@ public class JwtTokenUtil {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
 
 
 }

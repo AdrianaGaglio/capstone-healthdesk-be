@@ -2,10 +2,7 @@ package epicode.it.healthdesk.auth.appuser;
 
 
 import com.github.javafaker.App;
-import epicode.it.healthdesk.auth.dto.AuthResponse;
-import epicode.it.healthdesk.auth.dto.AuthUpdateRequest;
-import epicode.it.healthdesk.auth.dto.LoginRequest;
-import epicode.it.healthdesk.auth.dto.RegisterRequest;
+import epicode.it.healthdesk.auth.dto.*;
 import epicode.it.healthdesk.auth.jwt.JwtTokenUtil;
 import epicode.it.healthdesk.entities.general_user.GeneralUser;
 import epicode.it.healthdesk.entities.general_user.GeneralUserRepo;
@@ -48,5 +45,10 @@ public class AuthController {
         appUser = appUserSvc.updateLoginInfo(appUser, request);
         String token = jwtTokenUtil.generateAccessToken(appUser); // genero un nuovo token dopo la modifica dei dati di accesso
         return ResponseEntity.ok(new AuthResponse(token, jwtTokenUtil.getRolesFromToken(token)));
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<AuthResponse> resetAfterFirstAccess(@RequestBody ResetPassword request) {
+        return ResponseEntity.ok(appUserSvc.resetPassword(request));
     }
 }
