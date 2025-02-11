@@ -75,7 +75,7 @@ public class AppUserSvc {
 
         String token = jwtTokenUtil.generateAccessToken(appUser);
         emailRequest.setBody(emailMapper.toNewUserBody(emailRequest, token));
-        emailSvc.sendEmail(emailRequest);
+        emailSvc.sendEmailHtml(emailRequest);
         return p;
     }
 

@@ -64,6 +64,10 @@ public class DoctorSvc {
         return doctorRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Medico non trovato"));
     }
 
+    public Doctor save(Doctor d ){
+        return doctorRepo.save(d);
+    }
+
     public int count() {
         return (int) doctorRepo.count();
     }

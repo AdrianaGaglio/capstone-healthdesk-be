@@ -46,19 +46,19 @@ public class EmailSvc {
 
     public String sendEmailHtml(@Valid EmailRequest request) {
 
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message);
-
-            helper.setTo(request.getTo());
-            helper.setSubject(request.getSubject());
-            helper.setText(request.getBody(), true);
-            helper.setFrom(request.getFrom() != null ? request.getFrom() : from);
-
-            mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            MimeMessage message = mailSender.createMimeMessage();
+//            MimeMessageHelper helper = new MimeMessageHelper(message);
+//
+//            helper.setTo(request.getTo());
+//            helper.setSubject(request.getSubject());
+//            helper.setText(request.getBody(), true);
+//            helper.setFrom(request.getFrom() != null ? request.getFrom() : from);
+//
+//            mailSender.send(message);
+//        } catch (MessagingException e) {
+//            throw new RuntimeException(e);
+//        }
         return "Mail inviata correttamente!";
     }
 

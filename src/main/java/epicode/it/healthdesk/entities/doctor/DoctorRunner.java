@@ -14,12 +14,14 @@ import epicode.it.healthdesk.entities.doctor.dto.DoctorRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Order(1)
 public class DoctorRunner implements ApplicationRunner {
     private final AppUserSvc appUserSvc;
     private final DoctorSvc doctorSvc;
@@ -36,11 +38,10 @@ public class DoctorRunner implements ApplicationRunner {
             request.setPassword("doctorpwd");
 
             DoctorRequest doctorRequest = new DoctorRequest();
-            doctorRequest.setName(faker.name().firstName());
-            doctorRequest.setSurname(faker.name().lastName());
+            doctorRequest.setName("Maria Valentina");
+            doctorRequest.setSurname("Barone");
             doctorRequest.setLicenceNumber(faker.regexify("[A-Z0-9]{8}"));
-            doctorRequest.setPhoneNumber(faker.phoneNumber().phoneNumber());
-
+            doctorRequest.setPhoneNumber("3298180450");
 
             AddressRequestForDoctor addressRequest = new AddressRequestForDoctor();
             addressRequest.setStreet("Via Giusti");
@@ -50,7 +51,6 @@ public class DoctorRunner implements ApplicationRunner {
             addressRequest.setPostalCode("90144");
             addressRequest.setName("Studio Via Giusti");
             doctorRequest.getAddresses().add(addressRequest);
-
 
             request.setDoctor(doctorRequest);
 

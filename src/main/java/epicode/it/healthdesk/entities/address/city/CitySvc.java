@@ -11,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -66,10 +68,10 @@ public class CitySvc {
     // ricerca per provincia
     public List<CityDTO> findByProvince(String province) {
         HttpClient httpClient = HttpClient.newHttpClient();
-
+        String encodedProvince = URLEncoder.encode(province, StandardCharsets.UTF_8);
         // creo la richiesta
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(java.net.URI.create("https://axqvoqvbfjpaamphztgd.functions.supabase.co/comuni/provincia/" + province))
+                .uri(java.net.URI.create("https://axqvoqvbfjpaamphztgd.functions.supabase.co/comuni/provincia/" + encodedProvince))
                 .GET()
                 .build();
 
