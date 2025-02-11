@@ -81,12 +81,87 @@ public class EmailMapper {
         return processTemplate(template, values);
     }
 
+    public String toNewAppointment(Appointment app, boolean forDoctor) {
+        String template = "";
+        if(forDoctor) {
+            template = loadTemplate("src/main/resources/templates/new-appointment-for-doctor.html");
+        } else {
+            template = loadTemplate("src/main/resources/templates/new-appointment.html");
+        }
+
+        Map<String, String> values = new HashMap<>();
+        String day = app.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("it"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formattedDate = app.getStartDate().format(formatter);
+        values.put("user_name", app.getMedicalFolder().getPatient().getName());
+        values.put("user_surname", app.getMedicalFolder().getPatient().getSurname());
+        values.put("day", day);
+        values.put("startDate", formattedDate);
+        values.put("doctorService", app.getService().getName());
+        values.put("doctorName", app.getCalendar().getDoctor().getName() + " " + app.getCalendar().getDoctor().getSurname());
+        String location = "";
+        if(app.getOnline()) {
+            location = "Online";
+        } else {
+            location = app.getDoctorAddress().getStreet() + ", " + app.getDoctorAddress().getStreetNumber() + ", " +
+                    app.getDoctorAddress().getCity();
+        }
+        values.put("location",location);
+        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/" + app.getId() + "/true");
+        return processTemplate(template, values);
+    }
+
+    public String toAppointmentStatusChange(Appointment app, String status) {
+        String template = loadTemplate("src/main/resources/templates/appointment-status-change.html");
+        Map<String, String> values = new HashMap<>();
+        String day = app.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("it"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formattedDate = app.getStartDate().format(formatter);
+        values.put("day", day);
+        values.put("startDate", formattedDate);
+        values.put("doctorService", app.getService().getName());
+        values.put("user_name", app.getMedicalFolder().getPatient().getName());
+        values.put("user_surname", app.getMedicalFolder().getPatient().getSurname());
+        String location = "";
+        if(app.getOnline()) {
+            location = "Online";
+        } else {
+            location = app.getDoctorAddress().getStreet() + ", " + app.getDoctorAddress().getStreetNumber() + ", " +
+                       app.getDoctorAddress().getCity();
+        }
+        values.put("location", location);
+        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/" + app.getId() + "/true");
+        values.put("status", status);
+        return processTemplate(template, values);
+    }
+
     private String loadTemplate(String filePath)  {
         try {
             return new String(Files.readAllBytes(Paths.get(filePath)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String toAppCancellationForUser(Appointment app) {
+        String template = loadTemplate("src/main/resources/templates/appointment-cancellation-for-user.html");
+        Map<String, String> values = new HashMap<>();
+        String day = app.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("it"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formattedDate = app.getStartDate().format(formatter);
+        values.put("day", day);
+        values.put("startDate", formattedDate);
+        values.put("doctorService", app.getService().getName());
+        String location = "";
+        if(app.getOnline()) {
+            location = "Online";
+        } else {
+            location = app.getDoctorAddress().getStreet() + ", " + app.getDoctorAddress().getStreetNumber() + ", " +
+                       app.getDoctorAddress().getCity();
+        }
+        values.put("location", location);
+        values.put("confirm", "http://localhost:4200/prenota");
+        return processTemplate(template, values);
     }
 
     private String processTemplate(String template, Map<String, String> values) {

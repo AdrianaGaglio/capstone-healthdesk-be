@@ -65,18 +65,22 @@
 
 <div class="container">
     <div class="header">
-        Contatto per: <strong>Nuovo account creato</strong>
+        <strong>Health Desk - Conferma appuntamento</strong>
     </div>
     <div class="content">
-        <p>Benvenuto in HealthDesk <strong>{{user_name}} {{user_surname}}</strong>,</p>
-        <p>Di seguito l'email per accedere al sito:</p>
+        <p>Ciao <strong>{{user_name}} {{user_surname}}</strong>,</p>
+        <p>confermiamo che l'appuntamento è stato annullato. Di seguito i dettagli:</p>
         <p>
-            <em>{{email}}</em>
+            <em>{{day}} {{startDate}} - per {{doctorService}} con Dr. {{doctorName}}</em>
         </p>
 
-        <p>Per effettuare il primo accesso, clicca il pulsante sottostante. Ti verrà richiesto di impostare una nuova password ed inserire alcune informazioni.</p>
-        <p>
-            <a href="{{reset}}" class="button">Accedi</a>
+        <p>Luogo: {{location}}</p>
+
+        <p>Stato: Cancellato</p>
+
+        <p>Se vuoi prenotare un'altra visita, clicca sul pulsante sottostante:</p>
+        <p >
+            <a href="{{confirm}}" class="button">Prenota appuntamento</a>
         </p>
     </div>
     <div class="footer">

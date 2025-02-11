@@ -34,8 +34,8 @@ public class AppointmentController {
 
     // prenotazione appuntamento
     @PostMapping
-    public ResponseEntity<AppointmentResponse> create(@RequestBody AppointmentRequest request) {
-        return new ResponseEntity<>(mapper.toAppointmentResponse(appointmentSvc.create(request)), HttpStatus.CREATED);
+    public ResponseEntity<AppointmentResponse> create(@RequestBody AppointmentRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        return new ResponseEntity<>(mapper.toAppointmentResponse(appointmentSvc.create(request, userDetails)), HttpStatus.CREATED);
     }
 
     // prossimi appuntamenti medico
@@ -88,7 +88,7 @@ public class AppointmentController {
             }
         }
 
-        return new ResponseEntity<>(mapper.toAppResponseForMF(appointmentSvc.cancelApp(id)), HttpStatus.OK);
+        return new ResponseEntity<>(mapper.toAppResponseForMF(appointmentSvc.cancelApp(id, userDetails)), HttpStatus.OK);
     }
 
     @PutMapping("/confirm/{id}")
@@ -110,7 +110,7 @@ public class AppointmentController {
             }
         }
 
-        return new ResponseEntity<>(mapper.toAppResponseForMF(appointmentSvc.confirmApp(id)), HttpStatus.OK);
+        return new ResponseEntity<>(mapper.toAppResponseForMF(appointmentSvc.confirmApp(id, userDetails)), HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")

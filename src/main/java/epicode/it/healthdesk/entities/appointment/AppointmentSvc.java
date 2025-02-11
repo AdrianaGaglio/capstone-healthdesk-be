@@ -14,15 +14,21 @@ import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
 import epicode.it.healthdesk.entities.service.DoctorService;
 import epicode.it.healthdesk.entities.service.DoctorServiceSvc;
+import epicode.it.healthdesk.utilities.email.EmailMapper;
+import epicode.it.healthdesk.utilities.email.EmailRequest;
+import epicode.it.healthdesk.utilities.email.EmailSvc;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -40,6 +46,8 @@ public class AppointmentSvc {
     private final MedicalFolderSvc medicalFolderSvc;
     private final CalendarRepo calendarRepo;
     private final AddressSvc addressSvc;
+    private final EmailMapper emailMapper;
+    private final EmailSvc emailSvc;
 
     public List<Appointment> getAll() {
         return appointmentRepo.findAll();
@@ -78,7 +86,8 @@ public class AppointmentSvc {
 
     // nuovo appuntamento
     @Transactional
-    public Appointment create(@Valid AppointmentRequest request) {
+    public Appointment create(@Valid AppointmentRequest request, UserDetails userDetails) {
+
         Calendar c = doctorSvc.getById(request.getDoctorId()).getCalendar();
         Doctor d = doctorSvc.getById(request.getDoctorId());
 
@@ -125,7 +134,28 @@ public class AppointmentSvc {
             d.getPatients().add(p);
         }
 
-        return appointmentRepo.save(a);
+        a = appointmentRepo.save(a);
+
+        EmailRequest mailForDoctor = new EmailRequest();
+        EmailRequest mailForPatient = new EmailRequest();
+        String subject = "Health Desk - Nuovo appuntamento prenotato";
+        mailForDoctor.setSubject(subject);
+        mailForPatient.setSubject(subject);
+
+        if (userDetails == null || userDetails.getAuthorities().stream().anyMatch(auth -> !auth.getAuthority().equals("ROLE_DOCTOR"))) {
+            mailForDoctor.setTo(a.getCalendar().getDoctor().getAppUser().getEmail());
+            mailForDoctor.setBody(emailMapper.toNewAppointment(a, true));
+            mailForPatient.setTo(a.getMedicalFolder().getPatient().getAppUser().getEmail());
+            mailForPatient.setBody(emailMapper.toNewAppointment(a, false));
+            emailSvc.sendEmailHtml(mailForDoctor);
+            emailSvc.sendEmailHtml(mailForPatient);
+        } else {
+            mailForPatient.setTo(a.getMedicalFolder().getPatient().getAppUser().getEmail());
+            mailForPatient.setBody(emailMapper.toNewAppointment(a, false));
+            emailSvc.sendEmailHtml(mailForPatient);
+        }
+
+        return a;
     }
 
     public List<Appointment> findByService(DoctorService service) {
@@ -157,8 +187,14 @@ public class AppointmentSvc {
     public Calendar update(Long id, Appointment request) {
         Appointment a = getById(id);
 
+        EmailRequest mail = new EmailRequest();
+        mail.setTo(a.getMedicalFolder().getPatient().getAppUser().getEmail());
+        mail.setSubject("Health Desk - Conferma cancellazione appuntamento");
+
         // aggiorno lo stato
-        a.setStatus(request.getStatus());
+        if (!a.getStatus().equals(request.getStatus())) {
+            a.setStatus(request.getStatus());
+        }
 
         // controllo se per le date indicate esiste un appuntamento
         if (existByStartDateAndEndDate(request.getStartDate(), request.getEndDate())) {
@@ -172,7 +208,14 @@ public class AppointmentSvc {
         a.setStartDate(request.getStartDate());
         a.setEndDate(request.getEndDate());
 
+
         appointmentRepo.save(a);
+
+        if (a.getStatus().equals(AppointmentStatus.CANCELLED)) {
+            mail.setBody(emailMapper.toAppCancellationForUser(a));
+            emailSvc.sendEmailHtml(mail);
+        }
+
         return calendarRepo.findById(a.getCalendar().getId()).orElse(null);
     }
 
@@ -183,16 +226,44 @@ public class AppointmentSvc {
     }
 
     // cancellazione appuntamento (modifica stato in CANCELLED) --- per il paziente / medico
-    public Appointment cancelApp(Long id) {
+    public Appointment cancelApp(Long id, UserDetails userDetails) {
         Appointment a = getById(id);
         a.setStatus(AppointmentStatus.CANCELLED);
+
+        EmailRequest mailForDoctor = new EmailRequest();
+        EmailRequest mailForPatient = new EmailRequest();
+        String subject = "Health Desk - Cancellazione appuntamento";
+        mailForDoctor.setSubject(subject);
+        mailForPatient.setSubject(subject);
+
+        if(userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_DOCTOR"))) {
+            mailForPatient.setTo(a.getMedicalFolder().getPatient().getAppUser().getEmail());
+            mailForPatient.setBody(emailMapper.toAppCancellationForUser(a));
+            emailSvc.sendEmailHtml(mailForPatient);
+        } else {
+            mailForDoctor.setTo(a.getCalendar().getDoctor().getAppUser().getEmail());
+            mailForDoctor.setBody(emailMapper.toAppointmentStatusChange(a, "cancellato"));
+            mailForPatient.setTo(a.getMedicalFolder().getPatient().getAppUser().getEmail());
+            mailForPatient.setBody(emailMapper.toAppCancellationForUser(a));
+            emailSvc.sendEmailHtml(mailForPatient);
+            emailSvc.sendEmailHtml(mailForDoctor);
+        }
+
         return appointmentRepo.save(a);
     }
 
     // conferma appuntamento (modifica stato in CANCELLED) --- per il paziente / medico
-    public Appointment confirmApp(Long id) {
+    public Appointment confirmApp(Long id, UserDetails userDetails) {
         Appointment a = getById(id);
         a.setStatus(AppointmentStatus.CONFIRMED);
+
+        if(userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_PATIENT"))) {
+            EmailRequest mail = new EmailRequest();
+            mail.setTo(a.getCalendar().getDoctor().getAppUser().getEmail());
+            mail.setSubject("Health Desk - Conferma appuntamento" );
+            mail.setBody(emailMapper.toAppointmentStatusChange(a, "confermato"));
+            emailSvc.sendEmailHtml(mail);
+        }
         return appointmentRepo.save(a);
     }
 

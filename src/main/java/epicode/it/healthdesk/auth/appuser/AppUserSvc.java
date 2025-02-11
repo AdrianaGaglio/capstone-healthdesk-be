@@ -68,7 +68,7 @@ public class AppUserSvc {
         appUser.setGeneralUser(p);
 
         EmailRequest emailRequest = new EmailRequest();
-        emailRequest.setTo("infohealthdesk@gmail.com"); // da modificare con email utente
+        emailRequest.setTo(request.getEmail());
         emailRequest.setName(p.getName());
         emailRequest.setSurname(p.getSurname());
         emailRequest.setSubject("HealthDesk - " + p.getName() + " " + p.getSurname() + " - Nuovo account creato");
