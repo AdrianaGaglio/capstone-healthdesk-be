@@ -32,7 +32,12 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
 
     public List<Appointment> findByDoctorAddress(Address address);
 
-    @Query("SELECT a FROM Appointment a WHERE a.status = 'PENDING' AND a.startDate > :date")
-    public List<Appointment> findAllAfter(@Param("date") LocalDateTime date);
+    @Query("SELECT a FROM Appointment a WHERE a.status = 'PENDING' AND a.startDate BETWEEN :startOfDay AND :endOfDay")
+    List<Appointment> findAllForTomorrow(@Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
+
+    @Query("SELECT a FROM Appointment a WHERE a.status = 'PENDING' AND a.startDate BETWEEN :startOfDay AND :endOfDay")
+    List<Appointment> findAllToday(@Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
+
+
 }
 

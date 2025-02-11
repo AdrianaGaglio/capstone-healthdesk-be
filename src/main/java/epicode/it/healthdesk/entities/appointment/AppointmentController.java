@@ -7,6 +7,7 @@ import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
 import lombok.RequiredArgsConstructor;
+
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -114,5 +117,14 @@ public class AppointmentController {
         }
 
         return ResponseEntity.ok(mapper.toAppointmentResponse(appointmentSvc.getById(id)));
+    }
+
+    @GetMapping("/{id}/check")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Long>> getById(@PathVariable Long id) {
+        Appointment app = appointmentSvc.getById(id);
+        Map<String, Long> response = new HashMap<>();
+        response.put("patientId", app.getMedicalFolder().getPatient().getId());
+        return ResponseEntity.ok(response);
     }
 }

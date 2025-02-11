@@ -5,12 +5,16 @@ import epicode.it.healthdesk.entities.appointment.Appointment;
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @Component
@@ -51,7 +55,11 @@ public class EmailMapper {
         Map<String, String> values = new HashMap<>();
         values.put("user_name", app.getMedicalFolder().getPatient().getName());
         values.put("user_surname", app.getMedicalFolder().getPatient().getSurname());
-        values.put("startDate", app.getStartDate().toString());
+        String day = app.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("it"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formattedDate = app.getStartDate().format(formatter);
+        values.put("day", day);
+        values.put("startDate", formattedDate);
         values.put("doctorService", app.getService().getName());
         values.put("doctorName", app.getCalendar().getDoctor().getName() + " " + app.getCalendar().getDoctor().getSurname());
         values.put("confirm", "http://localhost:4200/");
