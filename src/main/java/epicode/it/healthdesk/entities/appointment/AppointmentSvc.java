@@ -187,9 +187,9 @@ public class AppointmentSvc {
     public Calendar update(Long id, Appointment request) {
         Appointment a = getById(id);
 
-        EmailRequest mail = new EmailRequest();
-        mail.setTo(a.getMedicalFolder().getPatient().getAppUser().getEmail());
-        mail.setSubject("Health Desk - Conferma cancellazione appuntamento");
+        EmailRequest cancellationEmail = new EmailRequest();
+        cancellationEmail.setTo(a.getMedicalFolder().getPatient().getAppUser().getEmail());
+        cancellationEmail.setSubject("Health Desk - Conferma cancellazione appuntamento");
 
         // aggiorno lo stato
         if (!a.getStatus().equals(request.getStatus())) {
@@ -204,16 +204,24 @@ public class AppointmentSvc {
                 throw new EntityExistsException("Slot non disponibile");
         }
 
-        // altrimenti imposto le nuove date
-        a.setStartDate(request.getStartDate());
-        a.setEndDate(request.getEndDate());
+        EmailRequest changeDateEmail = new EmailRequest();
+        changeDateEmail.setTo(a.getMedicalFolder().getPatient().getAppUser().getEmail());
+        changeDateEmail.setSubject("Health Desk - Modifica data appuntamento");
 
+
+        if(!a.getStartDate().equals(request.getStartDate())) {
+            // imposto le nuove date
+            a.setStartDate(request.getStartDate());
+            a.setEndDate(request.getEndDate());
+            changeDateEmail.setBody(emailMapper.toAppointmentDateChange(a, false));
+            emailSvc.sendEmailHtml(changeDateEmail);
+        }
 
         appointmentRepo.save(a);
 
         if (a.getStatus().equals(AppointmentStatus.CANCELLED)) {
-            mail.setBody(emailMapper.toAppCancellationForUser(a));
-            emailSvc.sendEmailHtml(mail);
+            cancellationEmail.setBody(emailMapper.toAppCancellationForUser(a));
+            emailSvc.sendEmailHtml(cancellationEmail);
         }
 
         return calendarRepo.findById(a.getCalendar().getId()).orElse(null);
@@ -281,6 +289,19 @@ public class AppointmentSvc {
 
         a.setStartDate(request.getStartDate());
         a.setEndDate(request.getEndDate());
+
+        EmailRequest mailForDoctor = new EmailRequest();
+        mailForDoctor.setTo(a.getCalendar().getDoctor().getAppUser().getEmail());
+        mailForDoctor.setSubject("Health Desk - Modifica data appuntamento");
+        mailForDoctor.setBody(emailMapper.toAppointmentDateChange(a, true));
+        emailSvc.sendEmailHtml(mailForDoctor);
+
+        EmailRequest mailForPatient = new EmailRequest();
+        mailForPatient.setTo(a.getMedicalFolder().getPatient().getAppUser().getEmail());
+        mailForPatient.setSubject("Health Desk - Modifica data appuntamento");
+        mailForPatient.setBody(emailMapper.toAppointmentDateChange(a, false));
+        emailSvc.sendEmailHtml(mailForPatient);
+
         return appointmentRepo.save(a);
     }
 

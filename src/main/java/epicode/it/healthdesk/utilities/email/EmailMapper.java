@@ -135,6 +135,34 @@ public class EmailMapper {
         return processTemplate(template, values);
     }
 
+    public String toAppointmentDateChange(Appointment app, boolean forDoctor) {
+        String template = "";
+        if(forDoctor) {
+            template = loadTemplate("src/main/resources/templates/appointment-date-change-for-doctor.html");
+        } else {
+            template = loadTemplate("src/main/resources/templates/appointment-date-change-for-patient.html");
+        }
+        Map<String, String> values = new HashMap<>();
+        String day = app.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("it"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formattedDate = app.getStartDate().format(formatter);
+        values.put("day", day);
+        values.put("startDate", formattedDate);
+        String location = "";
+        if(app.getOnline()) {
+            location = "Online";
+        } else {
+            location = app.getDoctorAddress().getStreet() + ", " + app.getDoctorAddress().getStreetNumber() + ", " +
+                       app.getDoctorAddress().getCity();
+        }
+        values.put("location", location);
+        values.put("user_name", app.getMedicalFolder().getPatient().getName());
+        values.put("user_surname", app.getMedicalFolder().getPatient().getSurname());
+        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/" + app.getId() + "/true");
+        values.put("doctorService", app.getService().getName());
+        return processTemplate(template, values);
+    }
+
     private String loadTemplate(String filePath)  {
         try {
             return new String(Files.readAllBytes(Paths.get(filePath)));
@@ -152,6 +180,9 @@ public class EmailMapper {
         values.put("day", day);
         values.put("startDate", formattedDate);
         values.put("doctorService", app.getService().getName());
+        values.put("user_name", app.getMedicalFolder().getPatient().getName());
+        values.put("user_surname", app.getMedicalFolder().getPatient().getSurname());
+        values.put("doctorName", app.getCalendar().getDoctor().getName() + " " + app.getCalendar().getDoctor().getSurname());
         String location = "";
         if(app.getOnline()) {
             location = "Online";
