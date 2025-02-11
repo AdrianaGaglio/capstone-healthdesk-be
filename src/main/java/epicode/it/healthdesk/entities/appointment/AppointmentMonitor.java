@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AppointmentMonitor  {
+public class AppointmentMonitor {
     private final AppointmentRepo repo;
     private final EmailMapper mapper;
     private final EmailSvc emailSvc;
@@ -49,11 +49,11 @@ public class AppointmentMonitor  {
     }
 
     // ogni giorno alle 7 controllo se ci sono appuntamenti pending per oggi
-    @Scheduled(cron = "0 00 7 * * ?")
+    @Scheduled(cron = "0 0 7 * * ?")
     @Transactional
     public void requestConfirmationToday() {
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay(); // inizio della giornata odierna
-        LocalDateTime endOfToday = startOfToday.minusSeconds(1); // fine della giornata odierna
+        LocalDateTime endOfToday = startOfToday.plusDays(1).minusSeconds(1); // fine della giornata odierna
         List<Appointment> appointments = repo.findAllBetween(startOfToday, endOfToday); // lista di appuntamenti pending della giornata odierna
         appointments.forEach(a -> {
             // per ogni appuntamento trovato, mando email di richiesta conferma
@@ -64,7 +64,28 @@ public class AppointmentMonitor  {
             request.setBody(mapper.toAppConfirmation(a));
             emailSvc.sendEmailHtml(request);
         });
+    }
 
+
+    // ogni giorno alle 7 controllo se ci sono appuntamenti pending per la giornata di ieri
+    @Scheduled(cron = "0 55 11  * * ?")
+    @Transactional
+    public void requestConfirmationDayAfter() {
+        LocalDateTime startOfYesterday = LocalDate.now().minusDays(1).atStartOfDay(); // inizio della giornata di ieri
+
+        LocalDateTime endOfYesterday = startOfYesterday.plusDays(1).minusSeconds(1); // fine della giornata di ieri
+
+        List<Appointment> appointments = repo.findAllBetween(startOfYesterday, endOfYesterday); // lista di appuntamenti pending della giornata di ieri
+        appointments.forEach(a -> {
+            System.out.println(a.getStartDate() + " " + a.getStatus());
+            // per ogni appuntamento trovato, mando email di richiesta conferma
+            EmailRequest request = new EmailRequest();
+            request.setTo(from);
+            request.setFrom(from);
+            request.setSubject("Health Desk - Richiesta conferma appuntamento");
+            request.setBody(mapper.toAppConfirmationForDoctor(a));
+            emailSvc.sendEmailHtml(request);
+        });
     }
 
 

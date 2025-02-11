@@ -63,6 +63,10 @@ public class PatientMapper {
         } else {
             response.setLastVisit(null);
         }
+
+        if(p.getLastSeenOnline() == null) {
+            p.setLastSeenOnline(null);
+        }
         return response;
     }
 

@@ -62,7 +62,22 @@ public class EmailMapper {
         values.put("startDate", formattedDate);
         values.put("doctorService", app.getService().getName());
         values.put("doctorName", app.getCalendar().getDoctor().getName() + " " + app.getCalendar().getDoctor().getSurname());
-        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/102/true");
+        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/" + app.getId() + "/true");
+        return processTemplate(template, values);
+    }
+
+    @Transactional
+    public String toAppConfirmationForDoctor(Appointment app) {
+        String template = loadTemplate("src/main/resources/templates/app-confirmation.html");
+        Map<String, String> values = new HashMap<>();
+        String day = app.getStartDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("it"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formattedDate = app.getStartDate().format(formatter);
+        values.put("day", day);
+        values.put("startDate", formattedDate);
+        values.put("doctorService", app.getService().getName());
+        values.put("doctorName", app.getCalendar().getDoctor().getName() + " " + app.getCalendar().getDoctor().getSurname());
+        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/" + app.getId() + "/true");
         return processTemplate(template, values);
     }
 

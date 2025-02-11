@@ -182,10 +182,17 @@ public class AppointmentSvc {
         return appointmentRepo.findLastByMedicalFolder(mf.getId()).stream().findFirst().orElse(null);
     }
 
-    // cancellazione appuntamento (modifica stato in CANCELLED) --- per il paziente
+    // cancellazione appuntamento (modifica stato in CANCELLED) --- per il paziente / medico
     public Appointment cancelApp(Long id) {
         Appointment a = getById(id);
         a.setStatus(AppointmentStatus.CANCELLED);
+        return appointmentRepo.save(a);
+    }
+
+    // conferma appuntamento (modifica stato in CANCELLED) --- per il paziente / medico
+    public Appointment confirmApp(Long id) {
+        Appointment a = getById(id);
+        a.setStatus(AppointmentStatus.CONFIRMED);
         return appointmentRepo.save(a);
     }
 

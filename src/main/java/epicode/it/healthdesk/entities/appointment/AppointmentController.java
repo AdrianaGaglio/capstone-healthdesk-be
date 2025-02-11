@@ -70,16 +70,47 @@ public class AppointmentController {
     }
 
     @PutMapping("/cancel/{id}")
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasAnyRole('PATIENT', 'DOCTOR')")
     public ResponseEntity<AppointmentResponseForMedicalFolder> cancel(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
-        Patient p = patientSvc.getByEmail(userDetails.getUsername());
-        Appointment a = appointmentSvc.getById(id);
-        if (!p.getId().equals(a.getMedicalFolder().getPatient().getId())) {
-            throw new AccessDeniedException("Accesso negato");
+
+        if(userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))){
+            Patient p = patientSvc.getByEmail(userDetails.getUsername());
+            Appointment a = appointmentSvc.getById(id);
+            if (!p.getId().equals(a.getMedicalFolder().getPatient().getId())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        } else if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            Appointment a = appointmentSvc.getById(id);
+            if (!d.getCalendar().getId().equals(a.getCalendar().getId())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
         }
 
         return new ResponseEntity<>(mapper.toAppResponseForMF(appointmentSvc.cancelApp(id)), HttpStatus.OK);
+    }
+
+    @PutMapping("/confirm/{id}")
+    @PreAuthorize("hasAnyRole('PATIENT', 'DOCTOR')")
+    public ResponseEntity<AppointmentResponseForMedicalFolder> confirm(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+
+
+        if(userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))){
+            Patient p = patientSvc.getByEmail(userDetails.getUsername());
+            Appointment a = appointmentSvc.getById(id);
+            if (!p.getId().equals(a.getMedicalFolder().getPatient().getId())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        } else if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            Appointment a = appointmentSvc.getById(id);
+            if (!d.getCalendar().getId().equals(a.getCalendar().getId())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+
+        return new ResponseEntity<>(mapper.toAppResponseForMF(appointmentSvc.confirmApp(id)), HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
