@@ -51,4 +51,11 @@ public class AuthController {
     public ResponseEntity<AuthResponse> resetAfterFirstAccess(@RequestBody ResetPassword request) {
         return ResponseEntity.ok(appUserSvc.resetPassword(request));
     }
+
+    @PostMapping("/reset-request")
+    public ResponseEntity<Map<String, String>> resetPasswordRequest(@RequestParam String email) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", appUserSvc.resetPasswordRequest(email, false));
+        return ResponseEntity.ok(response);
+    }
 }

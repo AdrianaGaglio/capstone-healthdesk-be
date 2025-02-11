@@ -195,6 +195,16 @@ public class EmailMapper {
         return processTemplate(template, values);
     }
 
+    public String toResetPassword(AppUser user, String token, boolean firstAccess) {
+        String template = loadTemplate("src/main/resources/templates/reset-password.html");
+        Map<String, String> values = new HashMap<>();
+        String firstAccessString = firstAccess ? "true/" : "false/";
+        values.put("reset", "http://localhost:4200/auth/reset-password/" + firstAccessString + token);
+        values.put("user_name", user.getGeneralUser().getName());
+        values.put("user_surname", user.getGeneralUser().getSurname());
+        return processTemplate(template, values);
+    }
+
     private String processTemplate(String template, Map<String, String> values) {
         for (Map.Entry<String, String> entry : values.entrySet()) {
             template = template.replace("{{" + entry.getKey() + "}}", entry.getValue());

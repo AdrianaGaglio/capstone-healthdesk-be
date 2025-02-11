@@ -163,19 +163,25 @@ public class AppUserSvc {
         return appUserRepo.save(appUser);
     }
 
+    // metodo per il reset della password
+    public String resetPasswordRequest(String email, boolean firstAccess) {
+        AppUser u = loadUserByEmail(email);
+        String token = jwtTokenUtil.generateAccessToken(u);
+        EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setTo(email);
+        emailRequest.setSubject("Health Desk - Reset della password");
+        emailRequest.setBody(emailMapper.toResetPassword(u, token, firstAccess));
+        emailSvc.sendEmailHtml(emailRequest);
+        return "Richiesta inviata con successo!";
+    }
+
     @Transactional
     public AuthResponse resetPassword(@Valid ResetPassword request) {
         String email = jwtTokenUtil.getUsernameFromToken(request.getToken());
+
         AppUser u = findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utente non trovato"));
 
-        if(request.getOldPassword()== null) {
-            request.setOldPassword("temp_password");
-        }
-
-        if(pwdEncoder.matches(request.getOldPassword(), u.getPassword())) {
-            u.setPassword(pwdEncoder.encode(request.getPassword()));
-        }
-
+        u.setPassword(pwdEncoder.encode(request.getPassword()));
         u.getGeneralUser().setLastSeenOnline(LocalDate.now());
         appUserRepo.save(u);
 
