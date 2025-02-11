@@ -30,7 +30,7 @@ public class AppointmentMonitor  {
     private String from;
 
     // ogni giorno alle 8, controllo se ci sono appuntamenti PENDING per l'indomani
-    @Scheduled(cron = "0 40 10 * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     @Transactional
     public void requestConfirmation() {
         LocalDateTime startOfTomorrow = LocalDate.now().plusDays(1).atStartOfDay(); // domani all'inizio del giorno
