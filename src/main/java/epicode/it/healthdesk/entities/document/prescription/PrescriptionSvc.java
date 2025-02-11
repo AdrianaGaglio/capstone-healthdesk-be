@@ -49,12 +49,13 @@ public class PrescriptionSvc {
         return "Prescrizione eliminata con successo";
     }
 
+    // registro una nuova prescrizione nel db
     @Transactional
     public Prescription create(MedicalFolder mf, @Valid DocumentCreateRequest request) {
         Prescription p = new Prescription();
         BeanUtils.copyProperties(request, p);
         p.setDate(LocalDate.now());
-        p.setMedicalFolder(mf);
+        p.setMedicalFolder(mf); // lo assegno alla cartella medica
         return prescriptionRepo.save(p);
     }
 }

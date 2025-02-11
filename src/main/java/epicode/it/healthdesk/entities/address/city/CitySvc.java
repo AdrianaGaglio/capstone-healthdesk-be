@@ -23,9 +23,11 @@ public class CitySvc {
     private final CityMapper mapper;
 
 
+    // ricerca di tutte le città
     public List<CityDTO> getCities() {
         HttpClient httpClient = HttpClient.newHttpClient();
 
+        // creo la richiesta
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(java.net.URI.create("https://axqvoqvbfjpaamphztgd.functions.supabase.co/comuni"))
                 .GET()
@@ -35,6 +37,7 @@ public class CitySvc {
 
 
         try {
+            // eseguo la richiesta
             response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -44,6 +47,7 @@ public class CitySvc {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+            // ritorno il risultato della chiamata mappato con i campi che mi servono
             return mapper.toCityDTOList(objectMapper.readValue(response.body(), new TypeReference<List<CityServerResponse>>() {
             }));
         } catch (IOException e) {
@@ -53,13 +57,17 @@ public class CitySvc {
 
 
 
+    // ricerca per codice postale
     public List<CityDTO> findByNameAndPostalCode(String postalCode) {
+        // filtro il risultato di getCities per codice fiscale
         return getCities().stream().filter(c -> c.getPostalCode().equals(postalCode)).toList();
     }
 
+    // ricerca per provincia
     public List<CityDTO> findByProvince(String province) {
         HttpClient httpClient = HttpClient.newHttpClient();
 
+        // creo la richiesta
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(java.net.URI.create("https://axqvoqvbfjpaamphztgd.functions.supabase.co/comuni/provincia/" + province))
                 .GET()
@@ -69,6 +77,7 @@ public class CitySvc {
 
 
         try {
+            // eseguo la richiesta
             response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -78,6 +87,7 @@ public class CitySvc {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+            // ritorno il risultato mappato con i campi che mi servono
             return mapper.toCityDTOList(objectMapper.readValue(response.body(), new TypeReference<List<CityServerResponse>>() {
             }));
         } catch (IOException e) {

@@ -62,7 +62,7 @@ public class EmailMapper {
         values.put("startDate", formattedDate);
         values.put("doctorService", app.getService().getName());
         values.put("doctorName", app.getCalendar().getDoctor().getName() + " " + app.getCalendar().getDoctor().getSurname());
-        values.put("confirm", "http://localhost:4200/");
+        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/102");
         return processTemplate(template, values);
     }
 

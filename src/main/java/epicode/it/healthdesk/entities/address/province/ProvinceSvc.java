@@ -20,9 +20,11 @@ import java.util.List;
 public class ProvinceSvc {
     private final ProvinceMapper mapper;
 
+    // per ottenere tutte le province
     public List<ProvinceDTO> getProvinces() {
         HttpClient httpClient = HttpClient.newHttpClient();
 
+        // creo la richiesta
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create("https://axqvoqvbfjpaamphztgd.functions.supabase.co/province"))
                 .GET()
@@ -31,6 +33,7 @@ public class ProvinceSvc {
         HttpResponse<String> response = null;
 
         try {
+            // eseguo la richiesta
             response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -40,6 +43,7 @@ public class ProvinceSvc {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
+            // ritorno il risultato mappato con i campi che mi servono
             return mapper.toProvinceDTOList(objectMapper.readValue(response.body(), new TypeReference<List<ProvinceServerResponse>>() {
             }));
 
@@ -48,6 +52,7 @@ public class ProvinceSvc {
         }
     }
 
+    // filtro il risultato di getProvince per acronimo della provincia
     public ProvinceDTO getByProvinceAcronym(String acronym) {
         return getProvinces().stream().filter(p -> p.getAcronym().equals(acronym)).findFirst().orElse(null);
     }

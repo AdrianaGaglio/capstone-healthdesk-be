@@ -50,28 +50,36 @@ public class MedicalFolderSvc {
         return "Cartella medica eliminata correttamente";
     }
 
+    // creo cartella medica, viene eseguito contestualmente alla creazione di un paziente
     public MedicalFolder create(Patient p) {
         MedicalFolder mf = new MedicalFolder();
         mf.setPatient(p);
         return medicalFolderRepo.save(mf);
     }
 
+    // ottengo la cartella medica per paziente
     public MedicalFolder getByPatient(Long patientId) {
         return medicalFolderRepo.findFirstByPatientId(patientId);
     }
 
+    // ritorno la cartella medica aggiornata
+    // dopo l'inserimento di una prescrizione
     public MedicalFolder addPrescription(Long id, DocumentCreateRequest request) {
         MedicalFolder mf = getById(id);
         mf.getPrescriptions().add(prescriptionSvc.create(mf, request));
         return medicalFolderRepo.save(mf);
     }
 
+    // ritorno la cartella medica aggiornata
+    // dopo l'inserimento di un nuovo certificato
     public MedicalFolder addCertificate(Long id, DocumentCreateRequest request) {
         MedicalFolder mf = getById(id);
         mf.getDocumentation().add(certificateSvc.create(mf, request));
         return medicalFolderRepo.save(mf);
     }
 
+    // ritorno la cartella medica aggiornata
+    // dopo la cancellazione di una prescrizione
     @Transactional
     public MedicalFolder deletePrescription(Long id, Long prescriptionId) {
         MedicalFolder mf = getById(id);
@@ -81,6 +89,8 @@ public class MedicalFolderSvc {
         return medicalFolderRepo.save(mf);
     }
 
+    // ritorno la cartella medica aggiornata
+    // dopo la cancellazione di un certificato
     @Transactional
     public MedicalFolder deleteCertificate(Long id, Long certificateId) {
         MedicalFolder mf = getById(id);

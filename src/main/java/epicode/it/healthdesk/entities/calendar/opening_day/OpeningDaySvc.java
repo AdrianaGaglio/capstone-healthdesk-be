@@ -26,6 +26,7 @@ public class OpeningDaySvc {
     private final TimeRangeRepo timeRangeRepo;
 
 
+    // genero i giorni della settimana (chiamato contestualmente alla creazione del calendario)
     @Transactional
     public List<OpeningDay> generateDays(Calendar c) {
         List<OpeningDay> days = new ArrayList<>();
@@ -47,16 +48,21 @@ public class OpeningDaySvc {
         return dayRepo.save(day);
     }
 
+    // per cercare il giorno in base al nome
     public OpeningDay getByNameAndCalendarId(Long calendarId, DayOfWeek dayName) {
         return dayRepo.findFirstByNameAndCalendarId(calendarId, dayName);
     }
 
+    // modifica dettagli del giorno della settimana
     @Transactional
     public List<OpeningDay> update(Long id, @Valid List<OpeningDayUpdateRequest> request) {
         List<OpeningDay> days = new ArrayList<>();
+        // ciclo la lista dei giorni della settimana
         request.forEach(r -> {
-            System.out.println("===>" + r);
+            // ottengo il giorno a partire dal suo nome
             OpeningDay day = getByNameAndCalendarId(id, DayOfWeek.valueOf(r.getDayName()));
+
+            // per ogni giorno imposto i vari parametri (stato, ora lavorativa di inizio e fine)
             BeanUtils.copyProperties(r, day);
             if (r.getExtraRange() != null) {
                 if (!timeRangeRepo.existsByOpeningDay(day)) {
@@ -65,11 +71,13 @@ public class OpeningDaySvc {
                     range.setOpeningDay(day);
                     timeRangeRepo.save(range);
                 } else {
+                    // se sono definiti range extra nella richiesta, credo il nuovo range impostando le sue proprietà
                     TimeRange range = timeRangeRepo.findByOpeningDay(day);
                     BeanUtils.copyProperties(r.getExtraRange(), range);
                     timeRangeRepo.save(range);
                 }
             } else {
+                // se non ci sono time range nella richiesta di modifica, cancello tutti quelli salvati a db
                 if (timeRangeRepo.existsByOpeningDay(day)) {
                     timeRangeRepo.delete(timeRangeRepo.findByOpeningDay(day));
                 }
@@ -80,6 +88,7 @@ public class OpeningDaySvc {
         return days;
     }
 
+    // per aggiungere un extra range orario alla giornata
     @Transactional
     public OpeningDay addRange(Long id, @Valid OpeningDayUpdateRequest request) {
         OpeningDay day = getByNameAndCalendarId(id, DayOfWeek.valueOf(request.getDayName()));
@@ -92,6 +101,7 @@ public class OpeningDaySvc {
         return dayRepo.save(day);
     }
 
+    // genera gli slot orari disponibili per la giornata (serve per la risposta al front-end)
     public List<TimeSlot> getSlots(OpeningDay day) {
         List<TimeSlot> slots = new ArrayList<>();
 
@@ -107,6 +117,7 @@ public class OpeningDaySvc {
 
     }
 
+    // genera gli gli slot definiti nell'extra range (serve per la risposta al front end)
     public List<TimeSlot> getExtraRange(OpeningDay day) {
         List<TimeSlot> slots = new ArrayList<>();
         if (day.getRanges().size() > 0) {

@@ -55,6 +55,7 @@ public class DoctorSvc {
         return doctorRepo.findAll();
     }
 
+    // per il momento non serve
     public Page<Doctor> getAllPageable(Pageable pageable) {
         return doctorRepo.findAll(pageable);
     }
@@ -79,10 +80,12 @@ public class DoctorSvc {
         return "Medico eliminato con successo";
     }
 
+    // ricerca per email contenuta in appUser (definito metodo nel repo)
     public Doctor getByEmail(String email) {
         return doctorRepo.findFirstByEmail(email).orElse(null);
     }
 
+    // creazione nuovo medico con assegnazione del calendario
     @Transactional
     public Doctor create(@Valid DoctorRequest request) {
         Doctor d = doctorRepo.save(mapper.fromDoctorRequestToDoctor(request));
@@ -90,6 +93,9 @@ public class DoctorSvc {
         return d;
     }
 
+    // modifica informazioni aggiuntive (servizi, specializzazioni, esperienze e formazione)
+    // le funzioni vengono eseguite nei rispettivi service
+    // ma ritorno il medico aggiornato
     @Transactional
     public Doctor updateAddInfo(Long id, @Valid DoctorUpdateAddInfoRequest request) {
         Doctor d = getById(id);
@@ -123,36 +129,45 @@ public class DoctorSvc {
         return doctorRepo.save(d);
     }
 
+    // ritorno il medico aggiornato dopo la modifica della disponibilità online/in presenza dei servizi
     public Doctor updateServiceAvailability(Long id, Long serviceId) {
         doctorServiceSvc.updateAvailability(serviceId);
         return getById(id);
     }
 
+    // ritorno il medico aggiornato dopo la modifica dello stato dei servizi
     public Doctor updateServiceActivation(Long id, Long serviceId) {
         doctorServiceSvc.updateActivation(serviceId);
         return getById(id);
     }
 
+    // ritorno il medico aggiornato
+
+    // dopo la cancellazione di un servizio
     public Doctor deleteService(Long id, Long serviceId) {
         doctorServiceSvc.delete(serviceId);
         return getById(id);
     }
 
+    // dopo la cancellazione di una formazione
     public Doctor deleteTraining(Long id, Long trainingId) {
         trainingSvc.delete(trainingId);
         return getById(id);
     }
 
+    // dopo la cancellazione di un'esperienza
     public Doctor deleteExperience(Long id, Long experienceId) {
         experienceSvc.delete(experienceId);
         return getById(id);
     }
 
+    // dopo la cancellazione di una specializzazione
     public Doctor deleteSpecialization(Long id, Long specializationId) {
         specializationSvc.delete(specializationId);
         return getById(id);
     }
 
+    // controllo se esiste un codice licenza
     public boolean existsByLicenceNumber(String licenceNumber) {
         return doctorRepo.existsByLicenceNumber(licenceNumber);
     }
@@ -161,11 +176,13 @@ public class DoctorSvc {
         return doctorRepo.findFirstByLicenceNumber(licenceNumber).orElse(null);
     }
 
+    // modifica informazioni personali del medico
     @Transactional
     public Doctor updatePersonalInfo(Long id, @Valid DoctorUpdateRequest request) {
         Doctor d = getById(id);
         BeanUtils.copyProperties(request, d);
 
+        // se viene cambiato il codice di licenza, controllo che non ne esiste uno uguale
         if (existsByLicenceNumber(request.getLicenceNumber()) && findFirstByLicenceNumber(request.getLicenceNumber()).getId() != id) {
             throw new IllegalArgumentException("Codice licenza già utilizzato");
         }

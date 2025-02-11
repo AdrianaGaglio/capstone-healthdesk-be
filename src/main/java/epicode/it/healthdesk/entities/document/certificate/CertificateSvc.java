@@ -53,12 +53,14 @@ public class CertificateSvc {
         return "Documento eliminato con successo";
     }
 
+
+    // registro un nuovo certificato nel db
     @Transactional
     public Certificate create(MedicalFolder mf, @Valid DocumentCreateRequest request) {
-        Certificate p = new Certificate();
-        BeanUtils.copyProperties(request, p);
-        p.setDate(LocalDate.now());
-        p.setMedicalFolder(mf);
-        return certificateRepo.save(p);
+        Certificate c = new Certificate();
+        BeanUtils.copyProperties(request, c);
+        c.setDate(LocalDate.now());
+        c.setMedicalFolder(mf); // lo assegno alla cartella medica
+        return certificateRepo.save(c);
     }
 }

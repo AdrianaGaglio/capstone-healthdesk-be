@@ -57,11 +57,13 @@ public class AppointmentSvc {
         return (int) appointmentRepo.count();
     }
 
+
     public String delete(Long id) {
         Appointment e = getById(id);
         appointmentRepo.delete(e);
         return "Appuntamento eliminato con successo";
     }
+
 
     public String delete(Appointment e) {
         Appointment foundAppointment = getById(e.getId());
@@ -73,6 +75,8 @@ public class AppointmentSvc {
         return appointmentRepo.findFirstByCalendarIdAndStartDate(calendarId, startDate).orElse(null);
     }
 
+
+    // nuovo appuntamento
     @Transactional
     public Appointment create(@Valid AppointmentRequest request) {
         Calendar c = doctorSvc.getById(request.getDoctorId()).getCalendar();
@@ -80,35 +84,42 @@ public class AppointmentSvc {
 
         Appointment app = findFirstByCalendarIdAndStartDate(c.getId(), request.getStartDate());
 
+        // se ci sono appuntamenti in programma che non sono cancellati, lancio l'eccezione
         if (app != null && app.getStatus() != AppointmentStatus.CANCELLED) {
             throw new EntityExistsException("Slot non disponibile");
         }
 
+        // controllo che ora di inizio e fine siano concruenti
         if (request.getEndDate().isBefore(request.getStartDate())) {
             throw new IllegalArgumentException("L'ora di fine precede quella di inizio");
         }
 
         Appointment a = new Appointment();
         BeanUtils.copyProperties(request, a);
-        a.setService(serviceSvc.getById(request.getServiceId()));
-        a.setCalendar(c);
-        a.setMedicalFolder(medicalFolderSvc.getByPatient(request.getPatientId()));
+        a.setService(serviceSvc.getById(request.getServiceId())); // servizio prenotato
+        a.setCalendar(c); // riferimento all'agenda del medico
+        a.setMedicalFolder(medicalFolderSvc.getByPatient(request.getPatientId())); // assegnazione dell'appuntamento alla cartella medica
         if (request.getOnline() == false && request.getDoctorAddressId() == null) {
+            // se visita in presenza, lancio eccezione nel caso in cui manchi l'indirizzo
             throw new IllegalArgumentException("Indirizzo del medico richiesto per visita in presenza");
         }
 
+        // imposto se online o meno
         if (request.getOnline() == true) {
             a.setOnline(true);
         } else {
             a.setOnline(false);
         }
 
+        // se c'è un indirizzo per visita in presenza, allora lo assegno all'appuntamento
         if (request.getDoctorAddressId() != null) {
             a.setDoctorAddress(addressSvc.getById(request.getDoctorAddressId()));
         }
 
+        // l'appuntamento appena creato ha uno stato di default pending
         a.setStatus(AppointmentStatus.PENDING);
 
+        // se il paziente non è già stato assegnato al medico, lo assegno
         Patient p = medicalFolderSvc.getByPatient(request.getPatientId()).getPatient();
         if (!d.getPatients().contains(p)) {
             d.getPatients().add(p);
@@ -121,11 +132,12 @@ public class AppointmentSvc {
         return appointmentRepo.findByService(service);
     }
 
+    // per ottenere i prossimi appuntamenti da mostrare al medico
     public Page<Appointment> findByCalendarNext(Long calendarId, Pageable pageable) {
         Calendar c = calendarRepo.findById(calendarId)
                 .orElseThrow(() -> new EntityNotFoundException("Agenda non trovata"));
 
-        // Il metodo di repository filtra già gli appuntamenti futuri
+
         return appointmentRepo.findByCalendarAndStartDateAfter(
                 c,
                 LocalDateTime.now(),
@@ -141,18 +153,22 @@ public class AppointmentSvc {
         return appointmentRepo.findFirstByStartDateAndEndDate(startDate, endDate);
     }
 
+    // modifica appuntamento da parte del medico
     public Calendar update(Long id, Appointment request) {
         Appointment a = getById(id);
+
+        // aggiorno lo stato
         a.setStatus(request.getStatus());
 
+        // controllo se per le date indicate esiste un appuntamento
         if (existByStartDateAndEndDate(request.getStartDate(), request.getEndDate())) {
             Appointment found = findFirstByStartDateAndEndDate(request.getStartDate(), request.getEndDate());
-            System.out.println(found.getId());
-            System.out.println(request.getId());
+            // se l'appuntamento trovato è diverso da quello che sto modificando, lancio l'eccezione
             if (!found.getId().equals(request.getId()))
                 throw new EntityExistsException("Slot non disponibile");
         }
 
+        // altrimenti imposto le nuove date
         a.setStartDate(request.getStartDate());
         a.setEndDate(request.getEndDate());
 
@@ -160,19 +176,31 @@ public class AppointmentSvc {
         return calendarRepo.findById(a.getCalendar().getId()).orElse(null);
     }
 
+    // per ottenere l'ultima visita effettuata dal paziente
     public Appointment findLastByMedicalFolder(Long patientId) {
         MedicalFolder mf = medicalFolderSvc.getByPatient(patientId);
         return appointmentRepo.findLastByMedicalFolder(mf.getId()).stream().findFirst().orElse(null);
     }
 
+    // cancellazione appuntamento (modifica stato in CANCELLED) --- per il paziente
     public Appointment cancelApp(Long id) {
         Appointment a = getById(id);
         a.setStatus(AppointmentStatus.CANCELLED);
         return appointmentRepo.save(a);
     }
 
+    // modifica date appuntamento --- per il paziente
     public Appointment updateDate(Long id, @Valid AppointmentDateUpdate request) {
         Appointment a = getById(id);
+
+        // controllo se per le date indicate esiste un appuntamento
+        if (existByStartDateAndEndDate(request.getStartDate(), request.getEndDate())) {
+            Appointment found = findFirstByStartDateAndEndDate(request.getStartDate(), request.getEndDate());
+            // se l'appuntamento trovato è diverso da quello che sto modificando, lancio l'eccezione
+            if (!found.getId().equals(request.getId()))
+                throw new EntityExistsException("Slot non disponibile");
+        }
+
         a.setStartDate(request.getStartDate());
         a.setEndDate(request.getEndDate());
         return appointmentRepo.save(a);

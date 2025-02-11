@@ -16,6 +16,7 @@ import java.util.List;
 public class TimeRangeSvc {
     private final TimeRangeRepo timeRangeRepo;
 
+    // ===> non dovrebbero servire, controllare
     public List<TimeRange> getAll() {
         return timeRangeRepo.findAll();
     }
@@ -45,12 +46,15 @@ public class TimeRangeSvc {
         return "Range orario eliminato";
     }
 
+    // elimina la definizione del range orario aggiuntivo
     public String delete(TimeRange e) {
         TimeRange foundTimeRange = getById(e.getId());
         timeRangeRepo.delete(foundTimeRange);
         return "Range orario eliminato";
     }
 
+
+    // gestisce la definizione di un nuovo range orario per un giorno preciso
     @Transactional
     public TimeRange add(OpeningDay day, LocalTime startTime, LocalTime endTime) {
         TimeRange tr = new TimeRange();
