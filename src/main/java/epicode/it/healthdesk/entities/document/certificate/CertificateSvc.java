@@ -2,6 +2,9 @@ package epicode.it.healthdesk.entities.document.certificate;
 
 import epicode.it.healthdesk.entities.document.document.DocumentCreateRequest;
 import epicode.it.healthdesk.entities.document.prescription.Prescription;
+import epicode.it.healthdesk.utilities.email.EmailMapper;
+import epicode.it.healthdesk.utilities.email.EmailRequest;
+import epicode.it.healthdesk.utilities.email.EmailSvc;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -23,6 +26,8 @@ import java.time.LocalDate;
 @Validated
 public class CertificateSvc {
     private final CertificateRepo certificateRepo;
+    private final EmailMapper emailMapper;
+    private final EmailSvc emailSvc;
 
     public List<Certificate> getAll() {
 
@@ -61,6 +66,14 @@ public class CertificateSvc {
         BeanUtils.copyProperties(request, c);
         c.setDate(LocalDate.now());
         c.setMedicalFolder(mf); // lo assegno alla cartella medica
-        return certificateRepo.save(c);
+        c=certificateRepo.save(c);
+
+        EmailRequest mail = new EmailRequest();
+        mail.setTo("infohealthdesk@gmail.com");
+        mail.setSubject("Health Desk - Nuovo documento disponibile");
+        mail.setBody(emailMapper.toNewDocument(mf.getPatient()));
+        emailSvc.sendEmailWithAttachment(mail, c.getFile());
+
+        return c;
     }
 }

@@ -173,6 +173,15 @@ public class EmailMapper {
         return processTemplate(template, values);
     }
 
+    public String toNewDocument(Patient p) {
+        String template = loadTemplate("src/main/resources/templates/new-document.html");
+        Map<String, String> values = new HashMap<>();
+        values.put("user_name", p.getName());
+        values.put("user_surname", p.getSurname());
+        values.put("confirm", website + "/paziente/scheda-personale");
+        return processTemplate(template, values);
+    }
+
     private String loadTemplate(String filePath)  {
         try {
             return new String(Files.readAllBytes(Paths.get(filePath)));

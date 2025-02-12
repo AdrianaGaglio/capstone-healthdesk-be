@@ -4,6 +4,7 @@ import epicode.it.healthdesk.entities.appointment.dto.AppointmentResponseForMedi
 import epicode.it.healthdesk.entities.document.certificate.dto.CertificateResponse;
 import epicode.it.healthdesk.entities.document.prescription.dto.PrescriptionResponse;
 import epicode.it.healthdesk.entities.reminder.Reminder;
+import epicode.it.healthdesk.entities.reminder.dto.ReminderResponse;
 import lombok.Data;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public class MedicalFolderResponse {
     private List<AppointmentResponseForMedicalFolder> appointments;
     private List<PrescriptionResponse> prescriptions;
     private List<CertificateResponse> documentation;
-    private List<Reminder> reminders;
+    private List<ReminderResponse> reminders;
 }

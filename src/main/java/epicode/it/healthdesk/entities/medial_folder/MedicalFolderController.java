@@ -8,7 +8,9 @@ import epicode.it.healthdesk.entities.medial_folder.dto.MedicalFolderMapper;
 import epicode.it.healthdesk.entities.medial_folder.dto.MedicalFolderResponse;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
+import epicode.it.healthdesk.entities.reminder.dto.ReminderRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -98,4 +100,19 @@ public class MedicalFolderController {
 
         return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.deleteCertificate(id, certificateId)));
     }
+
+    @PostMapping("{id}/add-reminder")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    public ResponseEntity<MedicalFolderResponse> addReminder(@PathVariable Long id, @RequestBody ReminderRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            MedicalFolder mf = medicalFolderSvc.getById(id);
+            if (!d.getPatients().contains(mf.getPatient())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+        return new ResponseEntity<>(mapper.toMedicalFolderResponse(medicalFolderSvc.addReminder(id, request)), HttpStatus.CREATED);
+    }
+
 }

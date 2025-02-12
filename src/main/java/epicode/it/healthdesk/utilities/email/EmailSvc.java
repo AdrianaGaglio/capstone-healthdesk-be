@@ -123,7 +123,7 @@ public class EmailSvc {
 
             // Allegare il file come DataSource
             ByteArrayDataSource dataSource = new ByteArrayDataSource(fileStream.readAllBytes(), "application/pdf");
-            helper.addAttachment("prescrizione.pdf", dataSource);
+            helper.addAttachment("documento.pdf", dataSource);
 
             mailSender.send(message);
         } catch (MessagingException e) {

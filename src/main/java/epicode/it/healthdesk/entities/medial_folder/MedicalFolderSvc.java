@@ -6,6 +6,8 @@ import epicode.it.healthdesk.entities.document.document.DocumentCreateRequest;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.document.prescription.Prescription;
 import epicode.it.healthdesk.entities.document.prescription.PrescriptionSvc;
+import epicode.it.healthdesk.entities.reminder.ReminderSvc;
+import epicode.it.healthdesk.entities.reminder.dto.ReminderRequest;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class MedicalFolderSvc {
     private final MedicalFolderRepo medicalFolderRepo;
     private final PrescriptionSvc prescriptionSvc;
     private final CertificateSvc certificateSvc;
+    private final ReminderSvc reminderSvc;
 
     public List<MedicalFolder> getAll() {
         return medicalFolderRepo.findAll();
@@ -97,6 +100,13 @@ public class MedicalFolderSvc {
         Certificate c = certificateSvc.getById(certificateId);
         mf.getDocumentation().remove(c);
         certificateSvc.delete(certificateId);
+        return medicalFolderRepo.save(mf);
+    }
+
+    @Transactional
+    public MedicalFolder addReminder(Long id, ReminderRequest request) {
+        MedicalFolder mf = getById(id);
+        mf.getReminders().add(reminderSvc.create(mf, request));
         return medicalFolderRepo.save(mf);
     }
 
