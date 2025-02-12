@@ -25,6 +25,9 @@ public class OpeningDaySvc {
     private final OpeningDayRepo dayRepo;
     private final TimeRangeRepo timeRangeRepo;
 
+    public List<OpeningDay> getByCalendar(Calendar calendar) {
+        return dayRepo.findAllByCalendar(calendar);
+    }
 
     // genero i giorni della settimana (chiamato contestualmente alla creazione del calendario)
     @Transactional

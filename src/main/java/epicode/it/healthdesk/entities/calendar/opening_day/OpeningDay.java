@@ -37,5 +37,6 @@ public class OpeningDay {
     private List<TimeRange> ranges = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(name = "calendar_id")
     private Calendar calendar;
 }

@@ -1,20 +1,78 @@
-//package epicode.it.healthdesk.entities.appointment;
-//
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.boot.ApplicationArguments;
-//import org.springframework.boot.ApplicationRunner;
-//import org.springframework.core.annotation.Order;
-//import org.springframework.stereotype.Component;
-//
-//@Component
-//@RequiredArgsConstructor
-//@Order(20)
-//public class AppointmentRunner implements ApplicationRunner {
-//    private final AppointmentSvc appointmentSvc;
-//
-//
-//    @Override
-//    public void run(ApplicationArguments args) throws Exception {
-//
-//    }
-//}
+package epicode.it.healthdesk.entities.appointment;
+
+import com.github.javafaker.Faker;
+import epicode.it.healthdesk.entities.address.Address;
+import epicode.it.healthdesk.entities.appointment.dto.AppointmentRequest;
+import epicode.it.healthdesk.entities.doctor.Doctor;
+import epicode.it.healthdesk.entities.doctor.DoctorSvc;
+import epicode.it.healthdesk.entities.patient.Patient;
+import epicode.it.healthdesk.entities.patient.PatientSvc;
+import epicode.it.healthdesk.entities.service.DoctorService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+@Component
+@RequiredArgsConstructor
+@Order(20)
+public class AppointmentRunner implements ApplicationRunner {
+    private final AppointmentSvc appointmentSvc;
+    private final PatientSvc patientSvc;
+    private final DoctorSvc doctorSvc;
+    private final Faker faker;
+
+    @Transactional
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+
+        List<Patient> allPatients = patientSvc.getAll();
+        Doctor d = doctorSvc.getByEmail("infohealthdesk@gmail.com");
+
+        if (appointmentSvc.count() > 0) return;
+
+        for (Patient p : allPatients) {
+            for (int i = 0; i < faker.random().nextInt(3); i++) {
+                AppointmentRequest app = new AppointmentRequest();
+                app.setPatientId(p.getId());
+                app.setDoctorId(d.getId());
+                LocalDateTime start = faker.date().future(30, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                start = start.withHour(faker.random().nextInt(16, 19)).withMinute(0).withSecond(0).withNano(0);
+                app.setStartDate(start);
+                app.setEndDate(app.getStartDate().plusHours(1));
+                app.setOnline(faker.random().nextInt(1, 2) == 1);
+                List<DoctorService> services = d.getServices().stream().filter(s -> s.getOnline() == app.getOnline()).toList();
+                app.setServiceId(services.get(faker.random().nextInt(services.size())).getId());
+                Address address = d.getAddresses().entrySet().iterator().next().getValue();
+                if (!app.getOnline()) app.setDoctorAddressId(address.getId());
+
+                UserDetails user = null;
+
+                try {
+                    boolean isAvailable = !appointmentSvc.existByStartDateAndEndDate(app.getStartDate(), app.getEndDate());
+                    if (isAvailable) {
+                        appointmentSvc.create(app, user);
+                    }
+
+                } catch (EntityExistsException e) {
+                    System.out.println(app.getStartDate());
+                } catch (RuntimeException e) {
+                    System.out.println(app);
+                    throw new RuntimeException(e);
+                }
+            }
+
+        }
+
+    }
+}

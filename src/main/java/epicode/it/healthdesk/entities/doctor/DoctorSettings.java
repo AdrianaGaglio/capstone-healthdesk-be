@@ -2,12 +2,14 @@ package epicode.it.healthdesk.entities.doctor;
 
 import epicode.it.healthdesk.entities.calendar.CalendarSvc;
 import epicode.it.healthdesk.entities.calendar.opening_day.OpeningDay;
+import epicode.it.healthdesk.entities.calendar.opening_day.OpeningDaySvc;
 import epicode.it.healthdesk.entities.calendar.opening_day.dto.OpeningDayUpdateRequest;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorUpdateAddInfoRequest;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorUpdateRequest;
 import epicode.it.healthdesk.entities.service.dto.DoctorServiceRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.cglib.core.Local;
@@ -25,32 +27,40 @@ import java.util.List;
 public class DoctorSettings implements ApplicationRunner {
     private final DoctorSvc doctorSvc;
     private final CalendarSvc calendarSvc;
+    private final OpeningDaySvc openingDaySvc;
 
     @Transactional
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
         Doctor d = doctorSvc.getByEmail("infohealthdesk@gmail.com");
+        List<OpeningDay> allDays = openingDaySvc.getByCalendar(d.getCalendar());
+        List<OpeningDayUpdateRequest> daysRequest = new ArrayList<>();
 
         if (d.getServices().size() > 0) return;
 
-        OpeningDayUpdateRequest tuesday = new OpeningDayUpdateRequest();
-        OpeningDayUpdateRequest thursday = new OpeningDayUpdateRequest();
+        allDays.forEach(day -> {
+            OpeningDayUpdateRequest r = new OpeningDayUpdateRequest();
+            BeanUtils.copyProperties(day, r);
 
-        // sistemare generazione slot orari
-        tuesday.setDayName(DayOfWeek.TUESDAY.toString());
-        tuesday.setStartTime(LocalTime.of(16, 0));
-        tuesday.setEndTime(LocalTime.of(20, 0));
-        tuesday.setIsActive(true);
+            r.setDayName(day.getDayName().toString());
 
-        thursday.setDayName(DayOfWeek.THURSDAY.toString());
-        thursday.setStartTime(LocalTime.of(16, 0));
-        thursday.setEndTime(LocalTime.of(20, 0));
-        thursday.setIsActive(true);
+            if (day.getDayName().equals(DayOfWeek.TUESDAY)) {
+                r.setStartTime(LocalTime.of(16, 0));
+                r.setEndTime(LocalTime.of(20, 0));
+                r.setIsActive(true);
+            }
 
-        List<OpeningDayUpdateRequest> days = new ArrayList<>();
-        days.addAll(List.of(tuesday, thursday));
-        calendarSvc.updateDay(d.getCalendar().getId(), days);
+            if (day.getDayName().equals(DayOfWeek.THURSDAY)) {
+                r.setStartTime(LocalTime.of(16, 0));
+                r.setEndTime(LocalTime.of(20, 0));
+                r.setIsActive(true);
+            }
+
+            daysRequest.add(r);
+        });
+
+        calendarSvc.updateDay(d.getCalendar().getId(), daysRequest);
 
         DoctorUpdateAddInfoRequest request = new DoctorUpdateAddInfoRequest();
 

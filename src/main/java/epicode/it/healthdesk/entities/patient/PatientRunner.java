@@ -58,8 +58,9 @@ public class PatientRunner implements ApplicationRunner {
                 patientRequest.setPhoneNumber(faker.phoneNumber().phoneNumber());
 
                 String surname = patientRequest.getSurname();
-                if (surname.contains("'")) surname.replace("'", "");
-                if (surname.contains(" ")) surname.replace(" ", "");
+                surname = surname.replace("'", "");
+                surname = surname.replace(" ", "");
+                surname = surname.trim();
 
                 request.setEmail(patientRequest.getName().toLowerCase() + "." + surname.toLowerCase() + "@mail.com");
 
@@ -80,10 +81,10 @@ public class PatientRunner implements ApplicationRunner {
 
                     try {
                         appUserSvc.registerPatient(request);
-
                     } catch (RuntimeException e) {
                         System.out.println(e.getMessage());
                         System.out.println(request);
+                        throw new RuntimeException(e);
                     }
                 }
             }
