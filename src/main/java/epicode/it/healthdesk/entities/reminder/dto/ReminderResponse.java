@@ -10,5 +10,6 @@ public class ReminderResponse {
     private String description;
     private String frequency;
     private LocalDate startDate;
-    private LocalDate endDate;
+    private Boolean isActive;
+
 }

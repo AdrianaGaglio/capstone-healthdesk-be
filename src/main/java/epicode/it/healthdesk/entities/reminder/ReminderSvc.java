@@ -35,6 +35,10 @@ public class ReminderSvc {
         return (int) reminderRepo.count();
     }
 
+    public Reminder save(Reminder r) {
+        return reminderRepo.save(r);
+    }
+
     public String delete(Long id) {
         Reminder e = getById(id);
         reminderRepo.delete(e);
@@ -52,7 +56,12 @@ public class ReminderSvc {
         Reminder r = new Reminder();
         BeanUtils.copyProperties(request, r);
         r.setFrequency(Frequency.valueOf(request.getFrequency().toUpperCase()));
+        r.setIsActive(true);
         r.setMedicalFolder(mf);
         return reminderRepo.save(r);
+    }
+
+    public List<Reminder> findByFrequency(Frequency frequency) {
+        return reminderRepo.findByFrequency(frequency);
     }
 }

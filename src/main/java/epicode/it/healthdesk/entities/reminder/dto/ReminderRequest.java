@@ -16,8 +16,6 @@ public class ReminderRequest {
     @NotNull(message = "Data di inizio richiesta")
     private LocalDate startDate;
 
-    private LocalDate endDate;
-
     @NotNull(message =  "Cartella medica richiesta")
     private Long medicalFolderId;
 }

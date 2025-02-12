@@ -24,9 +24,10 @@ public class Reminder {
     @Column(name = "start_date")
     private LocalDate startDate;
 
-    @Column(name = "end_date")
-    private LocalDate endDate;
+    private Boolean isActive;
 
     @ManyToOne
     private MedicalFolder medicalFolder;
+
+    private LocalDate lastSent;
 }

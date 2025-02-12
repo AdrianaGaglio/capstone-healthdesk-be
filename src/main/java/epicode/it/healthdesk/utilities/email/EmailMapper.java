@@ -224,6 +224,15 @@ public class EmailMapper {
         return processTemplate(template, values);
     }
 
+    public String toReminder(Patient p) {
+        String template = loadTemplate("src/main/resources/templates/reminder.html");
+        Map<String, String> values = new HashMap<>();
+        values.put("confirm", website + "/paziente/scheda-personale");
+        values.put("user_name", p.getName());
+        values.put("user_surname", p.getSurname());
+        return processTemplate(template, values);
+    }
+
     private String processTemplate(String template, Map<String, String> values) {
         for (Map.Entry<String, String> entry : values.entrySet()) {
             template = template.replace("{{" + entry.getKey() + "}}", entry.getValue());
