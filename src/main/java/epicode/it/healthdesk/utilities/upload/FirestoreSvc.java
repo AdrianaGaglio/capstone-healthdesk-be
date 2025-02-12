@@ -30,7 +30,7 @@ public class FirestoreSvc {
         String bucketName = firebase.getOptions().getStorageBucket();
 
         // Genera un nome univoco per il file
-        String fileName = "prescriptions/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        String fileName = "documents/" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
         // Crea il BlobInfo senza token di accesso
         BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, fileName)
@@ -44,7 +44,7 @@ public class FirestoreSvc {
             blob.createAcl(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 
             // Restituisce il link pubblico (senza token)
-            return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
+            return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName).trim();
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -75,7 +75,7 @@ public class FirestoreSvc {
         }
 
         // Costruisce e restituisce l'URL pubblico del file caricato
-        return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName);
+        return String.format("https://storage.googleapis.com/%s/%s", bucketName, fileName).trim();
     }
 
 

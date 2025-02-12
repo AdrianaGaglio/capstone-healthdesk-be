@@ -3,6 +3,7 @@ package epicode.it.healthdesk.utilities.email;
 import epicode.it.healthdesk.auth.appuser.AppUser;
 import epicode.it.healthdesk.entities.appointment.Appointment;
 import epicode.it.healthdesk.entities.doctor.Doctor;
+import epicode.it.healthdesk.entities.patient.Patient;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.Local;
@@ -62,7 +63,7 @@ public class EmailMapper {
         values.put("startDate", formattedDate);
         values.put("doctorService", app.getService().getName());
         values.put("doctorName", app.getCalendar().getDoctor().getName() + " " + app.getCalendar().getDoctor().getSurname());
-        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/" + app.getId() + "/true");
+        values.put("confirm", website + "/dettagli-appuntamento/" + app.getId() + "/true");
         return processTemplate(template, values);
     }
 
@@ -77,7 +78,7 @@ public class EmailMapper {
         values.put("startDate", formattedDate);
         values.put("doctorService", app.getService().getName());
         values.put("doctorName", app.getCalendar().getDoctor().getName() + " " + app.getCalendar().getDoctor().getSurname());
-        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/" + app.getId() + "/true");
+        values.put("confirm", website + "/dettagli-appuntamento/" + app.getId() + "/true");
         return processTemplate(template, values);
     }
 
@@ -107,7 +108,7 @@ public class EmailMapper {
                     app.getDoctorAddress().getCity();
         }
         values.put("location",location);
-        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/" + app.getId() + "/true");
+        values.put("confirm", website + "/dettagli-appuntamento/" + app.getId() + "/true");
         return processTemplate(template, values);
     }
 
@@ -130,7 +131,7 @@ public class EmailMapper {
                        app.getDoctorAddress().getCity();
         }
         values.put("location", location);
-        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/" + app.getId() + "/true");
+        values.put("confirm", website +"/dettagli-appuntamento/" + app.getId() + "/true");
         values.put("status", status);
         return processTemplate(template, values);
     }
@@ -158,8 +159,17 @@ public class EmailMapper {
         values.put("location", location);
         values.put("user_name", app.getMedicalFolder().getPatient().getName());
         values.put("user_surname", app.getMedicalFolder().getPatient().getSurname());
-        values.put("confirm", "http://localhost:4200/dettagli-appuntamento/" + app.getId() + "/true");
+        values.put("confirm", website + "/dettagli-appuntamento/" + app.getId() + "/true");
         values.put("doctorService", app.getService().getName());
+        return processTemplate(template, values);
+    }
+
+    public String toNewPrescription(Patient p) {
+        String template = loadTemplate("src/main/resources/templates/new-prescription.html");
+        Map<String, String> values = new HashMap<>();
+        values.put("user_name", p.getName());
+        values.put("user_surname", p.getSurname());
+        values.put("confirm", website + "/paziente/scheda-personale");
         return processTemplate(template, values);
     }
 

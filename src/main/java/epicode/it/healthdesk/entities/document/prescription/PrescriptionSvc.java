@@ -2,6 +2,9 @@ package epicode.it.healthdesk.entities.document.prescription;
 
 import epicode.it.healthdesk.entities.document.document.DocumentCreateRequest;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
+import epicode.it.healthdesk.utilities.email.EmailMapper;
+import epicode.it.healthdesk.utilities.email.EmailRequest;
+import epicode.it.healthdesk.utilities.email.EmailSvc;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,8 @@ import java.util.List;
 @Validated
 public class PrescriptionSvc {
     private final PrescriptionRepo prescriptionRepo;
+    private final EmailMapper emailMapper;
+    private final EmailSvc emailSvc;
 
     public List<Prescription> getAll() {
 
@@ -56,6 +61,16 @@ public class PrescriptionSvc {
         BeanUtils.copyProperties(request, p);
         p.setDate(LocalDate.now());
         p.setMedicalFolder(mf); // lo assegno alla cartella medica
-        return prescriptionRepo.save(p);
+
+
+        p = prescriptionRepo.save(p);
+
+        EmailRequest mail = new EmailRequest();
+        mail.setTo(mf.getPatient().getAppUser().getEmail());
+        mail.setSubject("Health Desk - Nuova prescrizione disponibile");
+        mail.setBody(emailMapper.toNewPrescription(mf.getPatient()));
+        emailSvc.sendEmailWithAttachment(mail, p.getFile());
+
+        return p;
     }
 }

@@ -67,7 +67,7 @@ public class DoctorSettings implements ApplicationRunner {
         List<DoctorServiceRequest> services = new ArrayList<>();
 
         DoctorServiceRequest s1 = new DoctorServiceRequest();
-        s1.setName("Consulenza online");
+        s1.setName("Consulenza");
         s1.setDescription("Consulto volto ad individuare l'eventuale presenza di un problema psicologico/psichiatrico e le sue possibilità di gestione.");
         s1.setOnline(true);
         s1.setPrice(50);
