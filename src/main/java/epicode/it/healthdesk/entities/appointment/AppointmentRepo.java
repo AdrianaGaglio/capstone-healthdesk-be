@@ -44,7 +44,7 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
     List<Appointment> findAllBetween(@Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
 
-
+    List<Appointment> findAllByStartDateBetween(LocalDate start, LocalDate end);
 
 }
 

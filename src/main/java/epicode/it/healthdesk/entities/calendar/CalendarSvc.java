@@ -1,5 +1,9 @@
 package epicode.it.healthdesk.entities.calendar;
 
+import epicode.it.healthdesk.entities.appointment.Appointment;
+import epicode.it.healthdesk.entities.appointment.AppointmentRepo;
+import epicode.it.healthdesk.entities.appointment.AppointmentStatus;
+import epicode.it.healthdesk.entities.appointment.AppointmentSvc;
 import epicode.it.healthdesk.entities.calendar.dto.HolidayRequest;
 import epicode.it.healthdesk.entities.calendar.opening_day.OpeningDaySvc;
 import epicode.it.healthdesk.entities.calendar.opening_day.dto.OpeningDayUpdateRequest;
@@ -75,6 +79,12 @@ public class CalendarSvc {
     // gestione periodi di sospensione del calendario
     public Calendar handleOnHoliday(Long id, HolidayRequest request) {
         Calendar c = getById(id);
+
+        List<Appointment> apps = c.getAppointments().stream().filter(a -> !a.getStatus().equals(AppointmentStatus.CANCELLED) && a.getStartDate().toLocalDate()
+                .isAfter(request.getHolidayDateStart()) && a.getStartDate().toLocalDate().isBefore(request.getHolidayDateEnd())).toList();
+
+        if(apps.size() > 0) throw new IllegalArgumentException("Ci sono appuntamenti prenotati per il periodo previsto, sposta gli appuntamenti prima di impostare questo periodo di sospensione");
+
         c.setOnHoliday(request.getOnHoliday());
         if(!request.getOnHoliday()) {
             c.setHolidayDateStart(null);

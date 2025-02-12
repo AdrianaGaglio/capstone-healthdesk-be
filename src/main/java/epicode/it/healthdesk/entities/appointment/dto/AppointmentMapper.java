@@ -27,8 +27,16 @@ public class AppointmentMapper {
     public AppointmentResponse toAppointmentResponse(Appointment a) {
         AppointmentResponse response = mapper.map(a, AppointmentResponse.class);
         response.setDoctor(doctorMapper.fromDoctorToDoctorResponse(a.getCalendar().getDoctor()));
-        response.setPatient(patientMapper.fromPatientToPatientResponse(a.getMedicalFolder().getPatient()));
-        response.setService(serviceMapper.toDoctorServiceResponse(a.getService()));
+        if (a.getMedicalFolder() != null) {
+            response.setPatient(patientMapper.fromPatientToPatientResponse(a.getMedicalFolder().getPatient()));
+        } else {
+            response.setPatient(null);
+        }
+        if (a.getService() != null) {
+            response.setService(serviceMapper.toDoctorServiceResponse(a.getService()));
+        } else {
+            response.setService(null);
+        }
         response.setStatus(a.getStatus().toString());
         if (a.getDoctorAddress() != null) {
             response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
@@ -46,8 +54,16 @@ public class AppointmentMapper {
 
     public AppointmentResponseForCalendar toAppointmentResponseForCalendar(Appointment a) {
         AppointmentResponseForCalendar response = mapper.map(a, AppointmentResponseForCalendar.class);
-        response.setService(serviceMapper.toDoctorServiceResponse(a.getService()));
-        response.setPatient(patientMapper.toPatientResponseForCalendar(a.getMedicalFolder().getPatient()));
+        if(a.getService()!=null) {
+            response.setService(serviceMapper.toDoctorServiceResponse(a.getService()));
+        } else {
+            response.setService(null);
+        }
+        if(a.getMedicalFolder()!=null) {
+            response.setPatient(patientMapper.toPatientResponseForCalendar(a.getMedicalFolder().getPatient()));
+        } else {
+            response.setPatient(null);
+        }
         response.setStatus(a.getStatus().toString());
         if (a.getDoctorAddress() != null) {
             response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));

@@ -38,6 +38,12 @@ public class AppointmentController {
         return new ResponseEntity<>(mapper.toAppointmentResponse(appointmentSvc.create(request, userDetails)), HttpStatus.CREATED);
     }
 
+    @PostMapping("/block-slot")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<AppointmentResponse> blockSlot(@RequestBody BlockedSlotRequest request) {
+        return ResponseEntity.ok(mapper.toAppointmentResponse(appointmentSvc.blockedSlot(request)));
+    }
+
     // prossimi appuntamenti medico
     @GetMapping("/next/{calendarId}")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")

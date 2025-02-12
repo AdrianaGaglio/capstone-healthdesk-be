@@ -4,6 +4,7 @@ import com.github.javafaker.App;
 import epicode.it.healthdesk.entities.address.AddressSvc;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentDateUpdate;
 import epicode.it.healthdesk.entities.appointment.dto.AppointmentRequest;
+import epicode.it.healthdesk.entities.appointment.dto.BlockedSlotRequest;
 import epicode.it.healthdesk.entities.calendar.Calendar;
 import epicode.it.healthdesk.entities.calendar.CalendarRepo;
 import epicode.it.healthdesk.entities.doctor.Doctor;
@@ -32,6 +33,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,6 +85,34 @@ public class AppointmentSvc {
         return appointmentRepo.findFirstByCalendarIdAndStartDate(calendarId, startDate).orElse(null);
     }
 
+    public Appointment blockedSlot(BlockedSlotRequest request) {
+        Doctor d = doctorSvc.getById(request.getDoctorId());
+        Calendar c = d.getCalendar();
+
+        Appointment app = findFirstByCalendarIdAndStartDate(c.getId(), request.getStartDate());
+        if (app != null && app.getStatus() != AppointmentStatus.CANCELLED) {
+            throw new EntityExistsException("Slot già prenotato");
+        }
+
+        // controllo che ora di inizio e fine siano concruenti
+        if (request.getEndDate().isBefore(request.getStartDate())) {
+            throw new IllegalArgumentException("L'ora di fine precede quella di inizio");
+        }
+
+        if(request.getStartDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Non è possibile bloccare uno slot nel passato");
+        }
+
+        Appointment a = new Appointment();
+        BeanUtils.copyProperties(request, a);
+        a.setService(null); // servizio prenotato
+        a.setCalendar(c); // riferimento all'agenda del medico
+        a.setMedicalFolder(null);
+        a.setOnline(null);
+        a.setDoctorAddress(null);
+        a.setStatus(AppointmentStatus.BLOCKED);
+        return appointmentRepo.save(a);
+    }
 
     // nuovo appuntamento
     @Transactional
@@ -181,6 +211,10 @@ public class AppointmentSvc {
 
     public Appointment findFirstByStartDateAndEndDate(LocalDateTime startDate, LocalDateTime endDate) {
         return appointmentRepo.findFirstByStartDateAndEndDate(startDate, endDate);
+    }
+
+    public List<Appointment> findAllByStartDateBetween(LocalDate start, LocalDate end) {
+        return appointmentRepo.findAllByStartDateBetween(start, end);
     }
 
     // modifica appuntamento da parte del medico
