@@ -25,7 +25,7 @@ public class CalendarSvc {
     // il sistema è predisposto per gestire più calendari
     // in questa situazione specifica il progetto prevede l'utilizzo di un solo calendario
     // metodo per ottenere il calendario per il paziente (cerca tutti i calendari a db e prende il primo)
-    public Calendar getForPatient(){
+    public Calendar getForPatient() {
         return calendarRepo.findAll().stream().findFirst().orElse(null);
     }
 
@@ -80,13 +80,16 @@ public class CalendarSvc {
     public Calendar handleOnHoliday(Long id, HolidayRequest request) {
         Calendar c = getById(id);
 
-        List<Appointment> apps = c.getAppointments().stream().filter(a -> !a.getStatus().equals(AppointmentStatus.CANCELLED) && a.getStartDate().toLocalDate()
-                .isAfter(request.getHolidayDateStart()) && a.getStartDate().toLocalDate().isBefore(request.getHolidayDateEnd())).toList();
+        if (request.getHolidayDateStart() != null && request.getHolidayDateEnd() != null) {
+            List<Appointment> apps = c.getAppointments().stream().filter(a -> !a.getStatus().equals(AppointmentStatus.CANCELLED) && a.getStartDate().toLocalDate()
+                    .isAfter(request.getHolidayDateStart()) && a.getStartDate().toLocalDate().isBefore(request.getHolidayDateEnd())).toList();
 
-        if(apps.size() > 0) throw new IllegalArgumentException("Ci sono appuntamenti prenotati per il periodo previsto, sposta gli appuntamenti prima di impostare questo periodo di sospensione");
+            if (apps.size() > 0)
+                throw new IllegalArgumentException("Ci sono appuntamenti prenotati per il periodo previsto, sposta gli appuntamenti prima di impostare questo periodo di sospensione");
+        }
 
         c.setOnHoliday(request.getOnHoliday());
-        if(!request.getOnHoliday()) {
+        if (!request.getOnHoliday()) {
             c.setHolidayDateStart(null);
             c.setHolidayDateEnd(null);
         } else {

@@ -133,6 +133,10 @@ public class AppointmentSvc {
             throw new IllegalArgumentException("L'ora di fine precede quella di inizio");
         }
 
+        if(request.getStartDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Non é possibile prenotare un appuntamento nel passato");
+        }
+
         Appointment a = new Appointment();
         BeanUtils.copyProperties(request, a);
         a.setService(serviceSvc.getById(request.getServiceId())); // servizio prenotato
