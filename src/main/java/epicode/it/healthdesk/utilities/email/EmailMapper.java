@@ -4,6 +4,7 @@ import epicode.it.healthdesk.auth.appuser.AppUser;
 import epicode.it.healthdesk.entities.appointment.Appointment;
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.patient.Patient;
+import epicode.it.healthdesk.entities.reminder.Reminder;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.Local;
@@ -224,10 +225,11 @@ public class EmailMapper {
         return processTemplate(template, values);
     }
 
-    public String toReminder(Patient p) {
+    public String toReminder(Patient p, Reminder r) {
         String template = loadTemplate("src/main/resources/templates/reminder.html");
         Map<String, String> values = new HashMap<>();
         values.put("confirm", website + "/paziente/scheda-personale");
+        values.put("description", r.getDescription());
         values.put("user_name", p.getName());
         values.put("user_surname", p.getSurname());
         return processTemplate(template, values);
