@@ -6,6 +6,7 @@ import epicode.it.healthdesk.entities.document.document.DocumentCreateRequest;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.document.prescription.Prescription;
 import epicode.it.healthdesk.entities.document.prescription.PrescriptionSvc;
+import epicode.it.healthdesk.entities.reminder.Reminder;
 import epicode.it.healthdesk.entities.reminder.ReminderSvc;
 import epicode.it.healthdesk.entities.reminder.dto.ReminderRequest;
 import jakarta.persistence.EntityNotFoundException;
@@ -103,10 +104,20 @@ public class MedicalFolderSvc {
         return medicalFolderRepo.save(mf);
     }
 
+    // ritorno cartella medica dopo aggiunta reminder
     @Transactional
     public MedicalFolder addReminder(Long id, ReminderRequest request) {
         MedicalFolder mf = getById(id);
         mf.getReminders().add(reminderSvc.create(mf, request));
+        return medicalFolderRepo.save(mf);
+    }
+
+    @Transactional
+    public MedicalFolder removeReminder(Long id, Long reminderId) {
+        MedicalFolder mf = getById(id);
+        Reminder r = reminderSvc.getById(reminderId);
+        mf.getReminders().remove(r);
+        reminderSvc.delete(r);
         return medicalFolderRepo.save(mf);
     }
 

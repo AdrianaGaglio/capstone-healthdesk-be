@@ -101,7 +101,7 @@ public class MedicalFolderController {
         return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.deleteCertificate(id, certificateId)));
     }
 
-    @PostMapping("{id}/add-reminder")
+    @PostMapping("/{id}/add-reminder")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     public ResponseEntity<MedicalFolderResponse> addReminder(@PathVariable Long id, @RequestBody ReminderRequest request, @AuthenticationPrincipal UserDetails userDetails) {
 
@@ -113,6 +113,19 @@ public class MedicalFolderController {
             }
         }
         return new ResponseEntity<>(mapper.toMedicalFolderResponse(medicalFolderSvc.addReminder(id, request)), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}/remove-reminder")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+    public ResponseEntity<MedicalFolderResponse> removeReminder(@PathVariable Long id, @RequestParam Long reminderId, @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            MedicalFolder mf = medicalFolderSvc.getById(id);
+            if (!d.getPatients().contains(mf.getPatient())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+        return ResponseEntity.ok(mapper.toMedicalFolderResponse(medicalFolderSvc.removeReminder(id, reminderId)));
     }
 
 }

@@ -42,53 +42,57 @@ public class PatientRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        if (patientSvc.count() > 0) return;
+
         List<ProvinceDTO> provinces = provinceSvc.getProvinces();
 
-        if (provinces.size() > 0) {
-            for (int i = 0; i < 50; i++) {
-                RegisterRequest request = new RegisterRequest();
 
-                request.setPassword("password");
-                PatientRequest patientRequest = new PatientRequest();
-                patientRequest.setName(faker.name().firstName());
-                patientRequest.setSurname(faker.name().lastName());
-                patientRequest.setTaxId(faker.regexify("[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]"));
-                patientRequest.setBirthDate(faker.date().past(18250, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                patientRequest.setPhoneNumber(faker.phoneNumber().phoneNumber());
+        if(patientSvc.count() == 0) {
+            if (provinces.size() > 0) {
+                for (int i = 0; i < 50; i++) {
+                    RegisterRequest request = new RegisterRequest();
 
-                String surname = patientRequest.getSurname();
-                surname = surname.replace("'", "");
-                surname = surname.replace(" ", "");
-                surname = surname.trim();
+                    request.setPassword("password");
+                    PatientRequest patientRequest = new PatientRequest();
+                    patientRequest.setName(faker.name().firstName());
+                    patientRequest.setSurname(faker.name().lastName());
+                    patientRequest.setTaxId(faker.regexify("[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]"));
+                    patientRequest.setBirthDate(faker.date().past(18250, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    patientRequest.setPhoneNumber(faker.phoneNumber().phoneNumber());
 
-                request.setEmail(patientRequest.getName().toLowerCase() + "." + surname.toLowerCase() + "@mail.com");
+                    String surname = patientRequest.getSurname();
+                    surname = surname.replace("'", "");
+                    surname = surname.replace(" ", "");
+                    surname = surname.trim();
 
-                ProvinceDTO p = provinces.get(faker.random().nextInt(provinces.size()));
-                List<CityDTO> cities = citySvc.findByProvince(p.getName());
+                    request.setEmail(patientRequest.getName().toLowerCase() + "." + surname.toLowerCase() + "@mail.com");
 
-                if (cities.size() > 0) {
-                    CityDTO city = cities.get(faker.random().nextInt(citySvc.findByProvince(p.getName()).size()));
+                    ProvinceDTO p = provinces.get(faker.random().nextInt(provinces.size()));
+                    List<CityDTO> cities = citySvc.findByProvince(p.getName());
 
-                    AddressRequest addressRequest = new AddressRequest();
-                    addressRequest.setStreet(faker.address().streetName());
-                    addressRequest.setStreetNumber(faker.address().streetAddressNumber());
-                    addressRequest.setProvinceAcronym(p.getAcronym());
-                    addressRequest.setCity(city.getName());
-                    addressRequest.setPostalCode(city.getPostalCode());
-                    patientRequest.setAddress(addressRequest);
-                    request.setPatient(patientRequest);
+                    if (cities.size() > 0) {
+                        CityDTO city = cities.get(faker.random().nextInt(citySvc.findByProvince(p.getName()).size()));
 
-                    try {
-                        appUserSvc.registerPatient(request);
-                    } catch (RuntimeException e) {
-                        System.out.println(e.getMessage());
-                        System.out.println(request);
-                        throw new RuntimeException(e);
+                        AddressRequest addressRequest = new AddressRequest();
+                        addressRequest.setStreet(faker.address().streetName());
+                        addressRequest.setStreetNumber(faker.address().streetAddressNumber());
+                        addressRequest.setProvinceAcronym(p.getAcronym());
+                        addressRequest.setCity(city.getName());
+                        addressRequest.setPostalCode(city.getPostalCode());
+                        patientRequest.setAddress(addressRequest);
+                        request.setPatient(patientRequest);
+
+                        try {
+                            appUserSvc.registerPatient(request);
+                        } catch (RuntimeException e) {
+                            System.out.println(e.getMessage());
+                            System.out.println(request);
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
-            }
 
+            }
         }
+
     }
 }

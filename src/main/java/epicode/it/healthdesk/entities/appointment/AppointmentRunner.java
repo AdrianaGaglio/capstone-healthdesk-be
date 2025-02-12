@@ -39,40 +39,41 @@ public class AppointmentRunner implements ApplicationRunner {
         List<Patient> allPatients = patientSvc.getAll();
         Doctor d = doctorSvc.getByEmail("infohealthdesk@gmail.com");
 
-        if (appointmentSvc.count() > 0) return;
+        if (appointmentSvc.count() == 0) {
+            for (Patient p : allPatients) {
+                for (int i = 0; i < faker.random().nextInt(3); i++) {
+                    AppointmentRequest app = new AppointmentRequest();
+                    app.setPatientId(p.getId());
+                    app.setDoctorId(d.getId());
+                    LocalDateTime start = faker.date().future(30, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    start = start.withHour(faker.random().nextInt(16, 19)).withMinute(0).withSecond(0).withNano(0);
+                    app.setStartDate(start);
+                    app.setEndDate(app.getStartDate().plusHours(1));
+                    app.setOnline(faker.random().nextInt(1, 2) == 1);
+                    List<DoctorService> services = d.getServices().stream().filter(s -> s.getOnline() == app.getOnline()).toList();
+                    app.setServiceId(services.get(faker.random().nextInt(services.size())).getId());
+                    Address address = d.getAddresses().entrySet().iterator().next().getValue();
+                    if (!app.getOnline()) app.setDoctorAddressId(address.getId());
 
-        for (Patient p : allPatients) {
-            for (int i = 0; i < faker.random().nextInt(3); i++) {
-                AppointmentRequest app = new AppointmentRequest();
-                app.setPatientId(p.getId());
-                app.setDoctorId(d.getId());
-                LocalDateTime start = faker.date().future(30, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-                start = start.withHour(faker.random().nextInt(16, 19)).withMinute(0).withSecond(0).withNano(0);
-                app.setStartDate(start);
-                app.setEndDate(app.getStartDate().plusHours(1));
-                app.setOnline(faker.random().nextInt(1, 2) == 1);
-                List<DoctorService> services = d.getServices().stream().filter(s -> s.getOnline() == app.getOnline()).toList();
-                app.setServiceId(services.get(faker.random().nextInt(services.size())).getId());
-                Address address = d.getAddresses().entrySet().iterator().next().getValue();
-                if (!app.getOnline()) app.setDoctorAddressId(address.getId());
+                    UserDetails user = null;
 
-                UserDetails user = null;
+                    try {
+                        boolean isAvailable = !appointmentSvc.existByStartDateAndEndDate(app.getStartDate(), app.getEndDate());
+                        if (isAvailable) {
+                            appointmentSvc.create(app, user);
+                        }
 
-                try {
-                    boolean isAvailable = !appointmentSvc.existByStartDateAndEndDate(app.getStartDate(), app.getEndDate());
-                    if (isAvailable) {
-                        appointmentSvc.create(app, user);
+                    } catch (EntityExistsException e) {
+                        System.out.println(app.getStartDate());
+                    } catch (RuntimeException e) {
+                        System.out.println(app);
+                        throw new RuntimeException(e);
                     }
-
-                } catch (EntityExistsException e) {
-                    System.out.println(app.getStartDate());
-                } catch (RuntimeException e) {
-                    System.out.println(app);
-                    throw new RuntimeException(e);
                 }
-            }
 
+            }
         }
+
 
     }
 }

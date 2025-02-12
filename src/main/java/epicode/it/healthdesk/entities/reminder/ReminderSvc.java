@@ -42,13 +42,13 @@ public class ReminderSvc {
     public String delete(Long id) {
         Reminder e = getById(id);
         reminderRepo.delete(e);
-        return "Reminder deleted successfully";
+        return "Reminder cancellato con successo!";
     }
 
     public String delete(Reminder e) {
         Reminder foundReminder = getById(e.getId());
         reminderRepo.delete(foundReminder);
-        return "Reminder deleted successfully";
+        return "Reminder cancellato con successo!";
     }
 
     public Reminder create(MedicalFolder mf, @Valid ReminderRequest request) {
@@ -64,4 +64,6 @@ public class ReminderSvc {
     public List<Reminder> findByFrequency(Frequency frequency) {
         return reminderRepo.findByFrequency(frequency);
     }
+
+
 }

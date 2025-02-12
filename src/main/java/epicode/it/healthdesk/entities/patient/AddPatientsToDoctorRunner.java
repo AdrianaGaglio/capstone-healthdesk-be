@@ -36,13 +36,15 @@ public class AddPatientsToDoctorRunner implements ApplicationRunner {
 
         Doctor d = doctorSvc.getByEmail("infohealthdesk@gmail.com");
 
-        if (d.getPatients().size() > 0) return;
-
-        List<Patient> patients = patientSvc.getAll();
-        for (Patient p : patients) {
-            d.getPatients().add(p);
-            doctorSvc.save(d);
+        if(d.getPatients().size() == 0) {
+            List<Patient> patients = patientSvc.getAll();
+            for (Patient p : patients) {
+                d.getPatients().add(p);
+                doctorSvc.save(d);
+            }
         }
+
+
 
     }
 }
