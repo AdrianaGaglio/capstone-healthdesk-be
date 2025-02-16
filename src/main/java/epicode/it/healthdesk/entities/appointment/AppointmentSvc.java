@@ -114,6 +114,11 @@ public class AppointmentSvc {
         return appointmentRepo.save(a);
     }
 
+    public void unlockSlot(Long id) {
+        Appointment a = getById(id);
+        delete(a);
+    }
+
     // nuovo appuntamento
     @Transactional
     public Appointment create(@Valid AppointmentRequest request, UserDetails userDetails) {

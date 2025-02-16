@@ -44,6 +44,15 @@ public class AppointmentController {
         return ResponseEntity.ok(mapper.toAppointmentResponse(appointmentSvc.blockedSlot(request)));
     }
 
+    @PostMapping("/unlock-slot")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<Map<String,String>> unlock(@RequestParam Long id) {
+        appointmentSvc.unlockSlot(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Slot orario sbloccato");
+        return ResponseEntity.ok(response);
+    }
+
     // prossimi appuntamenti medico
     @GetMapping("/next/{calendarId}")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")

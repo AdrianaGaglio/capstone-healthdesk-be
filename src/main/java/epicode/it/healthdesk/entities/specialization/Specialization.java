@@ -17,6 +17,7 @@ public class Specialization {
     @Column(nullable = false)
     private String name;
 
+    @Column(length = 1000)
     private String description;
 
     private LocalDate date;

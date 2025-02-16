@@ -17,8 +17,6 @@ public class PatientRequest {
     @NotNull(message = "Cognome richiesto")
     private String surname;
 
-    private String avatar;
-
     @Pattern(regexp = "^[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]$", message = "Codice fiscale non valido")
     private String taxId;
 
@@ -27,6 +25,7 @@ public class PatientRequest {
     private LocalDate birthDate;
 
     @NotNull(message = "Numero di telefono richiesto")
+    @Pattern(regexp = "^\\+?\\d{6,15}$", message = "Numero di telefono non valido")
     private String phoneNumber;
 
     private AddressRequest address;
