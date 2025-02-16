@@ -18,6 +18,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cglib.core.Local;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,6 +38,7 @@ import java.util.Set;
 public class AppUserSvc {
     private final AppUserRepo appUserRepo;
     private final PasswordEncoder pwdEncoder;
+    private final AuthCodeRepo authCodeRepo;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final PatientSvc patientSvc;
@@ -44,6 +46,10 @@ public class AppUserSvc {
     private final GeneralUserRepo generalUserRepo;
     private final EmailSvc emailSvc;
     private final EmailMapper emailMapper;
+
+    public int count() {
+        return (int) appUserRepo.count();
+    }
 
     @Transactional
     public Patient registerPatient(@Valid RegisterRequest request) {
@@ -79,24 +85,37 @@ public class AppUserSvc {
         return p;
     }
 
+    @Transactional
     // metodo per la registrazione di un nuovo amministratore
     public AppUser registerAdmin(@Valid RegisterRequest request) {
         if (appUserRepo.existsByEmail(request.getEmail())) {
             throw new EntityExistsException("Email già in uso");
         }
 
+        AuthCode authCode = authCodeRepo.findByEmail(request.getEmail());
+
+        if(authCode == null || !authCode.getCode().equals(request.getCode()) || !authCode.getValid()) throw new AccessDeniedException("Accesso negato! Inserisci un codice valido");
+
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
         appUser.setPassword(pwdEncoder.encode(request.getPassword()));
         appUser.setRoles(Set.of(Role.ROLE_ADMIN));
-
+        authCode.setValid(false);
+        authCodeRepo.save(authCode);
         return appUserRepo.save(appUser);
     }
 
+    public String generateAuthCode(String email) {
+        AuthCode authCode = new AuthCode();
+        authCode.setEmail(email);
+        authCode.setValid(true);
+        authCodeRepo.save(authCode);
+        return authCode.getCode();
+    }
 
     // metodo per la registrazione di un nuovo medico
     @Transactional
-    public String registerDoctor(@Valid RegisterDoctorRequest request) {
+    public Doctor registerDoctor(@Valid RegisterDoctorRequest request) {
 
         // controllo se l'email è già registrata
         if (appUserRepo.existsByEmail(request.getEmail())) {
@@ -114,7 +133,7 @@ public class AppUserSvc {
         d.setAppUser(appUser);
         appUser.setGeneralUser(d);
 
-        return "Medico registrato con successo";
+        return d;
     }
 
     // cerca utente per email
@@ -132,7 +151,9 @@ public class AppUserSvc {
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            u.getGeneralUser().setLastSeenOnline(LocalDate.now());
+            if (userDetails.getAuthorities().stream().anyMatch(a -> !a.getAuthority().equals("ROLE_ADMIN"))) {
+                u.getGeneralUser().setLastSeenOnline(LocalDate.now());
+            }
             appUserRepo.save(u);
             return jwtTokenUtil.generateToken(userDetails);
         } catch (AuthenticationException e) {

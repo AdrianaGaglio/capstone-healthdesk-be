@@ -12,6 +12,8 @@ public class RegisterRequest {
 
     private String password;
 
+    private String code;
+
     private PatientRequest patient;
 
     public RegisterRequest() {

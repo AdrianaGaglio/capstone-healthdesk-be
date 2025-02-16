@@ -1,9 +1,7 @@
 package epicode.it.healthdesk.entities.doctor;
 
-import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
-import epicode.it.healthdesk.entities.doctor.dto.DoctorResponse;
-import epicode.it.healthdesk.entities.doctor.dto.DoctorUpdateAddInfoRequest;
-import epicode.it.healthdesk.entities.doctor.dto.DoctorUpdateRequest;
+import epicode.it.healthdesk.auth.dto.RegisterDoctorRequest;
+import epicode.it.healthdesk.entities.doctor.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +34,16 @@ public class DoctorController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('DOCTOR')")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<DoctorResponse> getDoctor(@AuthenticationPrincipal UserDetails userDetails) {
-        Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
-        return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.getById(d.getId())));
+
+        if(userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))){
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.getById(d.getId())));
+        } else {
+            return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.getAll().stream().findFirst().orElse(null)));
+        }
+
     }
 
     @DeleteMapping("/{id}")
@@ -61,4 +65,6 @@ public class DoctorController {
     public ResponseEntity<DoctorResponse> updatePersonalInfo(@PathVariable Long id, @RequestBody DoctorUpdateRequest request) {
         return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.updatePersonalInfo(id, request)));
     }
+
+
 }

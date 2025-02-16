@@ -12,11 +12,12 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Consente tutte le richieste su tutti gli endpoint
-                        .allowedOrigins("*") // Consente richieste da qualsiasi origine
+                registry.addMapping("/api/**")// Consente tutte le richieste su tutti gli endpoint
+                        .allowedOrigins("http://localhost:4200")
+//                        .allowedOrigins("*")// Consente richieste da qualsiasi origine
                         .allowedMethods("*") // Consente tutti i metodi (GET, POST, PUT, DELETE, PATCH, OPTIONS)
                         .allowedHeaders("*") // Consente tutti gli header
-                        .allowCredentials(false); // Consente l'invio di credenziali, mettere false se allowedOrigins è "*"
+                        .allowCredentials(true); // Consente l'invio di credenziali, mettere false se allowedOrigins è "*"
             }
         };
     }

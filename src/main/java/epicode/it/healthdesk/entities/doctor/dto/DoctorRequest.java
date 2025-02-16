@@ -1,6 +1,7 @@
 package epicode.it.healthdesk.entities.doctor.dto;
 
 import epicode.it.healthdesk.entities.address.dto.AddressRequestForDoctor;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
@@ -19,6 +20,9 @@ public class DoctorRequest {
     private String surname;
 
     private String avatar;
+
+    @Email(message = "Email non valida")
+    private String email;
 
     @NotNull(message = "Numero di telefono richiesto")
     private String phoneNumber;

@@ -1,6 +1,8 @@
 package epicode.it.healthdesk.auth.appuser;
 
 import epicode.it.healthdesk.auth.dto.RegisterRequest;
+import epicode.it.healthdesk.utilities.email.EmailRequest;
+import epicode.it.healthdesk.utilities.email.EmailSvc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -15,17 +17,24 @@ import java.util.Optional;
 @Order(1)
 public class AuthRunner implements ApplicationRunner {
     private final AppUserSvc appUserSvc;
-
     private final PasswordEncoder pwdEncoder;
+    private final EmailSvc emailSvc;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        Optional<AppUser> admin = appUserSvc.findByEmail("admin@mail.com");
-        if (admin.isEmpty()) {
-            RegisterRequest adminRequest = new RegisterRequest("admin@mail.com", "adminpwd");
-            appUserSvc.registerAdmin(adminRequest);
-        }
+//        String code = appUserSvc.generateAuthCode("adriana.gaglio@gmail.com");
+//        EmailRequest mail = new EmailRequest();
+//        mail.setTo("adriana.gaglio@gmail.com");
+//        mail.setSubject("Health Desk - Registrazione amministratore");
+//        mail.setBody("Codice autorizzazione: " + code);
+//        emailSvc.sendEmail(mail);
+
+//        Optional<AppUser> admin = appUserSvc.findByEmail("admin@mail.com");
+//        if (admin.isEmpty()) {
+//            RegisterRequest adminRequest = new RegisterRequest("admin@mail.com", "adminpwd");
+//            appUserSvc.registerAdmin(adminRequest);
+//        }
 
 
 //        Optional<AppUser> doctor = appUserSvc.findByEmail("doctor@mail.com");

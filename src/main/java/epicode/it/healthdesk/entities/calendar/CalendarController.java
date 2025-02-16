@@ -10,6 +10,7 @@ import epicode.it.healthdesk.entities.calendar.opening_day.dto.OpeningDayUpdateR
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,7 +19,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/calendar")
@@ -29,20 +32,32 @@ public class CalendarController {
     private final OpeningDaySvc daySvc;
     private final DoctorSvc doctorSvc;
 
-    // calendario per il medico
-    @GetMapping
-    @PreAuthorize("hasRole('DOCTOR')")
-    public ResponseEntity<CalendarResponse> get(@AuthenticationPrincipal UserDetails userDetails) {
-
-        Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
-
-        return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.getByDoctor(d)), HttpStatus.OK);
+    @GetMapping("/check-db")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Boolean>> checkDb() {
+        Map<String, Boolean> response = new HashMap();
+        response.put("configurated", calendarSvc.count()>0);
+        return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<CalendarResponse> getById(@PathVariable Long id) {
-//        return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.getById(id)));
-//    }
+
+    // calendario per il medico
+    @GetMapping
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+    public ResponseEntity<CalendarResponse> get(@AuthenticationPrincipal UserDetails userDetails) {
+
+        if(userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))){
+        Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+        return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.getByDoctor(d)), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(mapper.toCalendarResponse(calendarSvc.getAll()), HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CalendarResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(mapper.toCalendarResponse(calendarSvc.getById(id)));
+    }
 
     // calendario per il paziente (anche non loggato)
     @GetMapping("/for-patient")

@@ -22,6 +22,14 @@ public class CalendarSvc {
     private final CalendarRepo calendarRepo;
     private final OpeningDaySvc daySvc;
 
+    public Calendar getAll() {
+        return calendarRepo.findAll().stream().findFirst().orElse(null);
+    }
+
+    public int count() {
+        return (int) calendarRepo.count();
+    }
+
     // il sistema è predisposto per gestire più calendari
     // in questa situazione specifica il progetto prevede l'utilizzo di un solo calendario
     // metodo per ottenere il calendario per il paziente (cerca tutti i calendari a db e prende il primo)
