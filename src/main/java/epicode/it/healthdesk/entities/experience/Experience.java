@@ -14,13 +14,13 @@ public class Experience {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date")
     private LocalDate startDate;
 
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String name;
 
     @Column(length = 1000)

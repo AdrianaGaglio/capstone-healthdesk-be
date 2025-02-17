@@ -92,16 +92,16 @@ public class AppUserSvc {
             throw new EntityExistsException("Email già in uso");
         }
 
-        AuthCode authCode = authCodeRepo.findByEmail(request.getEmail());
+//        AuthCode authCode = authCodeRepo.findByEmail(request.getEmail());
 
-        if(authCode == null || !authCode.getCode().equals(request.getCode()) || !authCode.getValid()) throw new AccessDeniedException("Accesso negato! Inserisci un codice valido");
+//        if(authCode == null || !authCode.getCode().equals(request.getCode()) || !authCode.getValid()) throw new AccessDeniedException("Accesso negato! Inserisci un codice valido");
 
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
         appUser.setPassword(pwdEncoder.encode(request.getPassword()));
         appUser.setRoles(Set.of(Role.ROLE_ADMIN));
-        authCode.setValid(false);
-        authCodeRepo.save(authCode);
+//        authCode.setValid(false);
+//        authCodeRepo.save(authCode);
         return appUserRepo.save(appUser);
     }
 

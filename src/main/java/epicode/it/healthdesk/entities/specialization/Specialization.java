@@ -14,7 +14,7 @@ public class Specialization {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String name;
 
     @Column(length = 1000)
