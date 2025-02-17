@@ -23,12 +23,12 @@ public class AuthRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-//        String code = appUserSvc.generateAuthCode("adriana.gaglio@gmail.com");
-//        EmailRequest mail = new EmailRequest();
-//        mail.setTo("adriana.gaglio@gmail.com");
-//        mail.setSubject("Health Desk - Registrazione amministratore");
-//        mail.setBody("Codice autorizzazione: " + code);
-//        emailSvc.sendEmail(mail);
+        String code = appUserSvc.generateAuthCode("adriana.gaglio@gmail.com");
+        EmailRequest mail = new EmailRequest();
+        mail.setTo("adriana.gaglio@gmail.com");
+        mail.setSubject("Health Desk - Registrazione amministratore");
+        mail.setBody("Codice autorizzazione: " + code);
+        emailSvc.sendEmail(mail);
 
 //        Optional<AppUser> admin = appUserSvc.findByEmail("admin@mail.com");
 //        if (admin.isEmpty()) {

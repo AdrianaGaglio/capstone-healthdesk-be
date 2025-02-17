@@ -32,15 +32,6 @@ public class CalendarController {
     private final OpeningDaySvc daySvc;
     private final DoctorSvc doctorSvc;
 
-    @GetMapping("/check-db")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Map<String, Boolean>> checkDb() {
-        Map<String, Boolean> response = new HashMap();
-        response.put("configurated", calendarSvc.count()>0);
-        return ResponseEntity.ok(response);
-    }
-
-
     // calendario per il medico
     @GetMapping
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")

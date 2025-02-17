@@ -34,10 +34,17 @@ public class AuthController {
     private final GeneralUserRepo generalUserRepo;
     private final JwtTokenUtil jwtTokenUtil;
 
-    @GetMapping("/check-db")
+    @GetMapping("/count")
     public ResponseEntity<Map<String, Boolean>> count() {
         Map<String, Boolean> response = new HashMap<>();
         response.put("configured", appUserSvc.count() > 0);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/check-db")
+    public ResponseEntity<Map<String, Boolean>> checkDb() {
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("configured", appUserSvc.count() > 0 && doctorSvc.count() > 0);
         return ResponseEntity.ok(response);
     }
 
