@@ -29,4 +29,6 @@ public class PatientRequest {
     private String phoneNumber;
 
     private AddressRequest address;
+
+    private LocalDate creationDate;
 }

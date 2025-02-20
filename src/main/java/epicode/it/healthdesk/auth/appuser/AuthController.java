@@ -35,6 +35,7 @@ public class AuthController {
     private final JwtTokenUtil jwtTokenUtil;
 
     @GetMapping("/count")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Map<String, Boolean>> count() {
         Map<String, Boolean> response = new HashMap<>();
         response.put("configured", appUserSvc.count() > 0);
@@ -42,6 +43,7 @@ public class AuthController {
     }
 
     @GetMapping("/check-db")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Map<String, Boolean>> checkDb() {
         Map<String, Boolean> response = new HashMap<>();
         response.put("configured", appUserSvc.count() > 0 && doctorSvc.count() > 0);

@@ -58,6 +58,7 @@ public class PatientRunner implements ApplicationRunner {
                     patientRequest.setTaxId(faker.regexify("[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]"));
                     patientRequest.setBirthDate(faker.date().past(18250, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                     patientRequest.setPhoneNumber(faker.numerify("+###########"));
+                    patientRequest.setCreationDate(faker.date().past(90, TimeUnit.DAYS).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
                     String surname = patientRequest.getSurname();
                     surname = surname.replace("'", "");

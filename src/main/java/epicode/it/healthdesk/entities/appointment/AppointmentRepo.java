@@ -2,6 +2,7 @@ package epicode.it.healthdesk.entities.appointment;
 
 import epicode.it.healthdesk.entities.address.Address;
 import epicode.it.healthdesk.entities.calendar.Calendar;
+import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.service.DoctorService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,8 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
     // cerco il primo appuntamento per calendario e data inizio appuntamento
     @Query("SELECT a From Appointment a WHERE a.calendar.id = :calendarId AND a.startDate = :startDate")
     public Optional<Appointment> findFirstByCalendarIdAndStartDate(@Param("calendarId") Long calendarId, @Param("startDate") LocalDateTime startDate);
+
+
 
     // cerco gli appuntamenti per servizio prenotato
     public List<Appointment> findByService(DoctorService service);

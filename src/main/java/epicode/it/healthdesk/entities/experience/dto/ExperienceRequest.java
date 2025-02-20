@@ -10,6 +10,7 @@ import java.time.LocalDate;
 public class ExperienceRequest {
     @NotNull(message="Data esperienza curriculare richiesta")
     private LocalDate startDate;
+
     private LocalDate endDate;
 
     @NotNull(message="Nome esperienza curriculare richiesta")

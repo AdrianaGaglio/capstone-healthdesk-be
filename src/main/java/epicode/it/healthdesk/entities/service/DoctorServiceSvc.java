@@ -33,7 +33,7 @@ public class DoctorServiceSvc {
         DoctorService s = new DoctorService();
         BeanUtils.copyProperties(request, s);
         s.setDoctor(d);
-        s.setIsActive(false);
+        s.setIsActive(request.getIsActive() == null ? false : true);
         if(request.getOnline() == null) s.setOnline(false);
         return serviceRepo.save(s);
     }

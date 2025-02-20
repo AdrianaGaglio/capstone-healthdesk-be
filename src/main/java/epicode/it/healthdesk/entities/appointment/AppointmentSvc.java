@@ -99,7 +99,7 @@ public class AppointmentSvc {
             throw new IllegalArgumentException("L'ora di fine precede quella di inizio");
         }
 
-        if(request.getStartDate().isBefore(LocalDateTime.now())) {
+        if (request.getStartDate().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Non è possibile bloccare uno slot nel passato");
         }
 
@@ -122,7 +122,6 @@ public class AppointmentSvc {
     // nuovo appuntamento
     @Transactional
     public Appointment create(@Valid AppointmentRequest request, UserDetails userDetails) {
-
         Calendar c = doctorSvc.getById(request.getDoctorId()).getCalendar();
         Doctor d = doctorSvc.getById(request.getDoctorId());
 
@@ -138,9 +137,9 @@ public class AppointmentSvc {
             throw new IllegalArgumentException("L'ora di fine precede quella di inizio");
         }
 
-        if(request.getStartDate().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Non é possibile prenotare un appuntamento nel passato");
-        }
+//        if (request.getStartDate().isBefore(LocalDateTime.now())) {
+//            throw new IllegalArgumentException("Non é possibile prenotare un appuntamento nel passato");
+//        }
 
         Appointment a = new Appointment();
         BeanUtils.copyProperties(request, a);
@@ -165,7 +164,7 @@ public class AppointmentSvc {
         }
 
         // l'appuntamento appena creato ha uno stato di default pending
-        a.setStatus(AppointmentStatus.PENDING);
+        if (a.getStatus() == null) a.setStatus(AppointmentStatus.PENDING);
 
         // se il paziente non è già stato assegnato al medico, lo assegno
         Patient p = medicalFolderSvc.getByPatient(request.getPatientId()).getPatient();
@@ -252,7 +251,7 @@ public class AppointmentSvc {
         changeDateEmail.setSubject("Health Desk - Modifica data appuntamento");
 
 
-        if(!a.getStartDate().equals(request.getStartDate())) {
+        if (!a.getStartDate().equals(request.getStartDate())) {
             // imposto le nuove date
             a.setStartDate(request.getStartDate());
             a.setEndDate(request.getEndDate());
@@ -287,7 +286,7 @@ public class AppointmentSvc {
         mailForDoctor.setSubject(subject);
         mailForPatient.setSubject(subject);
 
-        if(userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_DOCTOR"))) {
+        if (userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_DOCTOR"))) {
             mailForPatient.setTo(a.getMedicalFolder().getPatient().getAppUser().getEmail());
             mailForPatient.setBody(emailMapper.toAppCancellationForUser(a));
             emailSvc.sendEmailHtml(mailForPatient);
@@ -308,10 +307,10 @@ public class AppointmentSvc {
         Appointment a = getById(id);
         a.setStatus(AppointmentStatus.CONFIRMED);
 
-        if(userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_PATIENT"))) {
+        if (userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_PATIENT"))) {
             EmailRequest mail = new EmailRequest();
             mail.setTo(a.getCalendar().getDoctor().getAppUser().getEmail());
-            mail.setSubject("Health Desk - Conferma appuntamento" );
+            mail.setSubject("Health Desk - Conferma appuntamento");
             mail.setBody(emailMapper.toAppointmentStatusChange(a, "confermato"));
             emailSvc.sendEmailHtml(mail);
         }

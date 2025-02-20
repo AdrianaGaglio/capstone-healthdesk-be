@@ -9,9 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class FirestoreConfig {
@@ -20,28 +19,25 @@ public class FirestoreConfig {
     @Value("${spring.firestore.bucketName}")
     private String bucketName;
 
+    @Autowired
+    @Value("${spring.firestore.config}")
+    private String firestoreConfig;
+
     @Bean
     public FirebaseApp firebaseApp() {
-        FileInputStream serviceAccount =
-                null;
-        try {
-            serviceAccount = new FileInputStream("src/main/resources/healt-desk-7d46c-firebase-adminsdk-fbsvc-3d15d25b7b.json");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        try (InputStream serviceAccount =
+                     new ByteArrayInputStream(firestoreConfig.getBytes(StandardCharsets.UTF_8))) {
 
-        FirebaseOptions options = null;
-
-        try {
-            options = new FirebaseOptions.Builder()
+            FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .setStorageBucket(bucketName)
                     .build();
+
+            return FirebaseApp.initializeApp(options);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        return FirebaseApp.initializeApp(options);
     }
 
     @Bean

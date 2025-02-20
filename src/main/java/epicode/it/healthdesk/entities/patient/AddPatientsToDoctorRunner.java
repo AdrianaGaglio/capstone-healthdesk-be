@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
-@Order(10)
+@Order(6)
 @RequiredArgsConstructor
 public class AddPatientsToDoctorRunner implements ApplicationRunner {
     private final DoctorSvc doctorSvc;

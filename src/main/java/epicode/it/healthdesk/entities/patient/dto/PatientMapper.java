@@ -32,7 +32,7 @@ public class PatientMapper {
     public Patient fromPatientRequestToPatient(PatientRequest request) {
         Patient p = new Patient();
         BeanUtils.copyProperties(request, p);
-        p.setCreationDate(LocalDate.now());
+        p.setCreationDate(p.getCreationDate() == null ? LocalDate.now() : request.getCreationDate());
 
         if (request.getTaxId() == null) p.setTaxId(null);
 

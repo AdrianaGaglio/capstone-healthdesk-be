@@ -8,6 +8,7 @@ import epicode.it.healthdesk.entities.appointment.Appointment;
 import epicode.it.healthdesk.entities.appointment.AppointmentRepo;
 import epicode.it.healthdesk.entities.appointment.AppointmentStatus;
 import epicode.it.healthdesk.entities.appointment.AppointmentSvc;
+import epicode.it.healthdesk.entities.doctor.Doctor;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -72,5 +73,6 @@ public class AddressSvc {
         BeanUtils.copyProperties(request, a);
         return addressRepo.save(a);
     }
+
 
 }
