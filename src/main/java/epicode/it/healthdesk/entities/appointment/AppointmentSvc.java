@@ -28,11 +28,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.print.Doc;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -85,8 +87,8 @@ public class AppointmentSvc {
         return appointmentRepo.findFirstByCalendarIdAndStartDate(calendarId, startDate).orElse(null);
     }
 
-    public Appointment blockedSlot(BlockedSlotRequest request) {
-        Doctor d = doctorSvc.getById(request.getDoctorId());
+    public Appointment blockedSlot(UserDetails userDetails, BlockedSlotRequest request) {
+        Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
         Calendar c = d.getCalendar();
 
         Appointment app = findFirstByCalendarIdAndStartDate(c.getId(), request.getStartDate());
@@ -114,8 +116,12 @@ public class AppointmentSvc {
         return appointmentRepo.save(a);
     }
 
-    public void unlockSlot(Long id) {
+    public void unlockSlot(UserDetails userDetails, Long id) {
         Appointment a = getById(id);
+
+        Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+        if (!a.getCalendar().getDoctor().getId().equals(d.getId())) throw new AccessDeniedException("Accesso negato");
+
         delete(a);
     }
 

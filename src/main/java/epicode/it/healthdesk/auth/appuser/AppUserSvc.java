@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Optional;
 import java.util.Set;
 
@@ -65,6 +66,13 @@ public class AppUserSvc {
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
         appUser.setPassword(pwdEncoder.encode(request.getPassword()));
+
+        if(request.getPatient()!=null ) {
+            LocalDate birthDate = request.getPatient().getBirthDate();
+            int age = Period.between(birthDate, LocalDate.now()).getYears();
+            boolean isAdult = age >= 18;
+            if(!isAdult) throw new IllegalArgumentException("L'utente deve essere maggiorenne");
+        }
 
         appUser.setRoles(Set.of(Role.ROLE_PATIENT));
         appUser = appUserRepo.save(appUser);

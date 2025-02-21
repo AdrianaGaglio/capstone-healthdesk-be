@@ -14,6 +14,7 @@ import epicode.it.healthdesk.entities.patient.dto.PatientResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,12 +35,13 @@ public class AuthController {
     private final GeneralUserRepo generalUserRepo;
     private final JwtTokenUtil jwtTokenUtil;
 
+    // ❗TO DO: controllo sulla configurazione del db (da rivedere)
     @GetMapping("/count")
     @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<Map<String, Boolean>> count() {
         Map<String, Boolean> response = new HashMap<>();
         response.put("configured", appUserSvc.count() > 0);
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/check-db")
@@ -51,23 +53,27 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<PatientResponse> register(@RequestBody RegisterRequest registerRequest) {
-        return ResponseEntity.ok(patientMapper.fromPatientToPatientResponse(appUserSvc.registerPatient(registerRequest)));
+    public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequest registerRequest) {
+        appUserSvc.registerPatient(registerRequest);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Utente registrato con successo");
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/new-doctor")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DoctorResponse> registerDoctor(@RequestBody RegisterDoctorRequest registerRequest) {
         if (doctorSvc.count() > 0) throw new IllegalArgumentException("Non possono essere registrati altri medici");
-        return ResponseEntity.ok(doctorMapper.fromDoctorToDoctorResponse(appUserSvc.registerDoctor(registerRequest)));
+        return new ResponseEntity<>(doctorMapper.fromDoctorToDoctorResponse(appUserSvc.registerDoctor(registerRequest)), HttpStatus.CREATED);
     }
 
     @PostMapping("/new-admin")
+    // ❗TO DO: controllo sull'admin (si può registrare inserendo un codice) - da rivedere l'emissione del codice
     public ResponseEntity<Map<String, String>> registerAdmin(@RequestBody RegisterRequest registerRequest) {
         appUserSvc.registerAdmin(registerRequest);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Amministratore registrato con successo");
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -82,14 +88,16 @@ public class AuthController {
         AppUser appUser = appUserSvc.loadUserByEmail(userDetails.getUsername());
         appUser = appUserSvc.updateLoginInfo(appUser, request);
         String token = jwtTokenUtil.generateAccessToken(appUser); // genero un nuovo token dopo la modifica dei dati di accesso
-        return ResponseEntity.ok(new AuthResponse(token, jwtTokenUtil.getRolesFromToken(token)));
+        return new ResponseEntity<>(new AuthResponse(token, jwtTokenUtil.getRolesFromToken(token)), HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("/reset")
-    public ResponseEntity<AuthResponse> resetAfterFirstAccess(@RequestBody ResetPassword request) {
+    // metodo per impostare una nuova password dopo la creazione di un nuovo utente
+    @PostMapping("/new-password")
+    public ResponseEntity<AuthResponse> newPassword(@RequestBody ResetPassword request) {
         return ResponseEntity.ok(appUserSvc.resetPassword(request));
     }
 
+    // richiesta link per reimpostare la password
     @PostMapping("/reset-request")
     public ResponseEntity<Map<String, String>> resetPasswordRequest(@RequestParam String email) {
         Map<String, String> response = new HashMap<>();

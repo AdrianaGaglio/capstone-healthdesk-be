@@ -1,5 +1,6 @@
 package epicode.it.healthdesk.entities.patient;
 
+import com.google.api.Http;
 import epicode.it.healthdesk.entities.doctor.Doctor;
 import epicode.it.healthdesk.entities.doctor.DoctorSvc;
 import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
@@ -30,39 +31,44 @@ public class PatientController {
     private final DoctorSvc doctorSvc;
     private final PatientMapper mapper;
 
-    @GetMapping
+    @GetMapping // per il paziente
+    @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<PatientResponse> getPatient(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(mapper.fromPatientToPatientResponse(patientSvc.getByEmail(userDetails.getUsername())));
+        return new ResponseEntity<>(mapper.fromPatientToPatientResponse(patientSvc.getByEmail(userDetails.getUsername())), HttpStatus.OK);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/all") // per admin e medico
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     public ResponseEntity<List<PatientResponse>> getAll(@AuthenticationPrincipal UserDetails userDetails) {
         List<Patient> patients = patientSvc.getAll();
 
+        // il medico può visualizzare solo i pazienti che hanno prenotato un appuntamento con lui
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
             Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
             patients = patients.stream().filter(p -> d.getPatients().contains(p)).toList();
         }
 
-        return ResponseEntity.ok(mapper.fromPatientToPatientResponseList(patients));
+        return new ResponseEntity<>(mapper.fromPatientToPatientResponseList(patients), HttpStatus.OK);
     }
 
-    @GetMapping("/paged")
+    @GetMapping("/paged") // per admin e medico
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     public ResponseEntity<Page<PatientResponse>> getAllPaged(@ParameterObject Pageable pageable, @AuthenticationPrincipal UserDetails userDetails) {
 
+        // il medico visualizza solo i pazienti che hanno prenotato un appuntamento con lui
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
             Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
             return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patientSvc.getAllPageableByDoctor(d.getId(), pageable)));
         }
 
-        return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patientSvc.getAllPageable(pageable)));
+        return new ResponseEntity<>(mapper.fromPatientPagedToPatientResponsePaged(patientSvc.getAllPageable(pageable)), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") // per il paziente
+    @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<PatientResponse> getById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
+        // controlla se il paziente corrisponde all'id
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
             Patient p = patientSvc.getByEmail(userDetails.getUsername());
 
@@ -71,12 +77,13 @@ public class PatientController {
             }
         }
 
-        return ResponseEntity.ok(mapper.fromPatientToPatientResponse(patientSvc.getById(id)));
+        return new ResponseEntity<>(mapper.fromPatientToPatientResponse(patientSvc.getById(id)), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") //❗ implementare tutte le logiche che ripuliscono le info sul paziente in caso di cancellazione del profilo
     public ResponseEntity<Map<String, String>> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
+        // controlla se il paziente sta tentando di cancellare il proprio profilo
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
             Patient p = patientSvc.getByEmail(userDetails.getUsername());
 
@@ -94,10 +101,11 @@ public class PatientController {
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<PatientResponse> update(@PathVariable Long id, @RequestBody PatientUpdateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
 
+        // controlla se il paziente corrisponde all'id
         Patient p = patientSvc.getByEmail(userDetails.getUsername());
         if (p.getId() != id) throw new AccessDeniedException("Accesso negato");
 
-        return ResponseEntity.ok(mapper.fromPatientToPatientResponse(patientSvc.update(id, request)));
+        return new ResponseEntity<>(mapper.fromPatientToPatientResponse(patientSvc.update(id, request)), HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/search")
@@ -106,12 +114,13 @@ public class PatientController {
 
         Page<Patient> patients = patientSvc.findByNameOrSurname(identifier, pageable);
 
+        // il medico visualizza solo i pazienti che hanno prenotato appuntamenti con lui
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
             Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
             return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patientSvc.findByDoctorAndNameOrSurname(d.getId(), identifier, pageable)));
         }
 
-        return ResponseEntity.ok(mapper.fromPatientPagedToPatientResponsePaged(patients));
+        return new ResponseEntity<>(mapper.fromPatientPagedToPatientResponsePaged(patients), HttpStatus.OK);
     }
 
 }

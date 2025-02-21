@@ -22,31 +22,27 @@ public class DoctorController {
     private final DoctorSvc doctorSvc;
     private final DoctorMapper mapper;
 
-    @GetMapping("/all")
+    @GetMapping("/all") // solo per admin
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<DoctorResponse>> getAll() {
-        return ResponseEntity.ok(mapper.fromDoctorToDoctorResponseList(doctorSvc.getAll()));
+        return new ResponseEntity<>(mapper.fromDoctorToDoctorResponseList(doctorSvc.getAll()), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") // per pazienti e admin
     public ResponseEntity<DoctorResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.getById(id)));
+        return new ResponseEntity<>(mapper.fromDoctorToDoctorResponse(doctorSvc.getById(id)), HttpStatus.OK);
     }
 
-    @GetMapping
-    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+    @GetMapping // per il medico
+    @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<DoctorResponse> getDoctor(@AuthenticationPrincipal UserDetails userDetails) {
 
-        if(userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))){
-            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
-            return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.getById(d.getId())));
-        } else {
-            return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.getAll().stream().findFirst().orElse(null)));
-        }
+        Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+        return new ResponseEntity<>(mapper.fromDoctorToDoctorResponse(doctorSvc.getById(d.getId())), HttpStatus.OK);
 
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") // solo per l'admin
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, String>> delete(@PathVariable Long id) {
         Map<String, String> response = new HashMap<>();
@@ -54,17 +50,16 @@ public class DoctorController {
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}") // per admin e medico
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     public ResponseEntity<DoctorResponse> updateAddInfo(@PathVariable Long id, @RequestBody DoctorUpdateAddInfoRequest request) {
-        return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.updateAddInfo(id, request)));
+        return new ResponseEntity<>(mapper.fromDoctorToDoctorResponse(doctorSvc.updateAddInfo(id, request)), HttpStatus.ACCEPTED);
     }
 
-    @PutMapping("/update-personal-info/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    @PutMapping("/update-personal-info/{id}") // per il medico
+    @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<DoctorResponse> updatePersonalInfo(@PathVariable Long id, @RequestBody DoctorUpdateRequest request) {
-        return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.updatePersonalInfo(id, request)));
+        return new ResponseEntity<>(mapper.fromDoctorToDoctorResponse(doctorSvc.updatePersonalInfo(id, request)), HttpStatus.ACCEPTED);
     }
-
 
 }

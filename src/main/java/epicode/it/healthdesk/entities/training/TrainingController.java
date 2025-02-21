@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/training")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+@PreAuthorize("hasRole('DOCTOR')")
 public class TrainingController {
     private final DoctorSvc doctorSvc;
     private final DoctorMapper mapper;
 
+    // rimuove corso di formazione dal cv del medico e ritorna il medico aggiornato
     @DeleteMapping("/{id}/delete-training")
     public ResponseEntity<DoctorResponse> deleteTraining(@PathVariable Long id, @RequestParam Long trainingId) {
         return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.deleteTraining(id, trainingId)));

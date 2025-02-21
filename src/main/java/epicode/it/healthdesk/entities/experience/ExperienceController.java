@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/experience")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+@PreAuthorize("hasRole('DOCTOR')")
 public class ExperienceController {
     private final DoctorSvc doctorSvc;
     private final DoctorMapper mapper;
 
+    // rimuove esperienza dal cv del medico e ritorna il medico aggiornato
     @DeleteMapping("/{id}/delete-experience")
     public ResponseEntity<DoctorResponse> deleteExperience(@PathVariable Long id, @RequestParam Long experienceId) {
         return ResponseEntity.ok(mapper.fromDoctorToDoctorResponse(doctorSvc.deleteExperience(id, experienceId)));
