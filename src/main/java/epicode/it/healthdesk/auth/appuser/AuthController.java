@@ -53,11 +53,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequest registerRequest) {
-        appUserSvc.registerPatient(registerRequest);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Utente registrato con successo");
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<PatientResponse> register(@RequestBody RegisterRequest registerRequest) {
+        return new ResponseEntity<>(patientMapper.fromPatientToPatientResponse(appUserSvc.registerPatient(registerRequest)), HttpStatus.CREATED);
     }
 
     @PostMapping("/new-doctor")
