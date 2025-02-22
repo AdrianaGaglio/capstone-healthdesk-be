@@ -27,6 +27,7 @@ public interface AppointmentRepo extends JpaRepository<Appointment, Long> {
     public List<Appointment> findByService(DoctorService service);
 
     // pageable per calendario e data successiva a quella specificata
+    @Query("SELECT a FROM Appointment a WHERE a.calendar = :calendar AND a.startDate > :date AND a.status <> 'CANCELLED' AND a.status <> 'BLOCKED'")
     Page<Appointment> findByCalendarAndStartDateAfter(Calendar calendar, LocalDateTime date, Pageable pageable);
 
     // cerco il primo appuntamento per data inizio e fine

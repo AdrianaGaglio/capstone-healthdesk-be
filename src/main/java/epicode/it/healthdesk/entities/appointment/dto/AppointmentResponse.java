@@ -17,5 +17,6 @@ public class AppointmentResponse {
     private PatientResponse patient;
     private DoctorServiceResponse service;
     private String status;
-    private AddressResponse address;
+    private AddressResponse doctorAddress;
+    private Boolean online;
 }

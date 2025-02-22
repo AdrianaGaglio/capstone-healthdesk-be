@@ -231,6 +231,7 @@ public class AppointmentSvc {
         return appointmentRepo.findAllByStartDateBetween(start, end);
     }
 
+    @Transactional
     // modifica appuntamento da parte del medico
     public Calendar update(Long id, Appointment request) {
         Appointment a = getById(id);
@@ -244,11 +245,18 @@ public class AppointmentSvc {
             a.setStatus(request.getStatus());
         }
 
+        if(request.getOnline()) {
+            a.setOnline(true);
+            a.setDoctorAddress(null);
+        } else {
+            a.setDoctorAddress(addressSvc.getById(request.getDoctorAddress().getId()));
+        }
+
         // controllo se per le date indicate esiste un appuntamento
         if (existByStartDateAndEndDate(request.getStartDate(), request.getEndDate())) {
             Appointment found = findFirstByStartDateAndEndDate(request.getStartDate(), request.getEndDate());
             // se l'appuntamento trovato è diverso da quello che sto modificando, lancio l'eccezione
-            if (!found.getId().equals(request.getId()))
+            if (!found.getId().equals(request.getId()) && !found.getStatus().equals(AppointmentStatus.CANCELLED))
                 throw new EntityExistsException("Slot non disponibile");
         }
 

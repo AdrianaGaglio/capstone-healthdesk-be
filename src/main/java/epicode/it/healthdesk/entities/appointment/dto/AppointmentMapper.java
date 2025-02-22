@@ -3,10 +3,9 @@ package epicode.it.healthdesk.entities.appointment.dto;
 import epicode.it.healthdesk.entities.address.dto.AddressMapper;
 import epicode.it.healthdesk.entities.appointment.Appointment;
 import epicode.it.healthdesk.entities.doctor.dto.DoctorMapper;
-import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.dto.PatientMapper;
-import epicode.it.healthdesk.entities.patient.dto.PatientResponse;
 import epicode.it.healthdesk.entities.service.dto.DoctorServiceMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -39,7 +38,7 @@ public class AppointmentMapper {
         }
         response.setStatus(a.getStatus().toString());
         if (a.getDoctorAddress() != null) {
-            response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
+            response.setDoctorAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
         }
         return response;
     }
@@ -48,10 +47,11 @@ public class AppointmentMapper {
         return appointments.stream().map(this::toAppointmentResponse).toList();
     }
 
-    public Page<AppointmentResponse> toAppointmentsPaged(Page<Appointment> pagedAppointments) {
-        return pagedAppointments.map(this::toAppointmentResponse);
+    public Page<AppointmentResponseForCalendar> toAppointmentsPaged(Page<Appointment> pagedAppointments) {
+        return pagedAppointments.map(this::toAppointmentResponseForCalendar);
     }
 
+    @Transactional
     public AppointmentResponseForCalendar toAppointmentResponseForCalendar(Appointment a) {
         AppointmentResponseForCalendar response = mapper.map(a, AppointmentResponseForCalendar.class);
         if(a.getService()!=null) {
@@ -60,19 +60,26 @@ public class AppointmentMapper {
             response.setService(null);
         }
         if(a.getMedicalFolder()!=null) {
+
             response.setPatient(patientMapper.toPatientResponseForCalendar(a.getMedicalFolder().getPatient()));
         } else {
             response.setPatient(null);
         }
         response.setStatus(a.getStatus().toString());
         if (a.getDoctorAddress() != null) {
-            response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
+            response.setDoctorAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
         }
+
+
         return response;
     }
 
     public List<AppointmentResponseForCalendar> toAppointmentResponseForCalendarList(List<Appointment> appointments) {
         return appointments.stream().map(this::toAppointmentResponseForCalendar).toList();
+    }
+
+    public Page<AppointmentResponse> toAppointmentsForCalendarPaged(Page<Appointment> pagedAppointments) {
+        return pagedAppointments.map(this::toAppointmentResponse);
     }
 
     public AppointmentResponseForPatient toAppointmentResponseForPatient(Appointment a) {
@@ -81,7 +88,7 @@ public class AppointmentMapper {
         response.setService(null);
         response.setStatus(a.getStatus().toString());
         if (a.getDoctorAddress() != null) {
-            response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
+            response.setDoctorAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
         }
         return response;
     }
@@ -94,7 +101,7 @@ public class AppointmentMapper {
         AppointmentResponseForMedicalFolder response = mapper.map(a, AppointmentResponseForMedicalFolder.class);
         response.setService(serviceMapper.toDoctorServiceResponse(a.getService()));
         if (a.getDoctorAddress() != null) {
-            response.setAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
+            response.setDoctorAddress(addressMapper.fromAddressToAddressResponse(a.getDoctorAddress()));
         }
         response.setDoctor(doctorMapper.fromDoctorToDoctorResponse(a.getCalendar().getDoctor()));
         return response;

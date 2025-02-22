@@ -14,7 +14,7 @@ public class AppointmentResponseForMedicalFolder {
     private LocalDateTime endDate;
     private DoctorServiceResponse service;
     private String status;
-    private AddressResponse address;
+    private AddressResponse doctorAddress;
     private DoctorResponse doctor;
     private Boolean online;
 }

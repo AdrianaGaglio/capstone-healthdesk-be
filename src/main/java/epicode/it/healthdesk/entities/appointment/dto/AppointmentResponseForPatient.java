@@ -15,5 +15,5 @@ public class AppointmentResponseForPatient {
         private DoctorServiceResponse service = null;
         private PatientResponseForCalendar patient = null;
         private String status;
-        private AddressResponse address;
+        private AddressResponse doctorAddress;
 }

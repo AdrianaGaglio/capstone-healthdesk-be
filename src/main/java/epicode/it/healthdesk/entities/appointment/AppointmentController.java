@@ -61,7 +61,7 @@ public class AppointmentController {
     // prossimi appuntamenti medico
     @GetMapping("/next/{calendarId}")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
-    public ResponseEntity<Page<AppointmentResponse>> findNextByCalendar(@PathVariable Long calendarId, @ParameterObject Pageable pageable, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Page<AppointmentResponseForCalendar>> findNextByCalendar(@PathVariable Long calendarId, @ParameterObject Pageable pageable, @AuthenticationPrincipal UserDetails userDetails) {
 
         // controlla che il medico è proprietario di quell'agenda
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {

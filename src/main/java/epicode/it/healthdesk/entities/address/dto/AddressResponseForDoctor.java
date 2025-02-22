@@ -7,5 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class AddressResponseForDoctor {
     private String name;
-    private AddressResponse address;
+    private AddressResponse doctorAddress;
 }
