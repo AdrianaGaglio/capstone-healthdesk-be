@@ -14,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.print.Doc;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class DoctorServiceSvc {
         BeanUtils.copyProperties(request, s);
         s.setDoctor(d);
         s.setIsActive(request.getIsActive() == null ? false : true);
-        if(request.getOnline() == null) s.setOnline(false);
+        if (request.getOnline() == null) s.setOnline(false);
         return serviceRepo.save(s);
     }
 
@@ -78,6 +79,12 @@ public class DoctorServiceSvc {
         }
         DoctorService s = getById(id);
         s.setIsActive(!s.getIsActive());
+        return serviceRepo.save(s);
+    }
+
+    public DoctorService update(Long id, DoctorService request) {
+        DoctorService s = getById(id);
+        BeanUtils.copyProperties(request, s);
         return serviceRepo.save(s);
     }
 }

@@ -81,7 +81,9 @@ public class AuthController {
     }
 
     @PutMapping("/update")
+    @CrossOrigin(   )
     public ResponseEntity<?> updateLoginInfo(@RequestBody AuthUpdateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println(request);
         AppUser appUser = appUserSvc.loadUserByEmail(userDetails.getUsername());
         appUser = appUserSvc.updateLoginInfo(appUser, request);
         String token = jwtTokenUtil.generateAccessToken(appUser); // genero un nuovo token dopo la modifica dei dati di accesso
