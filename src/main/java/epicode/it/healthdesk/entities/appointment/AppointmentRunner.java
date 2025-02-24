@@ -59,7 +59,7 @@ public class AppointmentRunner implements ApplicationRunner {
                 for (LocalDate y = range; y.isAfter(LocalDate.now()); y = y.minusDays(1)) {
                     if (y.getDayOfWeek() == DayOfWeek.TUESDAY || y.getDayOfWeek() == DayOfWeek.THURSDAY) {
                         start = y.atTime(faker.random().nextInt(16, 19), 0);
-                        System.out.println(start);
+
                         break;
                     }
                 }
