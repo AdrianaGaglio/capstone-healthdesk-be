@@ -47,7 +47,7 @@ public class EmailMapper {
         values.put("user_surname", request.getSurname());
         values.put("email", request.getTo());
         values.put("website", website);
-        values.put("reset", website + "/auth/reset-password/true/" + token);
+        values.put("reset", website + "/auth/reset-password/" + token);
         return processTemplate(template, values);
     }
 

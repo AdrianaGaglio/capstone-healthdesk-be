@@ -92,7 +92,9 @@ public class AuthController {
 
     // metodo per impostare una nuova password dopo la creazione di un nuovo utente
     @PostMapping("/new-password")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<AuthResponse> newPassword(@RequestBody ResetPassword request) {
+        System.out.println(request);
         return ResponseEntity.ok(appUserSvc.resetPassword(request));
     }
 

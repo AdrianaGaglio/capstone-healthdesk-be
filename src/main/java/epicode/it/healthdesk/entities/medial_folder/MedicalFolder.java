@@ -2,6 +2,7 @@ package epicode.it.healthdesk.entities.medial_folder;
 
 import epicode.it.healthdesk.entities.appointment.Appointment;
 import epicode.it.healthdesk.entities.document.certificate.Certificate;
+import epicode.it.healthdesk.entities.note.Note;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.document.prescription.Prescription;
 import epicode.it.healthdesk.entities.reminder.Reminder;
@@ -33,4 +34,7 @@ public class MedicalFolder {
 
     @OneToMany
     private List<Reminder> reminders = new ArrayList<>();
+
+    @OneToMany
+    private List<Note> notes = new ArrayList<>();
 }

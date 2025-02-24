@@ -65,7 +65,6 @@ public class PatientController {
     }
 
     @GetMapping("/{id}") // per il paziente
-    @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<PatientResponse> getById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
         // controlla se il paziente corrisponde all'id
@@ -73,6 +72,14 @@ public class PatientController {
             Patient p = patientSvc.getByEmail(userDetails.getUsername());
 
             if (!p.getId().equals(id)) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+
+        if(userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+
+            if(!d.getPatients().contains(patientSvc.getById(id))) {
                 throw new AccessDeniedException("Accesso negato");
             }
         }

@@ -40,8 +40,6 @@ public class PastAppointmentRunner implements ApplicationRunner {
 
         List<Appointment> pastAppointments = appointmentSvc.getAll().stream().filter(a -> a.getStartDate().isBefore(LocalDateTime.now())).toList();
 
-        System.out.println(pastAppointments.size());
-
         if (pastAppointments.size() == 0) {
 
             for (Patient p : allPatients) {

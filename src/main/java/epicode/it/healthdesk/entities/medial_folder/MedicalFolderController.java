@@ -7,6 +7,8 @@ import epicode.it.healthdesk.entities.document.document.Document;
 import epicode.it.healthdesk.entities.document.document.DocumentCreateRequest;
 import epicode.it.healthdesk.entities.medial_folder.dto.MedicalFolderMapper;
 import epicode.it.healthdesk.entities.medial_folder.dto.MedicalFolderResponse;
+import epicode.it.healthdesk.entities.medial_folder.dto.MedicalFolderResponseForPatient;
+import epicode.it.healthdesk.entities.note.dto.NoteRequest;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.patient.PatientSvc;
 import epicode.it.healthdesk.entities.reminder.dto.ReminderRequest;
@@ -32,9 +34,9 @@ public class MedicalFolderController {
 
     @GetMapping // per il paziente
     @PreAuthorize("hasRole('PATIENT')")
-    public ResponseEntity<MedicalFolderResponse> get(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<MedicalFolderResponseForPatient> get(@AuthenticationPrincipal UserDetails userDetails) {
         Patient p = patientSvc.getByEmail(userDetails.getUsername());
-        return new ResponseEntity<>(mapper.toMedicalFolderResponse(medicalFolderSvc.getByPatient(p.getId())), HttpStatus.OK);
+        return new ResponseEntity<>(mapper.toMedicalFolderResponseForPatient(medicalFolderSvc.getByPatient(p.getId())), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -66,7 +68,7 @@ public class MedicalFolderController {
 
     @PutMapping("/{id}/add-certificate") // il paziente carica referti
     @PreAuthorize("hasRole('PATIENT')")
-    public ResponseEntity<MedicalFolderResponse> addCertificate(@PathVariable Long id, @RequestBody DocumentCreateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<MedicalFolderResponseForPatient> addCertificate(@PathVariable Long id, @RequestBody DocumentCreateRequest request, @AuthenticationPrincipal UserDetails userDetails) {
 
         // controlla se il paziente è proprietario di quella cartella medica
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
@@ -77,7 +79,7 @@ public class MedicalFolderController {
             }
         }
 
-        return new ResponseEntity<>(mapper.toMedicalFolderResponse(medicalFolderSvc.addCertificate(id, request)), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(mapper.toMedicalFolderResponseForPatient(medicalFolderSvc.addCertificate(id, request)), HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}/delete-prescription") // il medico cancella prescrizioni
@@ -98,7 +100,7 @@ public class MedicalFolderController {
 
     @DeleteMapping("/{id}/delete-certificate") // il paziente cancella il referto caricato
     @PreAuthorize("hasRole('PATIENT')")
-    public ResponseEntity<MedicalFolderResponse> deleteCertificate(@PathVariable Long id, @RequestParam Long certificateId, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<MedicalFolderResponseForPatient> deleteCertificate(@PathVariable Long id, @RequestParam Long certificateId, @AuthenticationPrincipal UserDetails userDetails) {
 
         // controlla se il paziente è proprietario della cartella medica
         if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT"))) {
@@ -109,7 +111,7 @@ public class MedicalFolderController {
             }
         }
 
-        return new ResponseEntity<>(mapper.toMedicalFolderResponse(medicalFolderSvc.deleteCertificate(id, certificateId)), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(mapper.toMedicalFolderResponseForPatient(medicalFolderSvc.deleteCertificate(id, certificateId)), HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/{id}/add-reminder") // per il medico
@@ -140,6 +142,37 @@ public class MedicalFolderController {
             }
         }
         return new ResponseEntity<>(mapper.toMedicalFolderResponse(medicalFolderSvc.removeReminder(id, reminderId)), HttpStatus.ACCEPTED);
+    }
+
+    @PutMapping("{id}/add-note")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<MedicalFolderResponse> addNote(@PathVariable Long id, @RequestBody NoteRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        // controlla se il medico segue il paziente
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            MedicalFolder mf = medicalFolderSvc.getById(id);
+            if (!d.getPatients().contains(mf.getPatient())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+
+        return new ResponseEntity<>(mapper.toMedicalFolderResponse(medicalFolderSvc.addNote(id, request)), HttpStatus.ACCEPTED);
+    }
+
+    @PutMapping("{id}/remove-note")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<MedicalFolderResponse> removeNote(@PathVariable Long id, @RequestParam Long noteId, @AuthenticationPrincipal UserDetails userDetails) {
+        // controlla se il medico segue il paziente
+        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTOR"))) {
+            Doctor d = doctorSvc.getByEmail(userDetails.getUsername());
+            MedicalFolder mf = medicalFolderSvc.getById(id);
+            if (!d.getPatients().contains(mf.getPatient())) {
+                throw new AccessDeniedException("Accesso negato");
+            }
+        }
+
+
+        return new ResponseEntity<>(mapper.toMedicalFolderResponse(medicalFolderSvc.removeNote(id, noteId)), HttpStatus.ACCEPTED);
     }
 
 }

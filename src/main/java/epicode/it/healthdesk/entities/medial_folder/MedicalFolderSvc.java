@@ -3,6 +3,9 @@ package epicode.it.healthdesk.entities.medial_folder;
 import epicode.it.healthdesk.entities.document.certificate.Certificate;
 import epicode.it.healthdesk.entities.document.certificate.CertificateSvc;
 import epicode.it.healthdesk.entities.document.document.DocumentCreateRequest;
+import epicode.it.healthdesk.entities.note.Note;
+import epicode.it.healthdesk.entities.note.NoteSvc;
+import epicode.it.healthdesk.entities.note.dto.NoteRequest;
 import epicode.it.healthdesk.entities.patient.Patient;
 import epicode.it.healthdesk.entities.document.prescription.Prescription;
 import epicode.it.healthdesk.entities.document.prescription.PrescriptionSvc;
@@ -25,6 +28,7 @@ public class MedicalFolderSvc {
     private final PrescriptionSvc prescriptionSvc;
     private final CertificateSvc certificateSvc;
     private final ReminderSvc reminderSvc;
+    private final NoteSvc noteSvc;
 
     public List<MedicalFolder> getAll() {
         return medicalFolderRepo.findAll();
@@ -121,5 +125,20 @@ public class MedicalFolderSvc {
         return medicalFolderRepo.save(mf);
     }
 
+    @Transactional
+    public MedicalFolder addNote(Long id, NoteRequest request) {
+        MedicalFolder mf = getById(id);
+        mf.getNotes().add(noteSvc.create(request));
+        return medicalFolderRepo.save(mf);
+    }
+
+    @Transactional
+    public MedicalFolder removeNote(Long id, Long noteId) {
+        MedicalFolder mf = getById(id);
+        Note n = noteSvc.getById(noteId);
+        mf.getNotes().remove(n);
+        noteSvc.delete(noteId);
+        return medicalFolderRepo.save(mf);
+    }
 
 }

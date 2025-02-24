@@ -29,6 +29,7 @@ public class DoctorController {
     }
 
     @GetMapping("/{id}") // per pazienti e admin
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<DoctorResponse> getById(@PathVariable Long id) {
         return new ResponseEntity<>(mapper.fromDoctorToDoctorResponse(doctorSvc.getById(id)), HttpStatus.OK);
     }

@@ -25,6 +25,18 @@ public class MedicalFolderMapper {
         response.setPrescriptions(prescriptionMapper.toPrescriptionResponseList(mf.getPrescriptions()));
         response.setDocumentation(certificateMapper.toCertificateResponseList(mf.getDocumentation()));
         response.setReminders(reminderMapper.toReminderResponseList(mf.getReminders()));
+        response.setNotes(mf.getNotes());
+        return response;
+    }
+
+    @Transactional
+    public MedicalFolderResponseForPatient toMedicalFolderResponseForPatient(MedicalFolder mf) {
+        MedicalFolderResponseForPatient response = new MedicalFolderResponseForPatient();
+        response.setId(mf.getId());
+        response.setAppointments(appointmentMapper.toAppResponseForMFList(mf.getAppointments()));
+        response.setPrescriptions(prescriptionMapper.toPrescriptionResponseList(mf.getPrescriptions()));
+        response.setDocumentation(certificateMapper.toCertificateResponseList(mf.getDocumentation()));
+        response.setReminders(reminderMapper.toReminderResponseList(mf.getReminders()));
         return response;
     }
 
