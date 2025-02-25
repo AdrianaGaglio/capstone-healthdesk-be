@@ -48,7 +48,7 @@ public class PatientRunner implements ApplicationRunner {
 
         if(patientSvc.count() == 0) {
             if (provinces.size() > 0) {
-                for (int i = 0; i < 50; i++) {
+                for (int i = 0; i < 30; i++) {
                     RegisterRequest request = new RegisterRequest();
 
                     request.setPassword("password");

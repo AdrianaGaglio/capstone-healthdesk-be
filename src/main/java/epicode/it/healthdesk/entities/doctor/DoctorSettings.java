@@ -91,11 +91,11 @@ public class DoctorSettings implements ApplicationRunner {
         s3.setIsActive(true);
         s3.setPrice(150);
 
-        DoctorServiceRequest s4 = new DoctorServiceRequest();
-        s4.setName("Visita a domicilio");
-        s4.setDescription("Riservata a chi si trova impossibilitato ad allontanarsi dal domicilio.");
-        s4.setOnline(false);
-        s4.setPrice(200);
+//        DoctorServiceRequest s4 = new DoctorServiceRequest();
+//        s4.setName("Visita a domicilio");
+//        s4.setDescription("Riservata a chi si trova impossibilitato ad allontanarsi dal domicilio.");
+//        s4.setOnline(false);
+//        s4.setPrice(200);
 
         DoctorServiceRequest s5 = new DoctorServiceRequest();
         s5.setName("Visita di controllo");
@@ -104,7 +104,7 @@ public class DoctorSettings implements ApplicationRunner {
         s5.setIsActive(true);
         s5.setPrice(70);
 
-        services.addAll(List.of(s1, s2, s3, s4, s5));
+        services.addAll(List.of(s1, s2, s3,  s5));
 
         request.setServices(services);
         request.setId(d.getId());

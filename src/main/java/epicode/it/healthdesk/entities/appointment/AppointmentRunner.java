@@ -53,8 +53,6 @@ public class AppointmentRunner implements ApplicationRunner {
 
                 LocalDateTime start = null;
 
-
-
                 LocalDate range = LocalDate.now().plusDays(faker.random().nextInt(1, 30)); // creazione appuntamenti futuri
                 for (LocalDate y = range; y.isAfter(LocalDate.now()); y = y.minusDays(1)) {
                     if (y.getDayOfWeek() == DayOfWeek.TUESDAY || y.getDayOfWeek() == DayOfWeek.THURSDAY) {
