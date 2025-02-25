@@ -43,14 +43,23 @@ public class DoctorRunner implements ApplicationRunner {
             doctorRequest.setLicenceNumber(faker.regexify("[A-Z0-9]{8}"));
             doctorRequest.setPhoneNumber("3298180450");
 
-            AddressRequestForDoctor addressRequest = new AddressRequestForDoctor();
-            addressRequest.setStreet("Via Giusti");
-            addressRequest.setStreetNumber("5");
-            addressRequest.setProvinceAcronym("PA");
-            addressRequest.setCity("Palermo");
-            addressRequest.setPostalCode("90144");
-            addressRequest.setName("Studio Via Giusti");
-            doctorRequest.getAddresses().add(addressRequest);
+            AddressRequestForDoctor addressRequest1 = new AddressRequestForDoctor();
+            addressRequest1.setStreet("Via Giusti");
+            addressRequest1.setStreetNumber("5");
+            addressRequest1.setProvinceAcronym("PA");
+            addressRequest1.setCity("Palermo");
+            addressRequest1.setPostalCode("90144");
+            addressRequest1.setName("Palermo");
+
+            AddressRequestForDoctor addressRequest2 = new AddressRequestForDoctor();
+            addressRequest2.setStreet("Via Libertà");
+            addressRequest2.setStreetNumber("10");
+            addressRequest2.setProvinceAcronym("TP");
+            addressRequest2.setCity("Castellammare del Golfo");
+            addressRequest2.setPostalCode("91014");
+            addressRequest2.setName("Castellammare G.fo");
+
+            doctorRequest.getAddresses().addAll(List.of(addressRequest1, addressRequest2));
 
             request.setDoctor(doctorRequest);
 

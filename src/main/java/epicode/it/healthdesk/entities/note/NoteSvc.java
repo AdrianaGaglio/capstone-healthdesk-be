@@ -51,7 +51,7 @@ public class NoteSvc {
     public Note create(@Valid NoteRequest request) {
         Note n = new Note();
         BeanUtils.copyProperties(request, n);
-        n.setDate(LocalDate.now());
+        if (request.getDate() == null) n.setDate(LocalDate.now());
         return noteRepo.save(n);
     }
 }

@@ -69,7 +69,7 @@ public class AppointmentRunner implements ApplicationRunner {
                 app.setEndDate(app.getStartDate().plusHours(1));
 //                    app.setStatus(faker.random().nextInt(2) == 1 ? AppointmentStatus.CONFIRMED : AppointmentStatus.CANCELLED);
                 app.setOnline(faker.random().nextInt(1, 2) == 1);
-                List<DoctorService> services = d.getServices().stream().filter(s -> s.getOnline() == app.getOnline()).toList();
+                List<DoctorService> services = d.getServices();
                 app.setServiceId(services.get(faker.random().nextInt(services.size())).getId());
                 Address address = d.getAddresses().entrySet().iterator().next().getValue();
                 if (!app.getOnline()) app.setDoctorAddressId(address.getId());

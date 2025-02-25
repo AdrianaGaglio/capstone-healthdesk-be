@@ -11,4 +11,5 @@ public class NoteRequest {
     private String title;
     @NotNull(message = "Descrizione nota richiesta")
     private String description;
+    private LocalDate date;
 }
