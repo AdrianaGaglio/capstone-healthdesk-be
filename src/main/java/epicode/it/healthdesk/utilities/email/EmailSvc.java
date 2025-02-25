@@ -98,39 +98,39 @@ public class EmailSvc {
     }
 
     public String sendEmailWithAttachment(@Valid EmailRequest request, String pathFile) {
-        try {
-
-            Storage storage = storageClient.bucket().getStorage();
-            String bucketName = firebase.getOptions().getStorageBucket();
-
-            // Ottieni il file da Firebase Storage
-            Blob blob = storage.get(bucketName, extractRelativePath(pathFile, bucketName));
-
-            if (blob == null) {
-                throw new RuntimeException("File non trovato su Firebase Storage");
-            }
-
-            // Legge il file in un input stream
-            InputStream fileStream = new ByteArrayInputStream(blob.getContent());
-
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            helper.setTo(request.getTo());
-            helper.setSubject(request.getSubject());
-            helper.setText(request.getBody(), true);
-            helper.setFrom(request.getFrom() != null ? request.getFrom() : from);
-
-            // Allegare il file come DataSource
-            ByteArrayDataSource dataSource = new ByteArrayDataSource(fileStream.readAllBytes(), "application/pdf");
-            helper.addAttachment("documento.pdf", dataSource);
-
-            mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//
+//            Storage storage = storageClient.bucket().getStorage();
+//            String bucketName = firebase.getOptions().getStorageBucket();
+//
+//            // Ottieni il file da Firebase Storage
+//            Blob blob = storage.get(bucketName, extractRelativePath(pathFile, bucketName));
+//
+//            if (blob == null) {
+//                throw new RuntimeException("File non trovato su Firebase Storage");
+//            }
+//
+//            // Legge il file in un input stream
+//            InputStream fileStream = new ByteArrayInputStream(blob.getContent());
+//
+//            MimeMessage message = mailSender.createMimeMessage();
+//            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+//
+//            helper.setTo(request.getTo());
+//            helper.setSubject(request.getSubject());
+//            helper.setText(request.getBody(), true);
+//            helper.setFrom(request.getFrom() != null ? request.getFrom() : from);
+//
+//            // Allegare il file come DataSource
+//            ByteArrayDataSource dataSource = new ByteArrayDataSource(fileStream.readAllBytes(), "application/pdf");
+//            helper.addAttachment("documento.pdf", dataSource);
+//
+//            mailSender.send(message);
+//        } catch (MessagingException e) {
+//            throw new RuntimeException(e);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         return "Mail inviata correttamente!";
     }
 

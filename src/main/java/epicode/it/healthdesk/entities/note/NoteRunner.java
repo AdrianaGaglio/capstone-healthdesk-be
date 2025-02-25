@@ -7,6 +7,7 @@ import epicode.it.healthdesk.entities.appointment.AppointmentSvc;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolder;
 import epicode.it.healthdesk.entities.medial_folder.MedicalFolderSvc;
 import epicode.it.healthdesk.entities.note.dto.NoteRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -27,6 +28,7 @@ public class NoteRunner implements ApplicationRunner {
 
 
 
+    @Transactional
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
